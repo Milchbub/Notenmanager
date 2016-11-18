@@ -3,11 +3,12 @@ package de.tum.sep.siglerbischoff.notenverwaltung.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.text.View;
+
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
-import de.tum.sep.siglerbischoff.notenverwaltung.view.View;
 
 public final class Main implements ActionListener {
 
