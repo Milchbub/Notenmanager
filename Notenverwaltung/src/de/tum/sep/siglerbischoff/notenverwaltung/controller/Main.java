@@ -1,5 +1,5 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.controller;
-//hugzusfdztw
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
