@@ -31,4 +31,9 @@ public class Kurs {
 	public int getKlassenleiterID() {
 		return lehrerID;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

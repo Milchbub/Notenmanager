@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
@@ -12,6 +13,10 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 public abstract class DAO {
 	
 	public abstract Benutzer passwortPruefen(String name, String pass) throws DatenbankFehler;
+
+	public abstract Jahre gebeJahre() throws DatenbankFehler;
+	
+	public abstract List<Benutzer> gebeBenutzer() throws DatenbankFehler;
 	
 	public abstract List<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler;
 

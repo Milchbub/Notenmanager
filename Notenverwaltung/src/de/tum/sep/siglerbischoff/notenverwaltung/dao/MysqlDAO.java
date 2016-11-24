@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Vector;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
@@ -37,6 +38,40 @@ class MysqlDAO extends DAO {
 					return null;
 				}
 			}
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		} 
+	}
+
+	@Override
+	public Jahre gebeJahre() throws DatenbankFehler {
+		String sql = "SELECT schuljahr FROM klasse "
+				+ "UNION SELECT schuljahr FROM kurs "
+				+ "ORDER BY schuljahr DESC";
+		List<Integer> list = new Vector<>();
+		try(Statement s = dbverbindung.createStatement()) {
+			try(ResultSet rs = s.executeQuery(sql)) {
+				while(rs.next()) {
+					list.add(rs.getInt(1));
+				}
+				return new Jahre(list);
+			}
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
+	}
+	
+	@Override
+	public List<Benutzer> gebeBenutzer() throws DatenbankFehler {
+		String sql = "SELECT benutzerID, name, istAdmin FROM benutzer";
+		try(Statement s = dbverbindung.createStatement()) {
+			List<Benutzer> list = new Vector<>();
+			try(ResultSet rs = s.executeQuery(sql)) {
+				while(rs.next()) {
+					list.add(new Benutzer(rs.getInt(1), rs.getString(2), rs.getBoolean(3))); 
+				}
+			}
+			return list;
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		} 
@@ -149,17 +184,38 @@ class MysqlDAO extends DAO {
 				+ "('" + name + "', "
 				+ "'" + gebDat + "', "
 				+ "'" + adresse + "')";
-		
+		try (Statement s = dbverbindung.createStatement()) {
+			s.execute(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
 	}
 
 	@Override
 	public void klasseEinrichten(String name, int jahr, Benutzer klassenlehrer) throws DatenbankFehler{
-		
+		String sql = "INSERT INTO klasse (name, schuljahr, klassenlehrerID) VALUES "
+				+ "('" + name + "', "
+				+ jahr + ", "
+				+ klassenlehrer.getId() + ")";
+		try (Statement s = dbverbindung.createStatement()) {
+			s.execute(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
 	}
 
 	@Override
 	public void kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler {
-		
+		String sql = "INSERT INTO kurs (name, fach, schuljahr, lehrerID) VALUES "
+				+ "('" + name + "', "
+				+ "'" + fach + "', "
+				+ jahr + ", "
+				+ kursleiter.getId() + ")";
+		try (Statement s = dbverbindung.createStatement()) {
+			s.execute(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
 	}
 	
 

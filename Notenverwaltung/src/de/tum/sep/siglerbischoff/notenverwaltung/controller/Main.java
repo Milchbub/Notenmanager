@@ -6,7 +6,11 @@ import java.awt.event.ActionListener;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerverwaltungView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.View;
 
 public final class Main implements ActionListener {
@@ -49,7 +53,7 @@ public final class Main implements ActionListener {
 				} else {
 					loggedIn = benutzer;
 					lv.success();
-					view.loginBenutzer(loggedIn);
+					view.loginBenutzer(loggedIn, dao.gebeJahre());
 				}
 			} catch (DatenbankFehler e) {
 				if(debug) {
@@ -58,12 +62,89 @@ public final class Main implements ActionListener {
 				view.showError(e);
 			}
 		});
-		lv.login();
+		//TODO
+		//lv.login();
+		try { //Nur zu Entwicklungszwecken!
+			view.loginBenutzer(dao.passwortPruefen("BischoffM", "hallo"), dao.gebeJahre());
+		} catch (DatenbankFehler e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		try {
+			switch(e.getActionCommand()) {
+				case View.COMMAND_SCHUELERDATEN: {
+					SchuelerdatenView sdView = view.getSchuelerdatenView(new SchuelerdatenManager());
+					sdView.addActionListener(ae -> {
+						try {
+							dao.schülerHinzufügen(sdView.getName(), sdView.getGebDat(), sdView.getAdresse());
+							sdView.schliessen();
+						} catch (DatenbankFehler f) {
+							if(debug) {
+								f.printStackTrace();
+							}
+							view.showError(f);
+						}
+					});
+					sdView.showSchuelerdaten();
+					break; 
+				}
+				case View.COMMAND_BENUTZERVERWALTUNG: {
+					BenutzerverwaltungView bvView = view.getBenutzerverwaltungView(new BenutzerManager());
+					bvView.addActionListener(ae -> {
+						try {
+							dao.benutzerAnlegen(bvView.getName(), bvView.getLoginName(), bvView.getPass(), bvView.getIstAdmin());
+							bvView.schliessen();
+						} catch (DatenbankFehler f) {
+							if(debug) {
+								f.printStackTrace();
+							}
+							view.showError(f);
+						}
+					});
+					bvView.showBenutzerverwaltung();
+					break;
+				}
+				case View.COMMAND_KLASSEN_ANLEGEN: {
+					KlassenverwaltungView klassenView = view.getKlassenverwaltungView(new KlassenManager());
+					klassenView.addActionListener(ae -> {
+						try {
+							dao.klasseEinrichten(klassenView.getName(), klassenView.getSchuljahr(), klassenView.getKlassenlehrer());
+							klassenView.schliessen();
+						} catch (DatenbankFehler f) {
+							if(debug) {
+								f.printStackTrace();
+							}
+							view.showError(f);
+						}
+					});
+					klassenView.showKlassenverwaltung(Benutzer.gebeBenutzer());
+					break;
+				}
+				case View.COMMAND_KURSE_ANLEGEN: {
+					KursverwaltungView kursView = view.getKursverwaltungView(new KursManager());
+					kursView.addActionListener(ae -> {
+						try {
+							dao.kursEinrichten(kursView.getName(), kursView.getFach(), kursView.getSchuljahr(), kursView.getLehrer());
+							kursView.schliessen();
+						} catch (DatenbankFehler f) {
+							if(debug) {
+								f.printStackTrace();
+							}
+							view.showError(f);
+						}
+					});
+					kursView.showKursverwaltung(Benutzer.gebeBenutzer());
+					break;
+				}
+			}
+		} catch (DatenbankFehler f) {
+			if(debug) {
+				f.printStackTrace();
+			}
+			view.showError(f);
+		}
 	}
 }

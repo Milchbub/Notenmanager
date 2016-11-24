@@ -6,8 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
-import java.util.List;
 
+import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
@@ -21,15 +21,25 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListModel;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.EventListenerList;
 
+import de.tum.sep.siglerbischoff.notenverwaltung.controller.BenutzerManager;
+import de.tum.sep.siglerbischoff.notenverwaltung.controller.KlassenManager;
+import de.tum.sep.siglerbischoff.notenverwaltung.controller.KursManager;
+import de.tum.sep.siglerbischoff.notenverwaltung.controller.SchuelerdatenManager;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerverwaltungView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.View;
-import javax.swing.SwingConstants;
 
 public class SwingView extends JFrame implements View {
 
@@ -39,7 +49,8 @@ public class SwingView extends JFrame implements View {
 	private JComboBox<Integer> cmbboxJahr;
 	private JLabel lblHerzlichWillkommen;
 	private JPanel pnlContent;
-	private JLabel lblLeer;
+	
+	private EventListenerList listeners;
 
 	public SwingView() {
 		setTitle("Notenmanager");
@@ -50,32 +61,39 @@ public class SwingView extends JFrame implements View {
 		contentPane.setPreferredSize(new Dimension(700, 600));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		listeners = new EventListenerList();
 
 		JPanel pnlHeader = new JPanel();
 		contentPane.add(pnlHeader, BorderLayout.NORTH);
 
-		lblHerzlichWillkommen = new JLabel("");
+		lblHerzlichWillkommen = new JLabel("TEST");
 		lblHerzlichWillkommen.setFont(new Font("Tahoma", Font.BOLD, 16));
-
-		cmbboxJahr = new JComboBox<>();
-
 		JLabel lblJahr = new JLabel("Schuljahr:");
+		cmbboxJahr = new JComboBox<>();
+		
 		GroupLayout gl_pnlHeader = new GroupLayout(pnlHeader);
-		gl_pnlHeader.setHorizontalGroup(gl_pnlHeader.createSequentialGroup().addContainerGap()
-				.addComponent(lblHerzlichWillkommen).addPreferredGap(ComponentPlacement.RELATED, 294, Short.MAX_VALUE)
-				.addComponent(lblJahr).addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(cmbboxJahr, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE).addGap(8));
-		gl_pnlHeader.setVerticalGroup(gl_pnlHeader.createParallelGroup(Alignment.LEADING).addGroup(gl_pnlHeader
-				.createSequentialGroup().addGap(8)
-				.addGroup(gl_pnlHeader.createParallelGroup(Alignment.BASELINE)
-						.addComponent(cmbboxJahr, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblJahr).addComponent(lblHerzlichWillkommen))
-				.addGap(8)));
+		gl_pnlHeader.setHorizontalGroup(gl_pnlHeader.createSequentialGroup()
+			.addContainerGap()
+			.addComponent(lblHerzlichWillkommen)
+			.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addComponent(lblJahr)
+			.addPreferredGap(ComponentPlacement.RELATED)
+			.addComponent(cmbboxJahr, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
+			.addContainerGap()
+		);
+		gl_pnlHeader.setVerticalGroup(gl_pnlHeader.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(gl_pnlHeader.createParallelGroup(Alignment.BASELINE)
+				.addComponent(lblHerzlichWillkommen)
+				.addComponent(lblJahr)
+				.addComponent(cmbboxJahr, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+			.addContainerGap()
+		);
 		pnlHeader.setLayout(gl_pnlHeader);
 
 		pnlContent = new JPanel();
-		pnlContent.setBorder(new EmptyBorder(0, 5, 0, 5));
+		pnlContent.setBorder(new EmptyBorder(0, 8, 0, 8));
 		contentPane.add(pnlContent, BorderLayout.CENTER);
 		pnlContent.setLayout(new BorderLayout(0, 0));
 
@@ -85,18 +103,19 @@ public class SwingView extends JFrame implements View {
 		JButton button = new JButton("");
 		button.setIcon(
 				new ImageIcon(SwingView.class.getResource("/com/sun/java/swing/plaf/windows/icons/JavaCup32.png")));
+		
 		GroupLayout gl_pnlFooter = new GroupLayout(pnlFooter);
-		gl_pnlFooter.setHorizontalGroup(gl_pnlFooter.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_pnlFooter.createSequentialGroup().addContainerGap(629, Short.MAX_VALUE)
-						.addComponent(button, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE).addGap(8)));
-		gl_pnlFooter.setVerticalGroup(gl_pnlFooter.createSequentialGroup().addGap(8)
-				.addComponent(button, GroupLayout.PREFERRED_SIZE, 41, GroupLayout.PREFERRED_SIZE).addGap(8));
+		gl_pnlFooter.setHorizontalGroup(gl_pnlFooter.createSequentialGroup()
+			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addComponent(button, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+			.addContainerGap()
+		);
+		gl_pnlFooter.setVerticalGroup(gl_pnlFooter.createSequentialGroup()
+			.addGap(8)
+			.addComponent(button, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
+			.addGap(8)
+		);
 		pnlFooter.setLayout(gl_pnlFooter);
-
-		/*
-		 * try { loginBenutzer(new Benutzer(0, "Max Mustermann", true)); } catch
-		 * (DatenbankFehler e) { e.printStackTrace(); }
-		 */
 	}
 
 	@Override
@@ -105,66 +124,89 @@ public class SwingView extends JFrame implements View {
 	}
 
 	@Override
-	public void loginBenutzer(Benutzer benutzer) throws DatenbankFehler {
+	public void loginBenutzer(Benutzer benutzer, ComboBoxModel<Integer> jahre) throws DatenbankFehler {
 
 		lblHerzlichWillkommen.setText("Herzlich willkommen, " + benutzer.getName() + "!");
 
 		int jahr = Calendar.getInstance().get(Calendar.YEAR);
+		cmbboxJahr.setModel(jahre);
+		cmbboxJahr.setSelectedItem(new Integer(jahr));
 
-		List<Klasse> klassen = benutzer.gebeGeleiteteKlassen(jahr);
-		List<Kurs> kurse = benutzer.gebeKurse(jahr);
+		ListModel<Klasse> klassen = benutzer.gebeGeleiteteKlassen(jahr);
+		ListModel<Kurs> kurse = benutzer.gebeKurse(jahr);
 
 		boolean istAdmin = benutzer.istAdmin();
-		boolean istKlassenleiter = klassen.size() > 0;
-		boolean istKursleiter = kurse.size() > 0;
+		boolean istKlassenleiter = klassen.getSize() > 0;
+		boolean istKursleiter = kurse.getSize() > 0;
 		boolean tabs = (istAdmin && istKlassenleiter) || (istAdmin && istKursleiter)
 				|| (istKlassenleiter && istKursleiter);
 
 		if (!(istAdmin || istKlassenleiter || istKursleiter)) {
-			lblLeer = new JLabel(
-					"<html><center>Sie sind leider weder Admin, <br />noch haben Sie Klassen oder Kurse.</center></html>");
+			JLabel lblLeer = new JLabel("<html><center>Sie sind leider weder Admin, <br />"
+					+ "noch haben Sie Klassen oder Kurse.</center></html>");
 			lblLeer.setHorizontalAlignment(SwingConstants.CENTER);
 			pnlContent.add(lblLeer);
 			lblLeer.setHorizontalTextPosition(SwingConstants.CENTER);
 		}
 
-		JPanel pnlAdmin;
-		JPanel pnlKlassen;
-		JPanel pnlKurse;
+		JTabbedPane tabbedPane = null;
+		if (tabs) {
+			tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		}
+
+		JPanel pnlAdmin = null;
+		JPanel pnlKlassen = null;
+		JPanel pnlKurse = null;
+
 		if (istAdmin) {
 			pnlAdmin = new JPanel();
-
+			
 			JButton btnSchlerdaten = new JButton("Sch\u00FClerdaten...");
+			btnSchlerdaten.setActionCommand(COMMAND_SCHUELERDATEN);
 
 			JButton btnBenutzerverwaltung = new JButton("Benutzerverwaltung...");
+			btnBenutzerverwaltung.setActionCommand(COMMAND_BENUTZERVERWALTUNG);
 
 			JButton btnKlassenAnlegen = new JButton("Klassen anlegen...");
+			btnKlassenAnlegen.setActionCommand(COMMAND_KLASSEN_ANLEGEN);
 
 			JButton btnKurseAnlegen = new JButton("Kurse anlegen...");
+			btnKurseAnlegen.setActionCommand(COMMAND_KURSE_ANLEGEN);
+			
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				btnSchlerdaten.addActionListener(l);
+				btnBenutzerverwaltung.addActionListener(l);
+				btnKlassenAnlegen.addActionListener(l);
+				btnKurseAnlegen.addActionListener(l);
+			}
+			
 			GroupLayout gl_pnlAdmin = new GroupLayout(pnlAdmin);
-			gl_pnlAdmin.setHorizontalGroup(gl_pnlAdmin.createParallelGroup(Alignment.LEADING)
-					.addGroup(gl_pnlAdmin.createSequentialGroup().addContainerGap()
-							.addGroup(gl_pnlAdmin.createParallelGroup(Alignment.TRAILING, false)
-									.addComponent(btnKurseAnlegen, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
-											GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(btnKlassenAnlegen, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
-											GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(btnSchlerdaten, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
-											GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addComponent(btnBenutzerverwaltung, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,
-											GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-							.addContainerGap(461, Short.MAX_VALUE)));
-			gl_pnlAdmin.setVerticalGroup(gl_pnlAdmin.createParallelGroup(Alignment.LEADING)
-					.addGroup(gl_pnlAdmin.createSequentialGroup().addContainerGap().addComponent(btnSchlerdaten)
-							.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnBenutzerverwaltung)
-							.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnKlassenAnlegen)
-							.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnKurseAnlegen)
-							.addContainerGap(252, Short.MAX_VALUE)));
+			gl_pnlAdmin.setHorizontalGroup(gl_pnlAdmin.createSequentialGroup()
+				.addContainerGap()
+				.addGroup(gl_pnlAdmin.createParallelGroup(Alignment.TRAILING, false)
+					.addComponent(btnKurseAnlegen, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,	GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnKlassenAnlegen, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnSchlerdaten, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnBenutzerverwaltung, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			);
+			gl_pnlAdmin.setVerticalGroup(gl_pnlAdmin.createSequentialGroup()
+				.addContainerGap()
+				.addComponent(btnSchlerdaten)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(btnBenutzerverwaltung)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(btnKlassenAnlegen)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(btnKurseAnlegen)
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			);
 			pnlAdmin.setLayout(gl_pnlAdmin);
-			if (tabs) {
-				// TODO
-			} else {
 
+			if (tabs) {
+				tabbedPane.add("Admin", pnlAdmin);
+			} else {
+				pnlContent.add(pnlAdmin, BorderLayout.CENTER);
 			}
 		}
 
@@ -187,44 +229,49 @@ public class SwingView extends JFrame implements View {
 			JButton btnNotenAnzeigen = new JButton("Noten anzeigen...");
 			btnNotenAnzeigen.setEnabled(false);
 			GroupLayout gl_pnlKlassen = new GroupLayout(pnlKlassen);
-			gl_pnlKlassen.setHorizontalGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING).addGroup(gl_pnlKlassen
-					.createSequentialGroup().addContainerGap()
-					.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING).addGroup(gl_pnlKlassen
-							.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 207, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING)
-									.addComponent(btnNotenAnzeigen)
-									.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING)
-											.addComponent(btnGefhrdungenAnzeigen, GroupLayout.DEFAULT_SIZE,
-													GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-											.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING, false)
-													.addComponent(btnNewButton).addComponent(lblZeugnisse)
-													.addComponent(btnZeugnisbemerkungen, GroupLayout.DEFAULT_SIZE,
-															GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-							.addComponent(lblIhreGeleitetenKlassen))
-					.addContainerGap(211, Short.MAX_VALUE)));
-			gl_pnlKlassen.setVerticalGroup(gl_pnlKlassen.createParallelGroup(Alignment.TRAILING).addGroup(gl_pnlKlassen
-					.createSequentialGroup().addContainerGap().addComponent(lblIhreGeleitetenKlassen)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.TRAILING)
-							.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 350,
-									Short.MAX_VALUE)
-							.addGroup(gl_pnlKlassen.createSequentialGroup().addComponent(btnZeugnisbemerkungen)
-									.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnNotenAnzeigen)
-									.addPreferredGap(ComponentPlacement.RELATED, 187, Short.MAX_VALUE)
-									.addComponent(btnGefhrdungenAnzeigen).addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblZeugnisse).addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnNewButton)))
-					.addContainerGap()));
+			gl_pnlKlassen.setHorizontalGroup(gl_pnlKlassen.createSequentialGroup()
+				.addContainerGap()
+				.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING, false)
+					.addComponent(lblIhreGeleitetenKlassen)
+					.addGroup(gl_pnlKlassen.createSequentialGroup()
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
+						.addPreferredGap(ComponentPlacement.UNRELATED)
+						.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(btnNotenAnzeigen)
+							.addComponent(btnGefhrdungenAnzeigen)
+							.addComponent(btnNewButton)
+							.addComponent(lblZeugnisse)
+							.addComponent(btnZeugnisbemerkungen))))
+				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			);
+			gl_pnlKlassen.setVerticalGroup(gl_pnlKlassen.createSequentialGroup()
+				.addContainerGap()
+				.addComponent(lblIhreGeleitetenKlassen)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING)
+					.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 406, Short.MAX_VALUE)
+					.addGroup(gl_pnlKlassen.createSequentialGroup()
+						.addComponent(btnZeugnisbemerkungen)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnNotenAnzeigen)
+						.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(btnGefhrdungenAnzeigen)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(lblZeugnisse)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(btnNewButton)))
+				.addContainerGap()
+			);
 
 			JList<Klasse> list = new JList<>();
+			list.setModel(klassen);
 			scrollPane.setViewportView(list);
 			pnlKlassen.setLayout(gl_pnlKlassen);
-			if (tabs) {
-				// TODO
-			} else {
 
+			if (tabs) {
+				tabbedPane.add("Klassen", pnlKlassen);
+			} else {
+				pnlContent.add(pnlKlassen, BorderLayout.CENTER);
 			}
 		}
 
@@ -243,21 +290,19 @@ public class SwingView extends JFrame implements View {
 
 			JLabel lblIhreKurse = new JLabel("Ihre Kurse: ");
 			GroupLayout gl_pnlKurse = new GroupLayout(pnlKurse);
-			gl_pnlKurse.setHorizontalGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING).addGroup(gl_pnlKurse
-					.createSequentialGroup().addContainerGap()
-					.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING).addComponent(lblIhreKurse)
-							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 207, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(
-							gl_pnlKurse.createParallelGroup(Alignment.LEADING)
-									.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING, false)
-											.addComponent(btnNotenAnzeigen_1, GroupLayout.DEFAULT_SIZE, 177,
-													Short.MAX_VALUE)
-											.addComponent(button_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
-													Short.MAX_VALUE))
-									.addComponent(btnKlassenarbeitEintagen, GroupLayout.PREFERRED_SIZE, 216,
-											GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(232, Short.MAX_VALUE)));
+			gl_pnlKurse.setHorizontalGroup(gl_pnlKurse.createSequentialGroup()
+				.addContainerGap()
+				.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING)
+					.addComponent(lblIhreKurse)
+					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 207, GroupLayout.PREFERRED_SIZE))
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnNotenAnzeigen_1, GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+						.addComponent(button_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addComponent(btnKlassenarbeitEintagen, GroupLayout.PREFERRED_SIZE, 216, GroupLayout.PREFERRED_SIZE))
+				.addContainerGap(232, Short.MAX_VALUE)
+			);
 			gl_pnlKurse.setVerticalGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING).addGroup(gl_pnlKurse
 					.createSequentialGroup().addContainerGap().addComponent(lblIhreKurse)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -271,25 +316,21 @@ public class SwingView extends JFrame implements View {
 					.addContainerGap()));
 
 			JList<Kurs> list_1 = new JList<>();
+			list_1.setModel(kurse);
 			scrollPane_1.setViewportView(list_1);
 			pnlKurse.setLayout(gl_pnlKurse);
-			if (tabs) {
-				// TODO
-			} else {
 
+			if (tabs) {
+				tabbedPane.add("Kurse", pnlKurse);
+			} else {
+				pnlContent.add(pnlKurse, BorderLayout.CENTER);
 			}
 		}
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.addTab("Admin", null, pnlAdmin, null);
-		tabbedPane.addTab("Klassen", null, pnlKlassen, null);
-		tabbedPane.addTab("Kurse", null, pnlKurse, null);
-
-		GroupLayout gl_pnlContent = new GroupLayout(pnlContent);
-		// gl_pnlContent.setHorizontalGroup(gl_pnlContent.createParallelGroup(Alignment.LEADING).addComponent(tabbedPane));
-		// gl_pnlContent.setVerticalGroup(gl_pnlContent.createParallelGroup(Alignment.LEADING).addComponent(tabbedPane));
-		pnlContent.setLayout(gl_pnlContent);
-
+		if (tabs) {
+			pnlContent.add(tabbedPane, BorderLayout.CENTER);
+		}
+				
 		pack();
 		setLocationRelativeTo(null);
 		setVisible(true);
@@ -307,6 +348,26 @@ public class SwingView extends JFrame implements View {
 
 	@Override
 	public void addActionListener(ActionListener l) {
+		listeners.add(ActionListener.class, l);
+	}
 
+	@Override
+	public SchuelerdatenView getSchuelerdatenView(SchuelerdatenManager schuelerdatenManager) {
+		return new SwingSchuelerdatenView(this);
+	}
+
+	@Override
+	public BenutzerverwaltungView getBenutzerverwaltungView(BenutzerManager benutzerManager) {
+		return new SwingBenutzerverwaltungView(this);
+	}
+
+	@Override
+	public KlassenverwaltungView getKlassenverwaltungView(KlassenManager klassenManager) {
+		return new SwingKlassenverwaltungView(this);
+	}
+
+	@Override
+	public KursverwaltungView getKursverwaltungView(KursManager kursManager) {
+		return new SwingKursverwaltungView(this);
 	}
 }

@@ -25,4 +25,9 @@ public class Klasse {
 	public int getKlassenlehrerID() {
 		return klassenlehrerID;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }
