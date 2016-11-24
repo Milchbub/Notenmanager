@@ -120,4 +120,9 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 		return listLehrer.getSelectedValue();
 	}
 
+	@Override
+	public void schliessen() {
+		setVisible(false);
+	}
+
 }
