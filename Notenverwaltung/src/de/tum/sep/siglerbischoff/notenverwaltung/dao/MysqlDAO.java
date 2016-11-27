@@ -18,8 +18,11 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
 class MysqlDAO extends DAO {
 
-	private static final String dbuser = "jdbc";
-	private static final String dbpass = "8xpPWLYzXSZAVRjt";
+//	private static final String dbuser = "jdbc";
+	private static final String dbuser = "root";
+//	private static final String dbpass = "8xpPWLYzXSZAVRjt";
+	private static final String dbpass = "maulwurf.";
+//	private static final String dbaddress = "10.176.89.15:3306";
 	private static final String dbaddress = "127.0.0.1:3306";
 	private static final String dbname = "notenmanager";
 
@@ -218,7 +221,25 @@ class MysqlDAO extends DAO {
 		}
 	}
 	
-
+	// Benutzer ueber den loginName loeschen. Es wird der User aus der benutzer-Tabelle sowie als
+	// auch der dazugehoerige Datenbank-User selbst geloescht.
+	@Override
+	public void benutzerLoeschen(String loginName) throws DatenbankFehler{
+		String sql = "DELETE FROM benutzer WHERE loginName = " + "'" + loginName + "'";
+		try (Statement s = dbverbindung.createStatement()) {
+			s.execute(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
+		try (Statement s = dbverbindung.createStatement()) {
+			sql = "DROP USER '" + loginName + "'@'%'";
+			s.execute(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	private void datenbankInitialisieren() throws SQLException {
 		dbverbindung = DriverManager.getConnection(
 				"jdbc:mariadb://" + dbaddress + "/" + dbname, 

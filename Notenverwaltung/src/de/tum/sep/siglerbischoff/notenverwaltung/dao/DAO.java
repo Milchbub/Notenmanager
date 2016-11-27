@@ -32,6 +32,8 @@ public abstract class DAO {
 	
 	public abstract void kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler;
 	
+	public abstract void benutzerLoeschen(String loginName) throws DatenbankFehler;
+	
 	public static DAO erstelleDAO() throws DatenbankFehler {
 		singleton = new MysqlDAO();
 		return singleton;

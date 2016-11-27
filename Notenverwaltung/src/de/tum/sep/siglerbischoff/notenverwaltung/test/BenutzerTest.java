@@ -53,10 +53,12 @@ public class BenutzerTest {
 		}
 	}
 	
-	/**
-	// TODO Testroutine funktioniert nur genau einmal!!! Grund: DB. Es sollte eine saubere Loeschfkt. geben.
+	// Es wird getestet, ob man Fehlerfrei einen Benutzer anlegen kann (DB User und Eintrag in User Tabelle).
+	// Danach wird der User auch wieder geloescht, was die Loeschroutine mitueberprueft. Verglichen werden
+	// zwei Arrays mit den Benutzernamen darin. Das Array vor dem User anlegen (mit manuell hinzugefuegtem
+	// Testuser) muss gleich dem Array nach dem User anlegen (frisch aus DB geholt) sein.
 	@Test
-	public void benutzerAnlegenTest() {
+	public void benutzerAnlegenUndLoeschenTest() {
 		try {
 			// DAO erstellen
 			DAO dao = DAO.erstelleDAO();
@@ -82,6 +84,8 @@ public class BenutzerTest {
 			for (i = 0; i < benutzerListeNachEinfuegen.size(); i++) {
 				vergleichsarray2[i] = benutzerListeNachEinfuegen.get(i).getName();
 			}
+			// Testbenutzer wieder aus DB loeschen
+			dao.benutzerLoeschen("Test");
 			
 			// Der eigentliche Test (Beide Arrays sollten identisch sein)
 			assertArrayEquals("test adding a user", vergleichsarray1 , vergleichsarray2);
@@ -90,6 +94,5 @@ public class BenutzerTest {
 			e.printStackTrace();
 		}
 	}
-	*/
 		
 }
