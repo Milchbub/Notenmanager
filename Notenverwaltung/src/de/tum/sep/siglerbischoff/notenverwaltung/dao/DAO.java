@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import javax.swing.ListModel;
 import javax.swing.table.TableModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
@@ -18,13 +19,13 @@ public interface DAO {
 
 	Jahre gebeJahre() throws DatenbankFehler;
 	
-	List<Benutzer> gebeBenutzer() throws DatenbankFehler;
+	ListModel<Benutzer> gebeBenutzer() throws DatenbankFehler;
 	
-	List<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler;
+	ListModel<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler;
 
-	List<Kurs> gebeKurse(Benutzer benutzer, int jahr) throws DatenbankFehler;
+	ListModel<Kurs> gebeKurse(Benutzer benutzer, int jahr) throws DatenbankFehler;
 
-	List<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler;
+	ListModel<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler;
 
 	TableModel gebeSchuelerdaten();
 	

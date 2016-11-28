@@ -10,6 +10,10 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ListModel;
+import javax.swing.event.ListDataListener;
+import javax.swing.table.TableModel;
+
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
@@ -62,7 +66,7 @@ class MysqlDAO implements DAO {
 	}
 	
 	@Override
-	public List<Benutzer> gebeBenutzer() throws DatenbankFehler {
+	public ListModel<Benutzer> gebeBenutzer() throws DatenbankFehler {
 		String sql = "SELECT benutzerID, name, istAdmin FROM benutzer";
 		try(Statement s = dbverbindung.createStatement()) {
 			List<Benutzer> list = new Vector<>();
@@ -71,14 +75,14 @@ class MysqlDAO implements DAO {
 					list.add(new Benutzer(rs.getInt(1), rs.getString(2), rs.getBoolean(3))); 
 				}
 			}
-			return list;
+			return new ListModelAdaptor<>(list);
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		} 
 	}
 
 	@Override
-	public List<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler {
+	public ListModel<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler {
 		String sql = "SELECT kurs.kursID, kurs.name, kurs.fach, kurs.lehrerID "
 				+ "FROM kurs, nimmtteil "
 				+ "WHERE kurs.kursID = nimmtteil.kursID AND "
@@ -94,7 +98,7 @@ class MysqlDAO implements DAO {
 					list.add(new Kurs(rs.getInt(1), rs.getString(2), 
 							rs.getString(3), jahr, rs.getInt(4)));
 				}
-				return list;
+				return new ListModelAdaptor<>(list);
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -102,7 +106,7 @@ class MysqlDAO implements DAO {
 	}
 
 	@Override
-	public List<Kurs> gebeKurse(Benutzer benutzer, int jahr) throws DatenbankFehler {
+	public ListModel<Kurs> gebeKurse(Benutzer benutzer, int jahr) throws DatenbankFehler {
 		String sql = "SELECT kursID, name, fach "
 				+ "FROM kurs "
 				+ "WHERE lehrerID = ? AND "
@@ -117,7 +121,7 @@ class MysqlDAO implements DAO {
 					list.add(new Kurs(rs.getInt(1), rs.getString(2), 
 							rs.getString(3), jahr, benutzer.getId()));
 				}
-				return list;
+				return new ListModelAdaptor<>(list);
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -125,7 +129,7 @@ class MysqlDAO implements DAO {
 	}
 
 	@Override
-	public List<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler {
+	public ListModel<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler {
 		String sql = "SELECT klasseID, name "
 				+ "FROM klasse "
 				+ "WHERE klassenlehrerID = ? AND "
@@ -139,7 +143,7 @@ class MysqlDAO implements DAO {
 				while (rs.next()) {
 					list.add(new Klasse(rs.getInt(1), rs.getString(2), jahr, benutzer.getId()));
 				}
-				return list;
+				return new ListModelAdaptor<>(list);
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -313,5 +317,35 @@ class MysqlDAO implements DAO {
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
+	}
+	
+	private class ListModelAdaptor<T> implements ListModel<T> {
+
+		private List<T> list;
+		
+		ListModelAdaptor(List<T> list) {
+			this.list = list;
+		}
+		
+		@Override
+		public int getSize() {
+			return list.size();
+		}
+
+		@Override
+		public T getElementAt(int index) {
+			return list.get(index);
+		}
+
+		@Override
+		public void addListDataListener(ListDataListener l) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void removeListDataListener(ListDataListener l) {
+			// TODO Auto-generated method stub
+		}
+		
 	}
 }

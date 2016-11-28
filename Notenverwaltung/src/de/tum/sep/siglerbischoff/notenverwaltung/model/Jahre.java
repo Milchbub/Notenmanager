@@ -1,5 +1,6 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.swing.ComboBoxModel;
@@ -18,6 +19,17 @@ public class Jahre implements ComboBoxModel<Integer> {
 		listeners = new EventListenerList();
 		
 		selected = null;
+	}
+	
+	public int gebeLetztesAktuellesJahr() {
+		int aktuell = Calendar.getInstance().get(Calendar.YEAR);
+		int best = 0;
+		for(int jahr : jahre) {
+			if (jahr > best && jahr <= aktuell) {
+				best = jahr;
+			}
+		}
+		return best;
 	}
 
 	@Override

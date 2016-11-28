@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
@@ -54,7 +55,12 @@ public final class Main implements ActionListener {
 				} else {
 					loggedIn = benutzer;
 					lv.schliessen();
-					view.loginBenutzer(loggedIn, dao.gebeJahre());
+					Jahre jahre = dao.gebeJahre();
+					int laj = jahre.gebeLetztesAktuellesJahr();
+					view.loginBenutzer(loggedIn, jahre, 
+							dao.gebeGeleiteteKlassen(loggedIn, laj), 
+							dao.gebeKurse(loggedIn, laj)
+					);
 				}
 			} catch (DatenbankFehler e) {
 				lv.showError(e);
@@ -62,10 +68,16 @@ public final class Main implements ActionListener {
 		});
 		//TODO
 		//lv.login();
-		try { //Nur zu Entwicklungszwecken!
-			view.loginBenutzer(dao.passwortPruefen("BischoffM", "hallo"), dao.gebeJahre());
+		try {
+			Benutzer benutzer = dao.passwortPruefen("michael.bischoff", "hallo");
+			Jahre jahre = dao.gebeJahre();
+			int laj = jahre.gebeLetztesAktuellesJahr();
+			view.loginBenutzer(benutzer, jahre, 
+					dao.gebeGeleiteteKlassen(loggedIn, laj), 
+					dao.gebeKurse(loggedIn, laj)
+			);
 		} catch (DatenbankFehler e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
