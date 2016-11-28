@@ -127,16 +127,13 @@ public class SwingMainView extends JFrame implements MainView {
 	}
 
 	@Override
-	public void loginBenutzer(Benutzer benutzer, ComboBoxModel<Integer> jahre) throws DatenbankFehler {
+	public void loginBenutzer(Benutzer benutzer, ComboBoxModel<Integer> jahre, ListModel<Klasse> klassen, ListModel<Kurs> kurse) throws DatenbankFehler {
 
 		lblHerzlichWillkommen.setText("Herzlich willkommen, " + benutzer.getName() + "!");
 
 		int jahr = Calendar.getInstance().get(Calendar.YEAR);
 		cmbboxJahr.setModel(jahre);
 		cmbboxJahr.setSelectedItem(new Integer(jahr));
-
-		ListModel<Klasse> klassen = benutzer.gebeGeleiteteKlassen(jahr);
-		ListModel<Kurs> kurse = benutzer.gebeKurse(jahr);
 
 		boolean istAdmin = benutzer.istAdmin();
 		boolean istKlassenleiter = klassen.getSize() > 0;
