@@ -23,20 +23,18 @@ public class BenutzerTest {
 			// DAO erstellen
 			DAO dao = DAO.erstelleDAO();
 			// Benutzer aus DB direkt ueber DAO geholt
-			List<Benutzer> benutzerUeberDAO = DAO.dao().gebeBenutzer();
+			List<Benutzer> benutzerUeberDAO = dao.gebeBenutzer();
 			// Vergleichsarray 1 erstellen
 			String[][] vergleichsarray1 = new String[benutzerUeberDAO.size()][2];
 			for (int i = 0; i < benutzerUeberDAO.size(); i++) {
 				vergleichsarray1[i][0] = String.valueOf(benutzerUeberDAO.get(i).getId());
 				vergleichsarray1[i][1] = benutzerUeberDAO.get(i).getName();
 			}
-		
-			// Dummy-Benutzer erstellen
-			Benutzer benutzer = new Benutzer(0, "", false);
+			
 			// Benutzer ueber Benutzermethode aus DB geholt
 			// Benutzermethode gibt ListModel zurueck
 			// Daher werden die List und ListModel Inhalte ueber die Namen verglichen
-			ListModel<Benutzer> benutzerUeberBenutzer = benutzer.gebeBenutzer();
+			ListModel<Benutzer> benutzerUeberBenutzer = Benutzer.gebeBenutzer();
 			// Vergleichsarray 2 erstellen
 			String[][] vergleichsarray2 = new String[benutzerUeberBenutzer.getSize()][2];
 			for (int i = 0; i < benutzerUeberBenutzer.getSize(); i++) {
@@ -63,7 +61,7 @@ public class BenutzerTest {
 			// DAO erstellen
 			DAO dao = DAO.erstelleDAO();
 			// Benutzer aus DB direkt ueber DAO geholt
-			List<Benutzer> benutzerListeVorEinfuegen = DAO.dao().gebeBenutzer();
+			List<Benutzer> benutzerListeVorEinfuegen = DAO.erstelleDAO().gebeBenutzer();
 			
 			// Benutzernamen aus benutzerListeVorEinfuegen in Array stecken.
 			// Testbenutzer-Namen am Ende dazu setzen
@@ -78,7 +76,7 @@ public class BenutzerTest {
 			// Test-Benutzer in DB ueber MysqlDAO erstellen und einfuegen
 			dao.benutzerAnlegen("Test-Benutzer", "Test", "Test", false);
 			// Erneut die veraenderte BenutzerListe aus DB holen
-			List<Benutzer> benutzerListeNachEinfuegen = DAO.dao().gebeBenutzer();
+			List<Benutzer> benutzerListeNachEinfuegen = dao.gebeBenutzer();
 			// Benutzernamen aus benutzerListeNachEinfuegen in Array stecken.
 			String[] vergleichsarray2 = new String[benutzerListeNachEinfuegen.size()];
 			for (i = 0; i < benutzerListeNachEinfuegen.size(); i++) {

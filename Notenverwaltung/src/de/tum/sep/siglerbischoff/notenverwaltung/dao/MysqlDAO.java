@@ -10,20 +10,22 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.table.TableModel;
+
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
-class MysqlDAO extends DAO {
+class MysqlDAO implements DAO {
 
-//	private static final String dbuser = "jdbc";
-	private static final String dbuser = "root";
-//	private static final String dbpass = "8xpPWLYzXSZAVRjt";
-	private static final String dbpass = "maulwurf.";
-//	private static final String dbaddress = "10.176.89.15:3306";
-	private static final String dbaddress = "127.0.0.1:3306";
+	private static final String dbuser = "jdbc";
+//	private static final String dbuser = "root";
+	private static final String dbpass = "8xpPWLYzXSZAVRjt";
+//	private static final String dbpass = "maulwurf.";
+	private static final String dbaddress = "localhost";
+//	private static final String dbaddress = "127.0.0.1:3306";
 	private static final String dbname = "notenmanager";
 
 	private Connection dbverbindung;
@@ -150,8 +152,13 @@ class MysqlDAO extends DAO {
 	}
 	
 	@Override
+	public TableModel gebeSchuelerdaten() {
+		return null;
+	}
+	
+	@Override
 	public void benutzerAnlegen(String name, String loginName, String passwort, boolean istAdmin) throws DatenbankFehler {
-		passwort = hashPasswort(passwort);
+		passwort = DAO.hashPasswort(passwort);
 		
 		String sql = "INSERT INTO benutzer "
 				+ "(loginName, name, passwort, istAdmin) VALUES "
