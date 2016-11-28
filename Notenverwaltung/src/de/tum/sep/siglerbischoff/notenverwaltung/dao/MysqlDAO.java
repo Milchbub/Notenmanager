@@ -16,7 +16,7 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
-class MysqlDAO extends DAO {
+class MysqlDAO implements DAO {
 
 	private static final String dbuser = "jdbc";
 	private static final String dbpass = "8xpPWLYzXSZAVRjt";
@@ -147,8 +147,13 @@ class MysqlDAO extends DAO {
 	}
 	
 	@Override
+	public TableModel gebeSchuelerdaten() {
+		
+	}
+	
+	@Override
 	public void benutzerAnlegen(String name, String loginName, String passwort, boolean istAdmin) throws DatenbankFehler {
-		passwort = hashPasswort(passwort);
+		passwort = DAO.hashPasswort(passwort);
 		
 		String sql = "INSERT INTO benutzer "
 				+ "(loginName, name, passwort, istAdmin) VALUES "
@@ -179,7 +184,7 @@ class MysqlDAO extends DAO {
 	}
 	
 	@Override
-	public void schülerHinzufügen(String name, String gebDat, String adresse) throws DatenbankFehler {
+	public void neuerSchueler(String name, String gebDat, String adresse) throws DatenbankFehler {
 		String sql = "INSERT INTO schueler (name, gebDat, adresse) VALUES "
 				+ "('" + name + "', "
 				+ "'" + gebDat + "', "

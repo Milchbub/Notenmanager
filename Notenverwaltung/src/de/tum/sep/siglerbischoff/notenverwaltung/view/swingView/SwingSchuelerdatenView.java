@@ -8,92 +8,77 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.event.EventListenerList;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
 
-public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView {
+public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView, TableModelListener {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private JTextField txtName;
-	private JTextField txtGebDat;
-	private JTextField txtAdresse;
-	private JButton btnFertig;
-	
 	private Component parent;
+	
+	private EventListenerList listeners;
 
-	public SwingSchuelerdatenView(Component parent) {
+	private String[] neuerSchueler;
+
+	public SwingSchuelerdatenView(Component parent, TableModel schueler) {
 		setModal(true);
 		
-		this.parent = parent;JLabel lblName = new JLabel("Name: ");
-		txtName = new JTextField();
+		this.parent = parent;
 		
-		JLabel lblGebDat = new JLabel("Geburtsdatum: ");
-		txtGebDat = new JTextField();
+		listeners = new EventListenerList();
 		
-		JLabel lblAdresse = new JLabel("Adresse: ");
-		txtAdresse = new JTextField();
+		JLabel lblAlleSchler = new JLabel("Alle Sch\u00FCler: ");
 		
-		btnFertig = new JButton("Schüler eintragen");
+		JScrollPane scrollPane = new JScrollPane();
+		
+		JTable table = new JTable();
+		scrollPane.setViewportView(table);
+		
+		JButton btnHinzufuegen = new JButton("Sch\u00FCler hinzuf\u00FCgen...");
 		
 		GroupLayout gl_kursVerwaltung = new GroupLayout(getContentPane());
 		gl_kursVerwaltung.setHorizontalGroup(gl_kursVerwaltung.createSequentialGroup()
 			.addContainerGap()
-			.addGroup(gl_kursVerwaltung.createParallelGroup(Alignment.LEADING, false)
-				.addComponent(lblName)
-				.addComponent(txtName, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-				.addComponent(lblGebDat)
-				.addComponent(txtGebDat, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-				.addComponent(lblAdresse)
-				.addComponent(txtAdresse, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-				.addComponent(btnFertig))
-			.addContainerGap()
+			.addGroup(gl_kursVerwaltung.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblAlleSchler)
+				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addComponent(btnHinzufuegen))
+			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 		);
 		gl_kursVerwaltung.setVerticalGroup(gl_kursVerwaltung.createSequentialGroup()
 			.addContainerGap()
-			.addComponent(lblName)
+			.addComponent(lblAlleSchler)
 			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(txtName)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(lblGebDat)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(txtGebDat)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(lblAdresse)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(txtAdresse)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(btnFertig)
-			.addContainerGap()
+			.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+			.addPreferredGap(ComponentPlacement.UNRELATED)
+			.addComponent(btnHinzufuegen)
+			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 		);
 		getContentPane().setLayout(gl_kursVerwaltung);
 		pack();
 	}
 
 	@Override
+	public String[] getNeuerSchueler() {
+		return neuerSchueler;
+	}
+
+	@Override
 	public void addActionListener(ActionListener l) {
-		btnFertig.addActionListener(l);
+		listeners.add(ActionListener.class, l);
 	}
 
 	@Override
-	public String getName() {
-		return txtName.getText();
-	}
-
-	@Override
-	public String getGebDat() {
-		return txtGebDat.getText();
-	}
-
-	@Override
-	public String getAdresse() {
-		return txtAdresse.getText();
-	}
-
-	@Override
-	public void showSchuelerdaten() {
+	public void zeigen() {
 		setLocationRelativeTo(parent);
 		setVisible(true);
 	}
@@ -101,5 +86,16 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	@Override
 	public void schliessen() {
 		setVisible(false);
+	}
+
+	@Override
+	public void showError(String titel, String nachricht) {
+		JOptionPane.showMessageDialog(this, nachricht, titel, JOptionPane.ERROR_MESSAGE);
+	}
+
+	@Override
+	public void tableChanged(TableModelEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

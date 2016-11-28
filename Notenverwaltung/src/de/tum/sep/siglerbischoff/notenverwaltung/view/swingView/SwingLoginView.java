@@ -8,6 +8,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -18,6 +19,8 @@ import java.awt.Color;
 public class SwingLoginView extends JDialog implements LoginView {
 
 	private static final long serialVersionUID = 1L;
+	public static final String COMMAND_LOGIN = "login";
+	
 	private JTextField textField;
 	private JPasswordField passwordField;
 	private JButton btnAnmelden;
@@ -45,6 +48,7 @@ public class SwingLoginView extends JDialog implements LoginView {
 		
 		btnAnmelden = new JButton("Anmelden");
 		btnAnmelden.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btnAnmelden.setActionCommand(COMMAND_LOGIN);
 		
 		lblStatus = new JLabel("");
 		lblStatus.setForeground(Color.RED);
@@ -87,13 +91,19 @@ public class SwingLoginView extends JDialog implements LoginView {
 	}
 
 	@Override
-	public void addLoginListener(ActionListener l) {
+	public void addActionListener(ActionListener l) {
 		btnAnmelden.addActionListener(l);
 	}
 
 	@Override
-	public void login() {
+	public void zeigen() {
+		setLocationRelativeTo(null);
 		setVisible(true);
+	}
+
+	@Override
+	public void schliessen() {
+		setVisible(false);
 	}
 
 	@Override
@@ -107,12 +117,12 @@ public class SwingLoginView extends JDialog implements LoginView {
 	}
 
 	@Override
-	public void success() {
-		setVisible(false);
+	public void failure() {
+		lblStatus.setText("Falsche Daten! Bitte versuchen Sie es erneut...");
 	}
 
 	@Override
-	public void failure() {
-		lblStatus.setText("Falsche Daten! Bitte versuchen Sie es erneut...");
+	public void showError(String titel, String nachricht) {
+		JOptionPane.showMessageDialog(this, nachricht, titel, JOptionPane.ERROR_MESSAGE);
 	}
 }

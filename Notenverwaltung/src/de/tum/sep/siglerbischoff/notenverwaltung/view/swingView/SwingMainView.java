@@ -25,11 +25,8 @@ import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.EventListenerList;
+import javax.swing.table.TableModel;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.controller.BenutzerManager;
-import de.tum.sep.siglerbischoff.notenverwaltung.controller.KlassenManager;
-import de.tum.sep.siglerbischoff.notenverwaltung.controller.KursManager;
-import de.tum.sep.siglerbischoff.notenverwaltung.controller.SchuelerdatenManager;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
@@ -38,10 +35,10 @@ import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.MainView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
-import de.tum.sep.siglerbischoff.notenverwaltung.view.View;
 
-public class SwingView extends JFrame implements View {
+public class SwingMainView extends JFrame implements MainView {
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,7 +49,7 @@ public class SwingView extends JFrame implements View {
 	
 	private EventListenerList listeners;
 
-	public SwingView() {
+	public SwingMainView() {
 		setTitle("Notenmanager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		contentPane = new JPanel();
@@ -102,7 +99,7 @@ public class SwingView extends JFrame implements View {
 
 		JButton button = new JButton("");
 		button.setIcon(
-				new ImageIcon(SwingView.class.getResource("/com/sun/java/swing/plaf/windows/icons/JavaCup32.png")));
+				new ImageIcon(SwingMainView.class.getResource("/com/sun/java/swing/plaf/windows/icons/JavaCup32.png")));
 		
 		GroupLayout gl_pnlFooter = new GroupLayout(pnlFooter);
 		gl_pnlFooter.setHorizontalGroup(gl_pnlFooter.createSequentialGroup()
@@ -119,8 +116,14 @@ public class SwingView extends JFrame implements View {
 	}
 
 	@Override
-	public LoginView getLoginView() {
-		return new SwingLoginView();
+	public void zeigen() {
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+
+	@Override
+	public void schliessen() {
+		setVisible(false);
 	}
 
 	@Override
@@ -183,11 +186,11 @@ public class SwingView extends JFrame implements View {
 			GroupLayout gl_pnlAdmin = new GroupLayout(pnlAdmin);
 			gl_pnlAdmin.setHorizontalGroup(gl_pnlAdmin.createSequentialGroup()
 				.addContainerGap()
-				.addGroup(gl_pnlAdmin.createParallelGroup(Alignment.TRAILING, false)
-					.addComponent(btnKurseAnlegen, Alignment.LEADING, GroupLayout.DEFAULT_SIZE,	GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(btnKlassenAnlegen, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(btnSchlerdaten, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(btnBenutzerverwaltung, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addGroup(gl_pnlAdmin.createParallelGroup(Alignment.LEADING, false)
+					.addComponent(btnKurseAnlegen, GroupLayout.DEFAULT_SIZE,	GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnKlassenAnlegen, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnSchlerdaten, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnBenutzerverwaltung, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 			);
 			gl_pnlAdmin.setVerticalGroup(gl_pnlAdmin.createSequentialGroup()
@@ -330,15 +333,8 @@ public class SwingView extends JFrame implements View {
 		if (tabs) {
 			pnlContent.add(tabbedPane, BorderLayout.CENTER);
 		}
-				
+		
 		pack();
-		setLocationRelativeTo(null);
-		setVisible(true);
-	}
-
-	@Override
-	public void showError(Throwable e) {
-		JOptionPane.showMessageDialog(this, e.getMessage(), "Fehler!", JOptionPane.ERROR_MESSAGE);
 	}
 
 	@Override
@@ -352,22 +348,27 @@ public class SwingView extends JFrame implements View {
 	}
 
 	@Override
-	public SchuelerdatenView getSchuelerdatenView(SchuelerdatenManager schuelerdatenManager) {
-		return new SwingSchuelerdatenView(this);
+	public LoginView getLoginView() {
+		return new SwingLoginView();
 	}
 
 	@Override
-	public BenutzerverwaltungView getBenutzerverwaltungView(BenutzerManager benutzerManager) {
+	public SchuelerdatenView getSchuelerdatenView(TableModel schueler) {
+		return new SwingSchuelerdatenView(this, schueler);
+	}
+
+	@Override
+	public BenutzerverwaltungView getBenutzerverwaltungView() {
 		return new SwingBenutzerverwaltungView(this);
 	}
 
 	@Override
-	public KlassenverwaltungView getKlassenverwaltungView(KlassenManager klassenManager) {
+	public KlassenverwaltungView getKlassenverwaltungView() {
 		return new SwingKlassenverwaltungView(this);
 	}
 
 	@Override
-	public KursverwaltungView getKursverwaltungView(KursManager kursManager) {
+	public KursverwaltungView getKursverwaltungView() {
 		return new SwingKursverwaltungView(this);
 	}
 }
