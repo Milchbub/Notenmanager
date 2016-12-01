@@ -2,6 +2,7 @@ package de.tum.sep.siglerbischoff.notenverwaltung.test;
 
 import static org.junit.Assert.*;
 
+import java.util.Properties;
 import java.util.Random;
 
 import javax.swing.ListModel;
@@ -22,6 +23,10 @@ public class BenutzerTest {
 		try {
 			// DAO erstellen
 			DAO dao = DAO.erstelleDAO();
+			Properties props = new Properties();
+			props.setProperty("dbhost", "127.0.0.1");
+			props.setProperty("dbname", "Notenmanager");
+			dao.passwortPruefen("michi", "test", props);
 			// Benutzer aus DB direkt ueber DAO geholt
 			ListModel<Benutzer> benutzerUeberDAO = dao.gebeBenutzer();
 			// Vergleichsarray 1 erstellen
@@ -61,6 +66,10 @@ public class BenutzerTest {
 		try {
 			// DAO erstellen
 			DAO dao = DAO.erstelleDAO();
+			Properties props = new Properties();
+			props.setProperty("dbhost", "127.0.0.1");
+			props.setProperty("dbname", "Notenmanager");
+			dao.passwortPruefen("michi", "test", props);
 			// Benutzer aus DB direkt ueber DAO geholt
 			ListModel<Benutzer> benutzerListeVorEinfuegen = dao.gebeBenutzer();
 			
@@ -102,51 +111,61 @@ public class BenutzerTest {
 	// Das Array vor dem User anlegen (mit manuell hinzugefuegten 100 Randomusern)
 	// muss gleich dem Array nach dem User anlegen (frisch aus DB geholt) sein.
 	@Test
-	public void HundertbenutzerAnlegenTest() {
-		String[] vergleichsarray1= null;
-		String[] vergleichsarray2= null;
-		for (int j=0; j < 1; j++){
+	public void HundertbenutzerAnlegenTest() throws DatenbankFehler {
+
+		// DAO erstellen
+		DAO dao = DAO.erstelleDAO();
+		Properties props = new Properties();
+		props.setProperty("dbhost", "127.0.0.1");
+		props.setProperty("dbname", "Notenmanager");
+		dao.passwortPruefen("michi", "test", props);
+		
+		// Benutzer aus DB direkt ueber DAO geholt
+		ListModel<Benutzer> benutzerListeVorEinfuegen = dao.gebeBenutzer();
+		
+		String[] vergleichsarray1 = new String[1000 + benutzerListeVorEinfuegen.getSize()];
+		String[] vergleichsarray2 = new String[1000 + benutzerListeVorEinfuegen.getSize()];
+	
+		// Benutzernamen aus benutzerListeVorEinfuegen in Array stecken.
+		// Testbenutzer-Namen am Ende dazu setzen
+		for (int i = 0; i < benutzerListeVorEinfuegen.getSize(); i++) {
+			vergleichsarray1[i] = benutzerListeVorEinfuegen.getElementAt(i).getName();
+		}
+
+		Random random = new Random();
+		for(int i = benutzerListeVorEinfuegen.getSize(); i < vergleichsarray1.length; i++) {
 			String allowedChars ="0123456789abcdefghijklmnopqrstuvwxyz";
-			Random random = new Random();
 			String randomString = generateRandomString(allowedChars, random);
+			
+			// Testbenutzer-Namen zu Array dazusetzen
+			vergleichsarray1[i] = randomString;
+		}
 		
+		for (int j=benutzerListeVorEinfuegen.getSize(); j < vergleichsarray1.length; j++){
 			try {
-				// DAO erstellen
-				DAO dao = DAO.erstelleDAO();
-				// Benutzer aus DB direkt ueber DAO geholt
-				ListModel<Benutzer> benutzerListeVorEinfuegen = dao.gebeBenutzer();
-			
-				// Benutzernamen aus benutzerListeVorEinfuegen in Array stecken.
-				// Testbenutzer-Namen am Ende dazu setzen
-				vergleichsarray1 = new String[benutzerListeVorEinfuegen.getSize() + 1];
-				int i;
-				for (i = 0; i < benutzerListeVorEinfuegen.getSize(); i++) {
-					vergleichsarray1[i] = benutzerListeVorEinfuegen.getElementAt(i).getName();
-				}
-				// Testbenutzer-Namen zu Array dazusetzen
-				vergleichsarray1[i] = randomString;
-			
 				// Test-Benutzer in DB ueber MysqlDAO erstellen und einfuegen
-				dao.benutzerAnlegen(randomString, randomString +"login", randomString +"pass", false);
-				// Erneut die veraenderte BenutzerListe aus DB holen
-				ListModel<Benutzer> benutzerListeNachEinfuegen = dao.gebeBenutzer();
-				// Benutzernamen aus benutzerListeNachEinfuegen in Array stecken.
-				vergleichsarray2 = new String[benutzerListeNachEinfuegen.getSize()];
-				//String[] vergleichsarray2 = new String[benutzerListeNachEinfuegen.getSize()];
-				for (i = 0; i < benutzerListeNachEinfuegen.getSize(); i++) {
-					vergleichsarray2[i] = benutzerListeNachEinfuegen.getElementAt(i).getName();
-				}
-				// Testbenutzer wieder aus DB loeschen
-				dao.benutzerLoeschen(randomString +"login");
-		
-				// Der eigentliche Test (Beide Arrays sollten identisch sein)
-				//assertArrayEquals("test adding a user", vergleichsarray1 , vergleichsarray2);
+				dao.benutzerAnlegen(vergleichsarray1[j], vergleichsarray1[j] +"login", vergleichsarray1[j] +"pass", false);		
 			} catch (DatenbankFehler e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		
+		// Erneut die veraenderte BenutzerListe aus DB holen
+		ListModel<Benutzer> benutzerListeNachEinfuegen = dao.gebeBenutzer();
+
+		// Benutzernamen aus benutzerListeNachEinfuegen in Array stecken.
+		for(int j=0; j < vergleichsarray2.length; j++) {
+			vergleichsarray2[j] = benutzerListeNachEinfuegen.getElementAt(j).getName();
+		}
+		
+		for(int j = benutzerListeVorEinfuegen.getSize(); j < vergleichsarray1.length; j++) {
+			// Testbenutzer wieder aus DB loeschen
+			dao.benutzerLoeschen(vergleichsarray1[j] +"login");
+		}
+
+		// Der eigentliche Test (Beide Arrays sollten identisch sein)
+		//assertArrayEquals("test adding a user", vergleichsarray1 , vergleichsarray2);
 		assertArrayEquals("test adding a user", vergleichsarray1 , vergleichsarray2);
 		
 		
@@ -157,7 +176,7 @@ public class BenutzerTest {
 	private static String generateRandomString(String allowedChars,	Random random){
 			int max = allowedChars.length();
 			StringBuffer buffer = new StringBuffer();
-			for (int i=0; i<16; i++) {
+			for (int i=0; i<12; i++) {
 			int value = random.nextInt(max);
 			buffer.append(allowedChars.charAt(value));
 			}
@@ -172,6 +191,10 @@ public class BenutzerTest {
 	 public void leererStringTest() {
 		try {
 			DAO dao = DAO.erstelleDAO();
+			Properties props = new Properties();
+			props.setProperty("dbhost", "127.0.0.1");
+			props.setProperty("dbname", "Notenmanager");
+			dao.passwortPruefen("michi", "test", props);
 			dao.benutzerAnlegen("", "Test", "", false);
 			dao.benutzerLoeschen("Test");
 		} catch (DatenbankFehler e) {
@@ -180,13 +203,17 @@ public class BenutzerTest {
 		}
 	 }
 	
-	@Test(expected=DatenbankFehler.class)
+	@Test(expected=Exception.class)
 	 public void NullStringTest() {
 		try {
 			DAO dao = DAO.erstelleDAO();
+			Properties props = new Properties();
+			props.setProperty("dbhost", "127.0.0.1");
+			props.setProperty("dbname", "Notenmanager");
+			dao.passwortPruefen("michi", "test", props);
 			dao.benutzerAnlegen(null, "Test", "", false);
 			dao.benutzerLoeschen("Test");
-		} catch (DatenbankFehler e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -198,18 +225,17 @@ public class BenutzerTest {
 	//Testet, ob ein Benutzer mit gleichem LoginNamen zweimal hintereinander in die DB eingefügt werden kann.
 	@Test(expected=DatenbankFehler.class)
 	 public void ZweimalGleicherLoginNameTest() throws DatenbankFehler {
-			DAO dao = DAO.erstelleDAO();
+		DAO dao = DAO.erstelleDAO();
+		try {
+			Properties props = new Properties();
+			props.setProperty("dbhost", "127.0.0.1");
+			props.setProperty("dbname", "Notenmanager");
+			dao.passwortPruefen("michi", "test", props);
 			dao.benutzerAnlegen("Test1", "Testlogin", "", false);
 			dao.benutzerAnlegen("Test2", "Testlogin", "", false);
-			
+		} finally {
+			dao.benutzerLoeschen("Testlogin");
+		}
 	 }
-	
-	//Löscht den zuvor eingefügten Benutzer "Test1" wieder
-	@Test
-	public void ZweimalGleicherLoginNameLöschen() throws DatenbankFehler {
-		DAO dao = DAO.erstelleDAO();
-		dao.benutzerLoeschen("Testlogin");
-		
- }
 	
 }

@@ -1,6 +1,10 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.ListModel;
 
@@ -8,7 +12,6 @@ import org.junit.Test;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
-
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
 
@@ -37,7 +40,12 @@ public class SchuelerTest {
 			vergleichsarray1[i] = "Schüler";
 			
 			// Testschueler in DB ueber MysqlDAO erstellen und einfuegen
-			dao.schülerHinzufügen("Schüler", "2001-11-01", "Marsstraße");
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				dao.schuelerHinzufuegen("Schüler", formatter.parse("2001-11-01"));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 			// Erneut die veraenderte SchuelerListe aus DB holen
 			ListModel<Schueler> schuelerListeNachEinfuegen = dao.gebeSchueler();
 			// Benutzernamen aus benutzerListeNachEinfuegen in Array stecken.

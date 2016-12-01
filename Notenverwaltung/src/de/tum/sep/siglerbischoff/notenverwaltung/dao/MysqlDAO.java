@@ -115,24 +115,7 @@ class MysqlDAO implements DAO {
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
-	}
-	
-	@Override
-	public ListModel<Schueler> gebeSchueler() throws DatenbankFehler {
-		String sql = "SELECT schuelerID, name FROM schueler";
-		try(Statement s = dbverbindung.createStatement()) {
-			List<Schueler> list = new Vector<>();
-			try(ResultSet rs = s.executeQuery(sql)) {
-				while(rs.next()) {
-					list.add(new Schueler(rs.getInt(1), rs.getString(2))); 
-				}
-			}
-			return new ListModelAdaptor<>(list);
-		} catch (SQLException e) {
-			throw new DatenbankFehler(e);
-		} 
-	}
-	
+	}	
 
 	@Override
 	public ListModel<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler {
@@ -218,13 +201,16 @@ class MysqlDAO implements DAO {
 		}
 		
 		try (Statement s = dbverbindung.createStatement()) {
-			sql = "CREATE USER " + loginName + " "
+			String sql1 = "CREATE USER '" + loginName + "' "
 					+ "IDENTIFIED BY '" + passwort + "'";
-			s.addBatch(sql);
-			sql = "GRANT INSERT, DELETE, SELECT, UPDATE ON Notenmanager.* "
-					+ "TO " + loginName;
-			s.addBatch(sql);
+			s.addBatch(sql1);
+			String sql2 = "GRANT INSERT, DELETE, SELECT, UPDATE ON Notenmanager.* "
+					+ "TO '" + loginName + "'";
+			s.addBatch(sql2);
 			if(istAdmin) {
+				String sql3 = "GRANT CREATE USER, GRANT OPTION ON *.* "
+						+ "TO '" + loginName + "'";
+				s.addBatch(sql3);
 			}
 			s.executeBatch();
 		} catch (SQLException e) {

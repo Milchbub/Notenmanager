@@ -1,14 +1,21 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
+
 import org.junit.Test;
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.*;
+
+import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
+import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 
 public class DAOAndMysqlDAOTest {
 
@@ -19,7 +26,10 @@ public class DAOAndMysqlDAOTest {
 		DAO dao;
 		try {
 			dao = DAO.erstelleDAO();
-			assertTrue(dao.passwortPruefen("XXX", "XXX") == null);
+			Properties props = new Properties();
+			props.setProperty("dbhost", "127.0.0.1");
+			props.setProperty("dbname", "Notenmanager");
+			assertTrue(dao.passwortPruefen("XXX", "XXX", props) == null);
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
