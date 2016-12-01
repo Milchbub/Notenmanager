@@ -2,7 +2,9 @@ package de.tum.sep.siglerbischoff.notenverwaltung.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import de.tum.sep.siglerbischoff.notenverwaltung.dao.ConfigDatei;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
@@ -12,14 +14,13 @@ import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.MainView;
-import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
-import de.tum.sep.siglerbischoff.notenverwaltung.view.View;
 
 public final class Main implements ActionListener {
 
-	private static final boolean debug = true;
+	static final boolean debug = true;
 	
 	private DAO dao;
+	private ConfigDatei config;
 	private MainView view;
 	
 	private Benutzer loggedIn;
@@ -31,6 +32,15 @@ public final class Main implements ActionListener {
 	private Main() {
 		view = MainView.erstelleMainView();
 		view.addActionListener(this);
+		
+		try {
+			config = new ConfigDatei();
+		} catch (IOException e) {
+			if(debug) {
+				e.printStackTrace();
+			}
+			view.showError(e);
+		}
 		
 		try {
 			dao = DAO.erstelleDAO();
@@ -49,7 +59,7 @@ public final class Main implements ActionListener {
 		LoginView lv = view.getLoginView();
 		lv.addActionListener(ae -> {
 			try {
-				Benutzer benutzer = dao.passwortPruefen(lv.getUser(), lv.getPassword());
+				Benutzer benutzer = dao.passwortPruefen(lv.getUser(), lv.getPassword(), config);
 				if(benutzer == null) {
 					lv.failure();
 				} else {
@@ -61,14 +71,15 @@ public final class Main implements ActionListener {
 							dao.gebeGeleiteteKlassen(loggedIn, laj), 
 							dao.gebeKurse(loggedIn, laj)
 					);
+					view.zeigen();
 				}
 			} catch (DatenbankFehler e) {
 				lv.showError(e);
 			}
 		});
 		//TODO
-		//lv.login();
-		try {
+		lv.zeigen();
+		/*try {
 			Benutzer benutzer = dao.passwortPruefen("michael.bischoff", "hallo");
 			Jahre jahre = dao.gebeJahre();
 			int laj = jahre.gebeLetztesAktuellesJahr();
@@ -78,21 +89,18 @@ public final class Main implements ActionListener {
 			);
 		} catch (DatenbankFehler e) {
 			throw new RuntimeException(e);
-		}
+		}*/
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
 			switch(e.getActionCommand()) {
-				case View.COMMAND_SCHUELERDATEN: {
-					SchuelerdatenView sdView = view.getSchuelerdatenView(dao.gebeSchuelerdaten());
-					SchuelerdatenManager sdm = new SchuelerdatenManager(sdView, dao);
-					sdView.addActionListener(sdm);
-					sdView.zeigen();
+				case MainView.COMMAND_SCHUELERDATEN: {
+					new SchuelerdatenManager(view, dao);
 					break; 
 				}
-				case View.COMMAND_BENUTZERVERWALTUNG: {
+				case MainView.COMMAND_BENUTZERVERWALTUNG: {
 					BenutzerverwaltungView bvView = view.getBenutzerverwaltungView();
 					bvView.addActionListener(ae -> {
 						try {
@@ -108,7 +116,7 @@ public final class Main implements ActionListener {
 					bvView.showBenutzerverwaltung();
 					break;
 				}
-				case View.COMMAND_KLASSEN_ANLEGEN: {
+				case MainView.COMMAND_KLASSEN_ANLEGEN: {
 					KlassenverwaltungView klassenView = view.getKlassenverwaltungView();
 					klassenView.addActionListener(ae -> {
 						try {
@@ -121,10 +129,10 @@ public final class Main implements ActionListener {
 							view.showError(f);
 						}
 					});
-					klassenView.showKlassenverwaltung(Benutzer.gebeBenutzer());
+					klassenView.showKlassenverwaltung(dao.gebeBenutzer());
 					break;
 				}
-				case View.COMMAND_KURSE_ANLEGEN: {
+				case MainView.COMMAND_KURSE_ANLEGEN: {
 					KursverwaltungView kursView = view.getKursverwaltungView();
 					kursView.addActionListener(ae -> {
 						try {
@@ -137,7 +145,7 @@ public final class Main implements ActionListener {
 							view.showError(f);
 						}
 					});
-					kursView.showKursverwaltung(Benutzer.gebeBenutzer());
+					kursView.showKursverwaltung(dao.gebeBenutzer());
 					break;
 				}
 			}

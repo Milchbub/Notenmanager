@@ -1,5 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view;
 
+import java.awt.event.ActionListener;
+
 public interface LoginView extends View {
 	
 	String getUser();
@@ -8,4 +10,5 @@ public interface LoginView extends View {
 	
 	void failure();
 	
+	void addActionListener(ActionListener l);
 }

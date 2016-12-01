@@ -1,8 +1,6 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.test;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
+import static org.junit.Assert.assertArrayEquals;
 
 import javax.swing.ListModel;
 

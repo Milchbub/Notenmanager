@@ -1,19 +1,21 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.dao;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLInvalidAuthorizationSpecException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
-import javax.swing.event.ListDataListener;
-
-import javax.swing.table.TableModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
@@ -23,29 +25,40 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
 class MysqlDAO implements DAO {
 
-	private static final String dbuser = "jdbc";
+	/*private static final String dbuser = "jdbc";
 //	private static final String dbuser = "root";
 	private static final String dbpass = "8xpPWLYzXSZAVRjt";
 //	private static final String dbpass = "maulwurf.";
 	private static final String dbaddress = "localhost";
 //	private static final String dbaddress = "127.0.0.1:3306";
-	private static final String dbname = "notenmanager";
+	private static final String dbname = "notenmanager";*/
 
 	private Connection dbverbindung;
 	
 	@Override
-	public Benutzer passwortPruefen(String benutzerName, String passwort) throws DatenbankFehler {
-		String sql = "SELECT passwort, benutzerId, name, istAdmin FROM benutzer "
+	public Benutzer passwortPruefen(String benutzerName, String passwort, Properties config) throws DatenbankFehler {
+		
+		String sql = "SELECT benutzerId, name, istAdmin FROM benutzer "
 				+ "WHERE loginName = ?";
-		try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
-			s.setString(1, benutzerName);
-			try (ResultSet rs = s.executeQuery()) {
-				if (rs.next() && rs.getString(1).equals(DAO.hashPasswort(passwort))) {
-					return new Benutzer(rs.getInt(2), rs.getString(3), rs.getBoolean(4));
-				} else {
-					return null;
+		try {
+			dbverbindung = DriverManager.getConnection(
+					"jdbc:mariadb://" + config.getProperty("dbhost") + "/" 
+							+ config.getProperty("dbname"), 
+					benutzerName, 
+					passwort);
+			try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
+					erstelleTabellen();
+					s.setString(1, benutzerName);
+				try (ResultSet rs = s.executeQuery()) {
+					if (rs.next()) {
+						return new Benutzer(rs.getInt(1), rs.getString(2), rs.getBoolean(3));
+					} else {
+						return null;
+					}
 				}
 			}
+		} catch (SQLInvalidAuthorizationSpecException e) {
+			return null;
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		} 
@@ -73,16 +86,34 @@ class MysqlDAO implements DAO {
 	public ListModel<Benutzer> gebeBenutzer() throws DatenbankFehler {
 		String sql = "SELECT benutzerID, name, istAdmin FROM benutzer";
 		try(Statement s = dbverbindung.createStatement()) {
-			List<Benutzer> list = new Vector<>();
+			DefaultListModel<Benutzer> list = new DefaultListModel<>();
 			try(ResultSet rs = s.executeQuery(sql)) {
 				while(rs.next()) {
-					list.add(new Benutzer(rs.getInt(1), rs.getString(2), rs.getBoolean(3))); 
+					list.addElement(new Benutzer(rs.getInt(1), rs.getString(2), rs.getBoolean(3))); 
 				}
 			}
-			return new ListModelAdaptor<>(list);
+			return list;
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		} 
+	}
+	
+	@Override
+	public ListModel<Schueler> gebeSchueler() throws DatenbankFehler {
+		String sql = "SELECT schuelerID, name, gebDat "
+				+ "FROM schueler "
+				+ "ORDER BY name";
+		try (Statement s = dbverbindung.createStatement()) {
+			DefaultListModel<Schueler> list = new DefaultListModel<>();
+			try (ResultSet rs = s.executeQuery(sql)) {
+				while (rs.next()) {
+					list.addElement(new Schueler(rs.getInt(1), rs.getString(2), new Date(rs.getDate(3).getTime())));
+				}
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
 	}
 
 	@Override
@@ -96,13 +127,13 @@ class MysqlDAO implements DAO {
 		try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
 			s.setInt(1, schueler.getId());
 			s.setInt(2, jahr);
-			List<Kurs> list = new Vector<>();
+			DefaultListModel<Kurs> list = new DefaultListModel<>();
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
-					list.add(new Kurs(rs.getInt(1), rs.getString(2), 
+					list.addElement(new Kurs(rs.getInt(1), rs.getString(2), 
 							rs.getString(3), jahr, rs.getInt(4)));
 				}
-				return new ListModelAdaptor<>(list);
+				return list;
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -119,13 +150,13 @@ class MysqlDAO implements DAO {
 		try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
 			s.setInt(1, benutzer.getId());
 			s.setInt(2, jahr);
-			List<Kurs> list = new Vector<>();
+			DefaultListModel<Kurs> list = new DefaultListModel<>();
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
-					list.add(new Kurs(rs.getInt(1), rs.getString(2), 
+					list.addElement(new Kurs(rs.getInt(1), rs.getString(2), 
 							rs.getString(3), jahr, benutzer.getId()));
 				}
-				return new ListModelAdaptor<>(list);
+				return list;
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -142,12 +173,12 @@ class MysqlDAO implements DAO {
 		try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
 			s.setInt(1, benutzer.getId());
 			s.setInt(2, jahr);
-			List<Klasse> list = new Vector<>();
+			DefaultListModel<Klasse> list = new DefaultListModel<>();
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
-					list.add(new Klasse(rs.getInt(1), rs.getString(2), jahr, benutzer.getId()));
+					list.addElement(new Klasse(rs.getInt(1), rs.getString(2), jahr, benutzer.getId()));
 				}
-				return new ListModelAdaptor<>(list);
+				return list;
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -155,19 +186,12 @@ class MysqlDAO implements DAO {
 	}
 	
 	@Override
-	public TableModel gebeSchuelerdaten() {
-		return null;
-	}
-	
-	@Override
 	public void benutzerAnlegen(String name, String loginName, String passwort, boolean istAdmin) throws DatenbankFehler {
-		passwort = DAO.hashPasswort(passwort);
 		
 		String sql = "INSERT INTO benutzer "
-				+ "(loginName, name, passwort, istAdmin) VALUES "
+				+ "(loginName, name, istAdmin) VALUES "
 				+ "('" + loginName + "', "
 				+ "'" + name + "', "
-				+ "'" + passwort + "', "
 				+ "" + istAdmin + ")";
 		try (Statement s = dbverbindung.createStatement()) {
 			s.execute(sql);
@@ -192,11 +216,11 @@ class MysqlDAO implements DAO {
 	}
 	
 	@Override
-	public void schülerHinzufügen(String name, String gebDat, String adresse) throws DatenbankFehler {
-		String sql = "INSERT INTO schueler (name, gebDat, adresse) VALUES "
+	public void schuelerHinzufuegen(String name, Date gebDat) throws DatenbankFehler {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String sql = "INSERT INTO schueler (name, gebDat) VALUES "
 				+ "('" + name + "', "
-				+ "'" + gebDat + "', "
-				+ "'" + adresse + "')";
+				+ "'" + df.format(gebDat) + "')";
 		try (Statement s = dbverbindung.createStatement()) {
 			s.execute(sql);
 		} catch (SQLException e) {
@@ -249,30 +273,19 @@ class MysqlDAO implements DAO {
 		}
 		
 	}
-	
-	private void datenbankInitialisieren() throws SQLException {
-		dbverbindung = DriverManager.getConnection(
-				"jdbc:mariadb://" + dbaddress + "/" + dbname, 
-				dbuser, 
-				dbpass);
-
-		erstelleTabellen();
-	}
 
 	private void erstelleTabellen() throws SQLException {
 		String schuelerTblle = 
 				  "CREATE TABLE IF NOT EXISTS schueler (" 
 				+ "schuelerID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "name VARCHAR(50), " 
-				+ "gebDat DATE, "
-				+ "adresse VARCHAR(50))";
+				+ "gebDat DATE)";
 
 		String benutzerTblle = 
 				  "CREATE TABLE IF NOT EXISTS benutzer (" 
 				+ "benutzerID INT PRIMARY KEY AUTO_INCREMENT, " 
 				+ "loginName VARCHAR(50) UNIQUE, "
 				+ "name VARCHAR(50), "
-				+ "passwort VARCHAR(32), "
 				+ "istAdmin BOOLEAN DEFAULT FALSE)";
 
 		String kursTblle = 
@@ -281,7 +294,7 @@ class MysqlDAO implements DAO {
 				+ "name VARCHAR(50), " 
 				+ "fach VARCHAR(30), "
 				+ "schuljahr YEAR, "
-				+ "lehrerID INT,"
+				+ "lehrerID INT, "
 				+ "FOREIGN KEY (lehrerID) REFERENCES benutzer (benutzerID) ON DELETE CASCADE)";
 		
 		String klasseTblle = 
@@ -289,7 +302,7 @@ class MysqlDAO implements DAO {
 				+ "klasseID INT PRIMARY KEY AUTO_INCREMENT, "
 				+ "name VARCHAR(50), "
 				+ "schuljahr YEAR, "
-				+ "klassenlehrerID INT,"
+				+ "klassenlehrerID INT, "
 				+ "FOREIGN KEY (klassenlehrerID) REFERENCES benutzer (benutzerID) ON DELETE CASCADE)";
 
 		String nimmtTeilTblle = 
@@ -323,51 +336,13 @@ class MysqlDAO implements DAO {
 
 		try (Statement stmt = dbverbindung.createStatement()) {
 			stmt.addBatch(schuelerTblle);
-			stmt.addBatch(klasseTblle);
 			stmt.addBatch(benutzerTblle);
 			stmt.addBatch(kursTblle);
+			stmt.addBatch(klasseTblle);
 			stmt.addBatch(nimmtTeilTblle);
 			stmt.addBatch(istInKlasseTblle);
 			stmt.addBatch(noteTblle);
 			stmt.executeBatch();
 		}
-	}
-	
-	public MysqlDAO() throws DatenbankFehler {
-		try {
-			datenbankInitialisieren();
-		} catch (SQLException e) {
-			throw new DatenbankFehler(e);
-		}
-	}
-	
-	private class ListModelAdaptor<T> implements ListModel<T> {
-
-		private List<T> list;
-		
-		ListModelAdaptor(List<T> list) {
-			this.list = list;
-		}
-		
-		@Override
-		public int getSize() {
-			return list.size();
-		}
-
-		@Override
-		public T getElementAt(int index) {
-			return list.get(index);
-		}
-
-		@Override
-		public void addListDataListener(ListDataListener l) {
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public void removeListDataListener(ListDataListener l) {
-			// TODO Auto-generated method stub
-		}
-		
 	}
 }

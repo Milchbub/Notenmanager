@@ -2,9 +2,10 @@ package de.tum.sep.siglerbischoff.notenverwaltung.dao;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.Properties;
 
 import javax.swing.ListModel;
-import javax.swing.table.TableModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
@@ -14,7 +15,7 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
 public interface DAO {
 	
-	Benutzer passwortPruefen(String name, String pass) throws DatenbankFehler;
+	Benutzer passwortPruefen(String name, String pass, Properties config) throws DatenbankFehler;
 
 	Jahre gebeJahre() throws DatenbankFehler;
 	
@@ -26,11 +27,11 @@ public interface DAO {
 
 	ListModel<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler;
 
-	TableModel gebeSchuelerdaten();
+	ListModel<Schueler> gebeSchueler() throws DatenbankFehler;
 	
 	void benutzerAnlegen(String name, String loginName, String passwort, boolean istAdmin) throws DatenbankFehler;
 	
-	void schülerHinzufügen(String name, String gebDat, String adresse) throws DatenbankFehler;
+	void schuelerHinzufuegen(String name, Date date) throws DatenbankFehler;
 	
 	void klasseEinrichten(String name, int jahr, Benutzer klassenlehrer) throws DatenbankFehler;
 	
