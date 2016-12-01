@@ -7,6 +7,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -16,7 +17,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
 import java.awt.Color;
 
-public class SwingLoginView extends JDialog implements LoginView {
+public class SwingLoginView extends JFrame implements LoginView {
 
 	private static final long serialVersionUID = 1L;
 	public static final String COMMAND_LOGIN = "login";
@@ -28,10 +29,10 @@ public class SwingLoginView extends JDialog implements LoginView {
 
 	public SwingLoginView() {
 		setTitle("Login");
-		setBounds(100, 100, 450, 320);
+		setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
 		
-		JLabel lblBitteGebenSie = new JLabel("Bitte geben Sie Ihre Login-Daten ein: ");
-		lblBitteGebenSie.setFont(new Font("Tahoma", Font.PLAIN, 22));
+		JLabel lblLoginDaten = new JLabel("Bitte geben Sie Ihre Login-Daten ein: ");
+		lblLoginDaten.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		
 		JLabel lblBenutzername = new JLabel("Benutzername: ");
 		lblBenutzername.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -59,7 +60,7 @@ public class SwingLoginView extends JDialog implements LoginView {
 				.addContainerGap()
 				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 					.addComponent(textField, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
-					.addComponent(lblBitteGebenSie)
+					.addComponent(lblLoginDaten)
 					.addComponent(lblBenutzername)
 					.addComponent(lblPasswort)
 					.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
@@ -70,7 +71,7 @@ public class SwingLoginView extends JDialog implements LoginView {
 		groupLayout.setVerticalGroup(
 			groupLayout.createSequentialGroup()
 				.addContainerGap()
-				.addComponent(lblBitteGebenSie)
+				.addComponent(lblLoginDaten)
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(lblBenutzername)
 				.addPreferredGap(ComponentPlacement.RELATED)
@@ -79,15 +80,16 @@ public class SwingLoginView extends JDialog implements LoginView {
 				.addComponent(lblPasswort)
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-				.addPreferredGap(ComponentPlacement.RELATED)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
 				.addComponent(lblStatus)
-				.addPreferredGap(ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+				.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 				.addComponent(btnAnmelden)
 				.addContainerGap()
 		);
 		getContentPane().setLayout(groupLayout);
-		setLocationRelativeTo(null);
 		getRootPane().setDefaultButton(btnAnmelden);
+		pack();
+		setMinimumSize(getSize());
 	}
 
 	@Override
@@ -118,7 +120,9 @@ public class SwingLoginView extends JDialog implements LoginView {
 
 	@Override
 	public void failure() {
-		lblStatus.setText("Falsche Daten! Bitte versuchen Sie es erneut...");
+		lblStatus.setText("<html>Falsche Daten! <br />Bitte versuchen Sie es erneut...</html>");
+		pack();
+		setMinimumSize(getSize());
 	}
 
 	@Override

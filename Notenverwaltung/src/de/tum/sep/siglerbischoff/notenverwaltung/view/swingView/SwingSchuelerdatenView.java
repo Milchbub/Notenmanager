@@ -1,7 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 
 import java.awt.Component;
-import java.awt.event.ActionListener;
+import java.awt.Dimension;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -13,21 +13,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.EventListenerList;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
 
-public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView, TableModelListener {
+public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private Component parent;
 	
 	private EventListenerList listeners;
-
-	private String[] neuerSchueler;
 
 	public SwingSchuelerdatenView(Component parent, TableModel schueler) {
 		setModal(true);
@@ -39,9 +35,15 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		JLabel lblAlleSchler = new JLabel("Alle Sch\u00FCler: ");
 		
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setPreferredSize(new Dimension(300,200));
 		
-		JTable table = new JTable();
-		scrollPane.setViewportView(table);
+		JTable schuelerTable = new JTable(schueler);
+		schuelerTable.setFillsViewportHeight(true);
+		if (schueler.getRowCount() > 0) {
+			scrollPane.setViewportView(schuelerTable);
+		} else {
+			scrollPane.setViewportView(new JLabel(" Keine Sch\u00FCler eingetragen..."));
+		}
 		
 		JButton btnHinzufuegen = new JButton("Sch\u00FCler hinzuf\u00FCgen...");
 		
@@ -50,31 +52,22 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 			.addContainerGap()
 			.addGroup(gl_kursVerwaltung.createParallelGroup(Alignment.LEADING)
 				.addComponent(lblAlleSchler)
-				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 				.addComponent(btnHinzufuegen))
-			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addContainerGap()
 		);
 		gl_kursVerwaltung.setVerticalGroup(gl_kursVerwaltung.createSequentialGroup()
 			.addContainerGap()
 			.addComponent(lblAlleSchler)
 			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+			.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 			.addPreferredGap(ComponentPlacement.UNRELATED)
 			.addComponent(btnHinzufuegen)
-			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addContainerGap()
 		);
 		getContentPane().setLayout(gl_kursVerwaltung);
 		pack();
-	}
-
-	@Override
-	public String[] getNeuerSchueler() {
-		return neuerSchueler;
-	}
-
-	@Override
-	public void addActionListener(ActionListener l) {
-		listeners.add(ActionListener.class, l);
+		setMinimumSize(getSize());
 	}
 
 	@Override
@@ -91,11 +84,5 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	@Override
 	public void showError(String titel, String nachricht) {
 		JOptionPane.showMessageDialog(this, nachricht, titel, JOptionPane.ERROR_MESSAGE);
-	}
-
-	@Override
-	public void tableChanged(TableModelEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 }
