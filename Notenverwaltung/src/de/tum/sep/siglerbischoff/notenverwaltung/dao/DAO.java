@@ -20,6 +20,8 @@ public interface DAO {
 	
 	ListModel<Benutzer> gebeBenutzer() throws DatenbankFehler;
 	
+	ListModel<Schueler> gebeSchueler() throws DatenbankFehler;
+	
 	ListModel<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler;
 
 	ListModel<Kurs> gebeKurse(Benutzer benutzer, int jahr) throws DatenbankFehler;
@@ -36,7 +38,9 @@ public interface DAO {
 	
 	void kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler;
 	
-	public abstract void benutzerLoeschen(String loginName) throws DatenbankFehler;
+	void benutzerLoeschen(String loginName) throws DatenbankFehler;
+	
+	void schuelerLoeschen(String schuelerName) throws DatenbankFehler;
 	
 	static DAO erstelleDAO() throws DatenbankFehler {
 		return new MysqlDAO();

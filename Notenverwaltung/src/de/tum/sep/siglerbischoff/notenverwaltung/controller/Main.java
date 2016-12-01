@@ -69,7 +69,7 @@ public final class Main implements ActionListener {
 		//TODO
 		//lv.login();
 		try {
-			Benutzer benutzer = dao.passwortPruefen("michael.bischoff", "hallo");
+			Benutzer benutzer = dao.passwortPruefen("lena", "hallo");
 			Jahre jahre = dao.gebeJahre();
 			int laj = jahre.gebeLetztesAktuellesJahr();
 			view.loginBenutzer(benutzer, jahre, 
@@ -78,7 +78,7 @@ public final class Main implements ActionListener {
 			);
 		} catch (DatenbankFehler e) {
 			throw new RuntimeException(e);
-		}
+		} 
 	}
 
 	@Override
@@ -122,6 +122,7 @@ public final class Main implements ActionListener {
 						}
 					});
 					klassenView.showKlassenverwaltung(Benutzer.gebeBenutzer());
+					
 					break;
 				}
 				case View.COMMAND_KURSE_ANLEGEN: {

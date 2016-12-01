@@ -23,10 +23,10 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
 class MysqlDAO implements DAO {
 
-	private static final String dbuser = "jdbc";
-//	private static final String dbuser = "root";
-	private static final String dbpass = "8xpPWLYzXSZAVRjt";
-//	private static final String dbpass = "maulwurf.";
+//	private static final String dbuser = "jdbc";
+	private static final String dbuser = "root";
+//	private static final String dbpass = "8xpPWLYzXSZAVRjt";
+	private static final String dbpass = "maulwurf.";
 	private static final String dbaddress = "localhost";
 //	private static final String dbaddress = "127.0.0.1:3306";
 	private static final String dbname = "notenmanager";
@@ -84,6 +84,23 @@ class MysqlDAO implements DAO {
 			throw new DatenbankFehler(e);
 		} 
 	}
+	
+	@Override
+	public ListModel<Schueler> gebeSchueler() throws DatenbankFehler {
+		String sql = "SELECT schuelerID, name FROM schueler";
+		try(Statement s = dbverbindung.createStatement()) {
+			List<Schueler> list = new Vector<>();
+			try(ResultSet rs = s.executeQuery(sql)) {
+				while(rs.next()) {
+					list.add(new Schueler(rs.getInt(1), rs.getString(2))); 
+				}
+			}
+			return new ListModelAdaptor<>(list);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		} 
+	}
+	
 
 	@Override
 	public ListModel<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler {
@@ -248,6 +265,28 @@ class MysqlDAO implements DAO {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	@Override
+	public void schuelerLoeschen(String schuelerName) throws DatenbankFehler{
+		int schuelerID;
+		
+		String sql = "SELECT schuelerID "
+				+ "FROM schueler "
+				+ "WHERE name = "+"'" + schuelerName + "'";
+		try (Statement s = dbverbindung.createStatement()) {
+			ResultSet rs = s.executeQuery(sql);
+			rs.next();
+			schuelerID=rs.getInt(1);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}		
+		String sqlDelete = "DELETE FROM schueler WHERE schuelerID =" +schuelerID;
+		try (Statement s = dbverbindung.createStatement()) {
+			s.execute(sqlDelete);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}	
 	}
 	
 	private void datenbankInitialisieren() throws SQLException {
