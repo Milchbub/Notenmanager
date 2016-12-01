@@ -30,6 +30,7 @@ public class DAOAndMysqlDAOTest {
 			props.setProperty("dbhost", "127.0.0.1");
 			props.setProperty("dbname", "Notenmanager");
 			assertTrue(dao.passwortPruefen("XXX", "XXX", props) == null);
+			assertTrue(dao.passwortPruefen("michi", "XXX", props) == null);
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

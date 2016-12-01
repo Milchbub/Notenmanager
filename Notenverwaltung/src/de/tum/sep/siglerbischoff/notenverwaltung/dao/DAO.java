@@ -29,17 +29,21 @@ public interface DAO {
 
 	ListModel<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler;
 	
-	void benutzerAnlegen(String name, String loginName, String passwort, boolean istAdmin) throws DatenbankFehler;
+	Benutzer benutzerAnlegen(String loginName, String name, String passwort, boolean istAdmin) throws DatenbankFehler;
+	void benutzerAendern(Benutzer benutzer, String neuerLoginName, String neuerName, String neuIstAdmin) throws DatenbankFehler;
+	void benutzerLoeschen(Benutzer benutzer) throws DatenbankFehler;
 	
-	void schuelerHinzufuegen(String name, Date date) throws DatenbankFehler;
+	Schueler schuelerHinzufuegen(String name, Date date) throws DatenbankFehler;
+	void schuelerAendern(Schueler schueler, String neuerName, Date neuesGebDat) throws DatenbankFehler;
+	void schuelerLoeschen(Schueler schueler) throws DatenbankFehler;
 	
-	void klasseEinrichten(String name, int jahr, Benutzer klassenlehrer) throws DatenbankFehler;
+	Klasse klasseEinrichten(String name, int jahr, Benutzer klassenlehrer) throws DatenbankFehler;
+	void klasseAendern(Klasse klasse, String neuerName, Benutzer neuerKlassenlehrer) throws DatenbankFehler;
+	void klasseLoeschen(Klasse klasse);
 	
-	void kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler;
-	
-	void benutzerLoeschen(String loginName) throws DatenbankFehler;
-	
-	void schuelerLoeschen(String schuelerName) throws DatenbankFehler;
+	Kurs kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler;
+	void kursAendern(Kurs kurs, String neuerName, String neuesFach, Benutzer neuerKursleiter);
+	void kursLoeschen(Kurs kurs);
 	
 	static DAO erstelleDAO() throws DatenbankFehler {
 		return new MysqlDAO();

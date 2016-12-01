@@ -2,7 +2,7 @@ package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.util.Date;
 
-public class Schueler extends Entity {
+public class Schueler {
 	
 	final int id;
 	private String name;
@@ -25,10 +25,13 @@ public class Schueler extends Entity {
 	public Date getGebDat() {
 		return gebDat;
 	}
+	
+	public void setName(String neuerName) {
+		name = neuerName;
+	}
 
-	@Override
-	public Object[] getData() {
-		return new Object[]{id, name, gebDat};
+	public void setGebDat(Date neuesGebDat) {
+		gebDat = neuesGebDat;
 	}
 	
 }

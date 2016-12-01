@@ -20,7 +20,7 @@ class SchuelerdatenManager {
 	SchuelerdatenManager (MainView mainView, DAO dao) {
 		try {
 			ListModel<Schueler> schueler = dao.gebeSchueler();
-			view = mainView.getSchuelerdatenView(new SchuelerTableModel(schueler));
+			view = mainView.getSchuelerdatenView(new SchuelerTableModel(schueler, dao));
 		} catch (DatenbankFehler e) {
 			if(Main.debug) {
 				e.printStackTrace();
@@ -34,11 +34,13 @@ class SchuelerdatenManager {
 	private static class SchuelerTableModel implements TableModel {
 
 		private ListModel<Schueler> schueler;
+		private DAO dao;
 		private static final String[] columnNames = new String[]{"ID", "Name", "Geburtsdatum"};
 		private static final Class<?>[] columnTypes = new Class<?>[]{int.class, String.class, Date.class};
 		
-		private SchuelerTableModel(ListModel<Schueler> schueler) {
+		private SchuelerTableModel(ListModel<Schueler> schueler, DAO dao) {
 			this.schueler = schueler;
+			this.dao = dao;
 		}
 		
 		@Override
@@ -72,14 +74,31 @@ class SchuelerdatenManager {
 
 		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
-			// TODO Auto-generated method stub
-			return null;
+			switch(columnIndex) {
+				case 0:
+					return schueler.getElementAt(rowIndex).getId();
+				case 1: 
+					return schueler.getElementAt(rowIndex).getName();
+				case 2:
+					return schueler.getElementAt(rowIndex).getGebDat();
+			}
+			throw new IllegalArgumentException();
 		}
 
 		@Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-			// TODO Auto-generated method stub
-			
+			try {
+				switch(columnIndex) {
+					case 1:
+						dao.schuelerAendern(schueler.getElementAt(rowIndex), (String) aValue, schueler.getElementAt(rowIndex).getGebDat());
+						break;
+					case 2:
+						dao.schuelerAendern(schueler.getElementAt(rowIndex), schueler.getElementAt(rowIndex).getName(), (Date) aValue);
+						break;
+				}
+			} catch (DatenbankFehler e) {
+				
+			}
 		}
 
 		@Override
