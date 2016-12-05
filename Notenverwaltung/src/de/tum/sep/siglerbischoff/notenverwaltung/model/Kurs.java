@@ -6,16 +6,19 @@ public class Kurs {
 	private String name; 
 	private String fach; 
 	private int jahr; 
-	private int lehrerID;
+	private Benutzer kursleiter;
 	
-	public Kurs (int id, String name, String fach, int jahr, int lehrerID) {
+	public Kurs (int id, String name, String fach, int jahr, Benutzer kursleiter) {
 		this.id = id;
 		this.name = name; 
 		this.fach = fach;
 		this.jahr = jahr; 
-		this.lehrerID = lehrerID;
+		this.kursleiter = kursleiter;
 	}
-
+	
+	public int getId() {
+		return id;
+	}
 	public String getName() {
 		return name;
 	}
@@ -28,8 +31,20 @@ public class Kurs {
 		return jahr;
 	}
 	
-	public int getKlassenleiterID() {
-		return lehrerID;
+	public Benutzer getKursleiter() {
+		return kursleiter;
+	}
+	
+	public void setName(String neuerName) {
+		name = neuerName;
+	}
+	
+	public void setFach(String neuesFach) {
+		fach = neuesFach;
+	}
+	
+	public void setKursleiter(Benutzer neuerKursleiter) {
+		kursleiter = neuerKursleiter;
 	}
 	
 	@Override

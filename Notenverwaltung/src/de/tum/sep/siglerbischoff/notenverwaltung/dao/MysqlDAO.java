@@ -146,7 +146,7 @@ class MysqlDAO implements DAO {
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
 					list.addElement(new Kurs(rs.getInt(1), rs.getString(2), 
-							rs.getString(3), jahr, benutzer.getId()));
+							rs.getString(3), jahr, benutzer));
 				}
 				return list;
 			}
@@ -168,7 +168,7 @@ class MysqlDAO implements DAO {
 			DefaultListModel<Klasse> list = new DefaultListModel<>();
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
-					list.addElement(new Klasse(rs.getInt(1), rs.getString(2), jahr, benutzer.getId()));
+					list.addElement(new Klasse(rs.getInt(1), rs.getString(2), jahr, benutzer));
 				}
 				return list;
 			}
@@ -214,33 +214,24 @@ class MysqlDAO implements DAO {
 	}
 
 	@Override
-	public Klasse klasseEinrichten(String name, int jahr, Benutzer klassenlehrer) throws DatenbankFehler{
-		String sql = "INSERT INTO klasse (name, schuljahr, klassenlehrerID) VALUES "
-				+ "('" + name + "', "
-				+ jahr + ", "
-				+ klassenlehrer.getId() + ")";
+	public void benutzerAendern(Benutzer benutzer, String neuerLoginName, String neuerName, boolean neuIstAdmin) throws DatenbankFehler {
+		benutzer.setLoginName(neuerLoginName);
+		benutzer.setName(neuerName);
+		benutzer.setIstAdmin(neuIstAdmin);
+		String sql = "UPDATE benutzer SET loginName = '" + neuerLoginName + "', "
+				+ "name = '" + neuerName + "', "
+				+ "istAdmin = '" + neuIstAdmin + "' "
+				+ "WHERE benutzerID = " + benutzer.getId();
 		try (Statement s = dbverbindung.createStatement()) {
-			s.execute(sql);
+			s.executeUpdate(sql);
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
 	}
 
-	@Override
-	public Kurs kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler {
-		String sql = "INSERT INTO kurs (name, fach, schuljahr, lehrerID) VALUES "
-				+ "('" + name + "', "
-				+ "'" + fach + "', "
-				+ jahr + ", "
-				+ kursleiter.getId() + ")";
-		try (Statement s = dbverbindung.createStatement()) {
-			s.execute(sql);
-		} catch (SQLException e) {
-			throw new DatenbankFehler(e);
-		}
-	}
+
 	
-	// Benutzer ueber den loginName loeschen. Es wird der User aus der benutzer-Tabelle sowie als
+	// Es wird der User aus der benutzer-Tabelle sowie als
 	// auch der dazugehoerige Datenbank-User selbst geloescht. 
 	@Override
 	public void benutzerLoeschen(Benutzer benutzer) throws DatenbankFehler{
@@ -259,14 +250,24 @@ class MysqlDAO implements DAO {
 		
 	}
 	
+	
+	//Schuelerverwaltung (Schueler hinzufuegen, aendern, loeschen)
+	
 	@Override
-	public Schueler schuelerHinzufuegen(String name, Date gebDat) throws DatenbankFehler {
+	public Schueler schuelerHinzufuegen(String name, Date gebDat) throws DatenbankFehler  {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		String sql = "INSERT INTO schueler (name, gebDat) VALUES "
 				+ "('" + name + "', "
 				+ "'" + df.format(gebDat) + "')";
-		try (Statement s = dbverbindung.createStatement()) {
-			s.execute(sql);
+		try (Statement s1 = dbverbindung.createStatement()) {
+			s1.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			
+			try (ResultSet rs = s1.getGeneratedKeys()) {
+				rs.next();
+				int id = rs.getInt(1);
+				
+				return new Schueler(id, name, gebDat);
+			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
@@ -297,6 +298,102 @@ class MysqlDAO implements DAO {
 			throw new DatenbankFehler(e);
 		}	
 	}
+	
+	//Klassenverwaltung (Klasse hinzufuegen, aendern, loeschen)
+	
+	@Override
+	public Klasse klasseEinrichten(String name, int jahr, Benutzer klassenlehrer) throws DatenbankFehler{
+		String sql = "INSERT INTO klasse (name, schuljahr, klassenlehrerID) VALUES "
+				+ "('" + name + "', "
+				+ jahr + ", "
+				+ klassenlehrer.getId() + ")";
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			
+			try (ResultSet rs = s.getGeneratedKeys()) {
+				rs.next();
+				int id = rs.getInt(1);
+				
+				return new Klasse(id, name, jahr, klassenlehrer);
+			}
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}	
+	}
+	
+	@Override
+	public void klasseAendern(Klasse klasse, String neuerName, Benutzer neuerKlassenlehrer) throws DatenbankFehler {
+		klasse.setName(neuerName);
+		klasse.setKlassenlehrer(neuerKlassenlehrer);
+		String sql = "UPDATE klasse SET name = '" + neuerName + "', "
+				+ "klassenlehrerID = '" + neuerKlassenlehrer.getId() + "' "
+				+ "WHERE klasseID = " + klasse.getId();
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
+	}
+	
+	@Override
+	public void klasseLoeschen(Klasse klasse) throws DatenbankFehler{
+		String sql = "DELETE FROM klasse WHERE klasseID = " + klasse.getId();
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}	
+	}
+	
+	//Kursverwaltung (Kurs hinzufuegen, aendern, loeschen)
+	
+	@Override
+	public Kurs kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler {
+		String sql = "INSERT INTO kurs (name, fach, schuljahr, lehrerID) VALUES "
+				+ "('" + name + "', "
+				+ "'" + fach + "', "
+				+ jahr + ", "
+				+ kursleiter.getId() + ")";
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			
+			try (ResultSet rs = s.getGeneratedKeys()) {
+				rs.next();
+				int id = rs.getInt(1);
+				
+				return new Kurs(id, name, fach, jahr, kursleiter);
+			}
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}	
+	}
+	
+	@Override
+	public void kursAendern(Kurs kurs, String neuerName, String neuesFach, Benutzer neuerKursleiter) throws DatenbankFehler {
+		kurs.setName(neuerName);
+		kurs.setFach(neuesFach);
+		kurs.setKursleiter(neuerKursleiter);
+		String sql = "UPDATE klasse SET name = '" + neuerName + "', "
+				+ "fach = '" + neuesFach + "', "
+				+ "lehrerID = '" + neuerKursleiter.getId() + "' "
+				+ "WHERE kursID = " + kurs.getId();
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
+	}
+	
+	@Override
+	public void kursLoeschen(Kurs kurs) throws DatenbankFehler {
+		String sql = "DELETE FROM kurs WHERE kursID = " + kurs.getId();
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}	
+	}
+	
 	
 	
 	private void erstelleTabellen() throws SQLException {

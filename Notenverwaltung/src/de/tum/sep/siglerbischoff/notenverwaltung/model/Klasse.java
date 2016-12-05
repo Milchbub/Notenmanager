@@ -2,16 +2,20 @@ package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 public class Klasse {
 
-	int id; 
+	final int id; 
 	private String name; 
 	private int jahr; 
-	private int klassenlehrerID;
+	private Benutzer klassenlehrer;
 	
-	public Klasse (int id, String name, int jahr, int klassenlehrerID) {
+	public Klasse (int id, String name, int jahr, Benutzer klassenlehrer) {
 		this.id = id; 
 		this.name = name; 
 		this.jahr = jahr; 
-		this.klassenlehrerID = klassenlehrerID;
+		this.klassenlehrer = klassenlehrer;
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	public String getName() {
@@ -22,9 +26,19 @@ public class Klasse {
 		return jahr;
 	}
 	
-	public int getKlassenlehrerID() {
-		return klassenlehrerID;
+	public Benutzer getKlassenlehrer() {
+		return klassenlehrer;
 	}
+	
+	public void setName(String neuerName) {
+		name = neuerName;
+	}
+	
+	public void setKlassenlehrer(Benutzer neuerKlassenlehrer) {
+		klassenlehrer = neuerKlassenlehrer;
+	}
+	
+	
 	
 	@Override
 	public String toString() {
