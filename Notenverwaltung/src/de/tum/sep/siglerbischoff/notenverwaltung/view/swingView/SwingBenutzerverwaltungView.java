@@ -118,6 +118,6 @@ public class SwingBenutzerverwaltungView extends JDialog implements Benutzerverw
 
 	@Override
 	public void schliessen() {
-		setVisible(false);
+		dispose();
 	}
 }
