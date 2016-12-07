@@ -50,6 +50,7 @@ class MysqlDAO implements DAO {
 				}
 			}
 		} catch (SQLInvalidAuthorizationSpecException e) {
+			e.printStackTrace();
 			return null;
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);

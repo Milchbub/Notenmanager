@@ -123,7 +123,7 @@ public class SwingMainView extends JFrame implements MainView {
 
 	@Override
 	public void schliessen() {
-		setVisible(false);
+		dispose();
 	}
 
 	@Override

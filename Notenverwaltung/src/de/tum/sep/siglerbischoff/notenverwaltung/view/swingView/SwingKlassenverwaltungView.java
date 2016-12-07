@@ -107,6 +107,6 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 
 	@Override
 	public void schliessen() {
-		setVisible(false);
+		dispose();
 	}
 }

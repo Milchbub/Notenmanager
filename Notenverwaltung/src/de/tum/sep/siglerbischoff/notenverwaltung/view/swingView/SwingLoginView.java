@@ -105,7 +105,7 @@ public class SwingLoginView extends JFrame implements LoginView {
 
 	@Override
 	public void schliessen() {
-		setVisible(false);
+		dispose();
 	}
 
 	@Override

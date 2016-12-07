@@ -122,7 +122,7 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 
 	@Override
 	public void schliessen() {
-		setVisible(false);
+		dispose();
 	}
 
 }
