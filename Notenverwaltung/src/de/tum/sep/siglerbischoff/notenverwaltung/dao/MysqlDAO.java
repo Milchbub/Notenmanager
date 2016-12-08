@@ -39,7 +39,7 @@ class MysqlDAO implements DAO {
 					benutzerName, 
 					passwort);
 			try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
-					erstelleTabellen();
+					//erstelleTabellen();
 					s.setString(1, benutzerName);
 				try (ResultSet rs = s.executeQuery()) {
 					if (rs.next()) {
@@ -226,7 +226,7 @@ class MysqlDAO implements DAO {
 		benutzer.setIstAdmin(neuIstAdmin);
 		String sql = "UPDATE benutzer SET loginName = '" + neuerLoginName + "', "
 				+ "name = '" + neuerName + "', "
-				+ "istAdmin = '" + neuIstAdmin + "' "
+				+ "istAdmin = " + neuIstAdmin + " "
 				+ "WHERE benutzerID = " + benutzer.getId();
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);

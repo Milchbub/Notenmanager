@@ -12,7 +12,7 @@ public class BenutzerTableModel extends AbstractTableModel {
 	ListModel<Benutzer> benutzer;
 
 	private static final String[] columnNames = new String[]{"ID", "Loginname", "Name", "Ist Admin?"};
-	private static final Class<?>[] columnTypes = new Class<?>[]{Integer.class, String.class, String.class, boolean.class};
+	private static final Class<?>[] columnTypes = new Class<?>[]{Integer.class, String.class, String.class, Boolean.class};
 	
 	public BenutzerTableModel(ListModel<Benutzer> benutzer, BenutzerListener listener) {
 		this.benutzer = benutzer;

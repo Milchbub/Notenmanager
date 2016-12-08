@@ -18,16 +18,6 @@ public class SchuelerTableModel extends AbstractTableModel {
 	public SchuelerTableModel(ListModel<Schueler> schueler, SchuelerListener listener) {
 		this.schueler = schueler;
 		listenerList.add(SchuelerListener.class, listener);
-		new Thread(() -> {
-			while(true) {
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				System.out.println(getRowCount());
-			}
-		}).start();
 	}
 	
 	@Override
