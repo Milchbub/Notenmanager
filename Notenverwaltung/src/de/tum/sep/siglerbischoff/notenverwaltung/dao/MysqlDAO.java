@@ -111,11 +111,13 @@ class MysqlDAO implements DAO {
 
 	@Override
 	public ListModel<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler {
-		String sql = "SELECT kurs.kursID, kurs.name, kurs.fach, kurs.lehrerID "
-				+ "FROM kurs, nimmtteil "
-				+ "WHERE kurs.kursID = nimmtteil.kursID AND "
-					+ "nimmtteil.schuelerID = ? AND "
-					+ "kurs.schuljahr = ?"
+		String sql = "SELECT kurs.kursID, kurs.name, kurs.fach, "
+						+ "benutzer.benutzerID, benutzer.loginName, benutzer.name, benutzer.istAdmin "
+				+ "FROM kurs, nimmTteil "
+				+ "WHERE kurs.kursID = nimmtTeil.kursID AND "
+					+ "nimmtTeil.schuelerID = ? AND "
+					+ "kurs.schuljahr = ? AND "
+					+ "kurs.lehrerID = benutzer.BenutzerID"
 				+ "ORDER BY kurs.name";
 		try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
 			s.setInt(1, schueler.getId());
@@ -123,8 +125,9 @@ class MysqlDAO implements DAO {
 			DefaultListModel<Kurs> list = new DefaultListModel<>();
 			try (ResultSet rs = s.executeQuery()) {
 				while (rs.next()) {
+					Benutzer lehrer = new Benutzer(rs.getInt(4), rs.getString(5), rs.getString(6), rs.getBoolean(7));
 					list.addElement(new Kurs(rs.getInt(1), rs.getString(2), 
-							rs.getString(3), jahr, rs.getInt(4)));
+							rs.getString(3), jahr, lehrer));
 				}
 				return list;
 			}
@@ -214,6 +217,8 @@ class MysqlDAO implements DAO {
 		}
 	}
 
+//TODO: Achtung! Hier muss auch der MySQL-Benutzername geändert werden! Am besten den 
+	//loginNamen als nicht änderbar festlegen. 
 	@Override
 	public void benutzerAendern(Benutzer benutzer, String neuerLoginName, String neuerName, boolean neuIstAdmin) throws DatenbankFehler {
 		benutzer.setLoginName(neuerLoginName);

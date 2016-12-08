@@ -3,11 +3,7 @@ package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
@@ -15,23 +11,18 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JSpinner.DateEditor;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SpinnerDateModel;
-import javax.swing.SpinnerModel;
 import javax.swing.event.EventListenerList;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
 
-public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView {
+public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -39,10 +30,10 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	
 	private EventListenerList listeners;
 	
-	private JTable schuelerTable;
+	private JTable benutzerTable;
 	
-	public SwingSchuelerdatenView(JFrame parent, TableModel schueler) {
-		super(parent, "Schülerdaten");
+	public SwingBenutzerdatenView(JFrame parent, TableModel schueler) {
+		super(parent, "Benutzerdaten");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		this.parent = parent;
@@ -54,18 +45,16 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setPreferredSize(new Dimension(300,200));
 		
-		schuelerTable = new JTable(schueler);
-		schuelerTable.setFillsViewportHeight(true);
-		schuelerTable.getColumnModel().getColumn(2).setCellRenderer(new DateCellRenderer());
-		schuelerTable.getColumnModel().getColumn(2).setCellEditor(new DateCellEditor());
+		benutzerTable = new JTable(schueler);
+		benutzerTable.setFillsViewportHeight(true);
 		
 		if (schueler.getRowCount() > 0) {
-			scrollPane.setViewportView(schuelerTable);
+			scrollPane.setViewportView(benutzerTable);
 		} else {
-			scrollPane.setViewportView(new JLabel(" Keine Sch\u00FCler eingetragen..."));
+			scrollPane.setViewportView(new JLabel(" Keine Benutzer eingetragen..."));
 		}
 		
-		JButton btnHinzufuegen = new JButton("Sch\u00FCler hinzuf\u00FCgen...");
+		JButton btnHinzufuegen = new JButton("Benutzer hinzuf\u00FCgen...");
 		btnHinzufuegen.setActionCommand(COMMAND_NEU);
 		btnHinzufuegen.addActionListener(ae -> {
 			for (ActionListener l : listeners.getListeners(ActionListener.class)) {
@@ -136,31 +125,28 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		listeners.remove(ActionListener.class, l);
 	}
 
+	private String neuLoginName;
 	private String neuName;
-	private Date neuDatum;
+	private String neuPasswort;
+	private boolean neuIstAdmin;
 	
 	@Override
 	public void neu() {
-		JDialog dialog = new JDialog(this, "Neuer Schüler");
-		
+		JDialog dialog = new JDialog(this, "Neuer Benutzer");
+
+		JLabel lblLoginName = new JLabel("Login-Name: ");
+		JTextField txtLoginName = new JTextField();
 		JLabel lblName = new JLabel("Name: ");
 		JTextField txtName = new JTextField();
-		JLabel lblDatum = new JLabel("Geburtsdatum: ");
-		
-		Calendar calendar = Calendar.getInstance();
-	    Date initDate = calendar.getTime();
-	    calendar.add(Calendar.YEAR, -100);
-	    Date earliestDate = calendar.getTime();
-	    calendar.add(Calendar.YEAR, 200);
-	    Date latestDate = calendar.getTime();
-		JSpinner sprDatum = new JSpinner(new SpinnerDateModel(initDate, earliestDate, latestDate, Calendar.YEAR));
-		sprDatum.setEditor(new DateEditor(sprDatum, "yyyy-MM-dd"));
+		JLabel lblPasswort = new JLabel("Passwort: ");
+		JPasswordField txtPasswort = new JPasswordField();
 		
 		JButton btnOk = new JButton("Ok");
 		btnOk.setActionCommand(COMMAND_NEU_FERTIG);
 		btnOk.addActionListener(ae -> {
+			neuLoginName = txtLoginName.getText();
 			neuName = txtName.getText();
-			neuDatum = (Date) sprDatum.getValue();
+			neuPasswort = txtPasswort.getText();
 			for (ActionListener l : listeners.getListeners(ActionListener.class)) {
 				l.actionPerformed(ae);
 			}
@@ -176,10 +162,12 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		gl_neuer_Schueler.setHorizontalGroup(gl_neuer_Schueler.createSequentialGroup()
 			.addContainerGap()
 			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblLoginName)
+				.addComponent(txtLoginName)
 				.addComponent(lblName)
 				.addComponent(txtName)
-				.addComponent(lblDatum)
-				.addComponent(sprDatum)
+				.addComponent(lblPasswort)
+				.addComponent(txtPasswort)
 				.addGroup(gl_neuer_Schueler.createSequentialGroup()
 					.addComponent(btnOk)
 					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
@@ -189,13 +177,17 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		
 		gl_neuer_Schueler.setVerticalGroup(gl_neuer_Schueler.createSequentialGroup()
 			.addContainerGap()
+			.addComponent(lblLoginName)
+			.addPreferredGap(ComponentPlacement.RELATED)
+			.addComponent(txtLoginName)
+			.addPreferredGap(ComponentPlacement.UNRELATED)
 			.addComponent(lblName)
 			.addPreferredGap(ComponentPlacement.RELATED)
 			.addComponent(txtName)
 			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addComponent(lblDatum)
+			.addComponent(lblPasswort)
 			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(sprDatum)
+			.addComponent(txtPasswort)
 			.addPreferredGap(ComponentPlacement.UNRELATED)
 			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
 				.addComponent(btnOk)
@@ -207,62 +199,29 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
 	}
+	
+	@Override
+	public String gebeNeuLoginName() {
+		return neuLoginName;
+	}
 
 	@Override
 	public String gebeNeuName() {
 		return neuName;
 	}
-
+	
 	@Override
-	public Date gebeNeuGebDat() {
-		return neuDatum;
+	public String gebeNeuPasswort() {
+		return neuPasswort;
+	}
+	
+	@Override
+	public boolean gebeNeuIstAdmin() {
+		return neuIstAdmin;
 	}
 	
 	@Override
 	public void update() {
-		((AbstractTableModel) (schuelerTable.getModel())).fireTableDataChanged();
-	}
-	
-	private static class DateCellRenderer extends DefaultTableCellRenderer {
-
-	    private static final long serialVersionUID = 1L;
-		private SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
-
-	    public Component getTableCellRendererComponent(JTable table,
-	            Object value, boolean isSelected, boolean hasFocus,
-	            int row, int column) {
-	        value = f.format(value);
-	        return super.getTableCellRendererComponent(table, value, isSelected,
-	                hasFocus, row, column);
-	    }
-	}
-	
-	private static class DateCellEditor extends AbstractCellEditor implements TableCellEditor {
-		
-		private static final long serialVersionUID = 1L;
-		private JSpinner spinner;
-		
-		public DateCellEditor() {
-		    Calendar calendar = Calendar.getInstance();
-		    Date initDate = calendar.getTime();
-		    calendar.add(Calendar.YEAR, -100);
-		    Date earliestDate = calendar.getTime();
-		    calendar.add(Calendar.YEAR, 200);
-		    Date latestDate = calendar.getTime();
-			SpinnerModel dateModel = new SpinnerDateModel(
-					initDate, earliestDate,	latestDate, Calendar.YEAR);
-			spinner = new JSpinner(dateModel);
-			spinner.setEditor(new JSpinner.DateEditor(spinner, "yyyy-MM-dd"));
-		}
-		
-		public Object getCellEditorValue() {
-			return ((SpinnerDateModel)spinner.getModel()).getDate();
-		}
-		
-		public Component getTableCellEditorComponent(JTable table, Object value,
-				boolean isSelected, int row, int column) {
-			spinner.setValue(value);
-			return spinner;
-		}
+		((AbstractTableModel) (benutzerTable.getModel())).fireTableDataChanged();
 	}
 }

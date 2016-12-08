@@ -31,7 +31,7 @@ import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
-import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerverwaltungView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
@@ -355,8 +355,8 @@ public class SwingMainView extends JFrame implements MainView {
 	}
 
 	@Override
-	public BenutzerverwaltungView getBenutzerverwaltungView() {
-		return new SwingBenutzerverwaltungView(this);
+	public BenutzerdatenView getBenutzerverwaltungView(TableModel benutzer) {
+		return new SwingBenutzerdatenView(this, benutzer);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
 import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
-import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerverwaltungView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
@@ -101,19 +101,7 @@ public final class Main implements ActionListener {
 					break; 
 				}
 				case MainView.COMMAND_BENUTZERVERWALTUNG: {
-					BenutzerverwaltungView bvView = view.getBenutzerverwaltungView();
-					bvView.addActionListener(ae -> {
-						try {
-							dao.benutzerAnlegen(bvView.getName(), bvView.getLoginName(), bvView.getPass(), bvView.getIstAdmin());
-							bvView.schliessen();
-						} catch (DatenbankFehler f) {
-							if(debug) {
-								f.printStackTrace();
-							}
-							view.showError(f);
-						}
-					});
-					bvView.showBenutzerverwaltung();
+					new BenutzerdatenManager(view, dao);
 					break;
 				}
 				case MainView.COMMAND_KLASSEN_ANLEGEN: {

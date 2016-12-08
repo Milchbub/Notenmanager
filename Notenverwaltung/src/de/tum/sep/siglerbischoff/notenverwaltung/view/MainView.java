@@ -25,7 +25,7 @@ public interface MainView extends View {
 
 	SchuelerdatenView getSchuelerdatenView(TableModel schueler);
 
-	BenutzerverwaltungView getBenutzerverwaltungView();
+	BenutzerdatenView getBenutzerverwaltungView(TableModel benutzer);
 
 	KlassenverwaltungView getKlassenverwaltungView();
 
