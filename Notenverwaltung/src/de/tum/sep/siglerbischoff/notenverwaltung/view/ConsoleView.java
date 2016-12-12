@@ -5,8 +5,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 
@@ -31,7 +31,7 @@ public class ConsoleView implements View {
 
 	@Override
 	public void loginBenutzer(Benutzer benutzer) throws DatenbankFehler {
-		System.out.println("Herzlich willkommen, " + benutzer.getName() + "! ");
+		System.out.println("Herzlich willkommen, " + benutzer.gebeName() + "! ");
 		int jahr = Calendar.getInstance().get(Calendar.YEAR);
 		System.out.println("Das aktuell eingestellte Jahr ist " + jahr + ". ");
 		

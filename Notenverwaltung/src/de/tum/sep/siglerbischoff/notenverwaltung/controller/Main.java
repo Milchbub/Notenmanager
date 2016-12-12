@@ -4,11 +4,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.ConfigDatei;
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.ConfigDatei;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
@@ -18,9 +18,8 @@ public final class Main implements ActionListener {
 
 	static final boolean debug = true;
 	
-	private DAO dao;
-	private ConfigDatei config;
 	private MainView view;
+	private Model model;
 	
 	private Benutzer loggedIn;
 	
@@ -33,43 +32,32 @@ public final class Main implements ActionListener {
 		view.addActionListener(this);
 		
 		try {
-			config = new ConfigDatei();
+			model = new Model();
+		} catch (DatenbankFehler e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (IOException e) {
-			if(debug) {
-				e.printStackTrace();
-			}
-			view.showError(e);
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		try {
-			dao = DAO.erstelleDAO();
-			
-			login();
-		} catch (DatenbankFehler e) {
-			if(debug) {
-				e.printStackTrace();
-			}
-			view.showError("Datenbankfehler", "Fehler beim Verbinden mit der Datenbank, prüfen Sie Ihre Internetverbindung. ");
-			System.exit(0);
-		}
+		login();
 	}
 	
 	private void login() {
 		LoginView lv = view.getLoginView();
 		lv.addActionListener(ae -> {
 			try {
-				Benutzer benutzer = dao.passwortPruefen(lv.getUser(), lv.getPassword(), config);
+				Benutzer benutzer = model.passwortPruefen(lv.gebeLogin());
 				if(benutzer == null) {
 					lv.failure();
 				} else {
 					loggedIn = benutzer;
 					lv.schliessen();
-					Jahre jahre = dao.gebeJahre();
+					Jahre jahre = model.gebeJahre();
 					int laj = jahre.gebeLetztesAktuellesJahr();
-					view.loginBenutzer(loggedIn, jahre, 
-							dao.gebeGeleiteteKlassen(loggedIn, laj), 
-							dao.gebeKurse(loggedIn, laj)
-					);
+					view.loginBenutzer(loggedIn, loggedIn.gebeGeleiteteKlassen(laj, model), 
+							loggedIn.gebeGeleiteteKurse(laj, model), jahre);
 					view.zeigen();
 				}
 			} catch (DatenbankFehler e) {
@@ -96,11 +84,11 @@ public final class Main implements ActionListener {
 		try {
 			switch(e.getActionCommand()) {
 				case MainView.COMMAND_SCHUELERDATEN: {
-					new SchuelerdatenManager(view, dao);
+					new SchuelerdatenManager(view, model);
 					break; 
 				}
 				case MainView.COMMAND_BENUTZERVERWALTUNG: {
-					new BenutzerdatenManager(view, dao);
+					new BenutzerdatenManager(view, model);
 					break;
 				}
 				case MainView.COMMAND_KLASSEN_ANLEGEN: {

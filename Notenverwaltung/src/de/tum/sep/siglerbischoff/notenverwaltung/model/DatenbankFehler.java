@@ -1,4 +1,4 @@
-package de.tum.sep.siglerbischoff.notenverwaltung.dao;
+package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 public class DatenbankFehler extends Exception {
 

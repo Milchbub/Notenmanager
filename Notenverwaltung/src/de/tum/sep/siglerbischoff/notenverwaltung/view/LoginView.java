@@ -2,11 +2,11 @@ package de.tum.sep.siglerbischoff.notenverwaltung.view;
 
 import java.awt.event.ActionListener;
 
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Login;
+
 public interface LoginView extends View {
-	
-	String getUser();
-	
-	String getPassword();
+
+	Login gebeLogin();
 	
 	void failure();
 	

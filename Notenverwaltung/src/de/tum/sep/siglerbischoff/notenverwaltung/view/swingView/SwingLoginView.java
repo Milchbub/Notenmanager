@@ -14,6 +14,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Login;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
 import java.awt.Color;
 
@@ -22,8 +23,8 @@ public class SwingLoginView extends JFrame implements LoginView {
 	private static final long serialVersionUID = 1L;
 	public static final String COMMAND_LOGIN = "login";
 	
-	private JTextField textField;
-	private JPasswordField passwordField;
+	private JTextField txtName;
+	private JPasswordField txtPass;
 	private JButton btnAnmelden;
 	private JLabel lblStatus;
 
@@ -37,15 +38,15 @@ public class SwingLoginView extends JFrame implements LoginView {
 		JLabel lblBenutzername = new JLabel("Benutzername: ");
 		lblBenutzername.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		textField = new JTextField();
-		textField.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		textField.setColumns(10);
+		txtName = new JTextField();
+		txtName.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		txtName.setColumns(10);
 		
 		JLabel lblPasswort = new JLabel("Passwort: ");
 		lblPasswort.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		passwordField = new JPasswordField();
-		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		txtPass = new JPasswordField();
+		txtPass.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
 		btnAnmelden = new JButton("Anmelden");
 		btnAnmelden.setFont(new Font("Tahoma", Font.PLAIN, 20));
@@ -59,11 +60,11 @@ public class SwingLoginView extends JFrame implements LoginView {
 			groupLayout.createSequentialGroup()
 				.addContainerGap()
 				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-					.addComponent(textField, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+					.addComponent(txtName, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
 					.addComponent(lblLoginDaten)
 					.addComponent(lblBenutzername)
 					.addComponent(lblPasswort)
-					.addComponent(passwordField, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+					.addComponent(txtPass, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
 					.addComponent(btnAnmelden)
 					.addComponent(lblStatus))
 				.addContainerGap()
@@ -75,11 +76,11 @@ public class SwingLoginView extends JFrame implements LoginView {
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(lblBenutzername)
 				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addComponent(txtName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(lblPasswort)
 				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(passwordField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addComponent(txtPass, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addPreferredGap(ComponentPlacement.UNRELATED)
 				.addComponent(lblStatus)
 				.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
@@ -93,8 +94,8 @@ public class SwingLoginView extends JFrame implements LoginView {
 	}
 
 	@Override
-	public void addActionListener(ActionListener l) {
-		btnAnmelden.addActionListener(l);
+	public Login gebeLogin() {
+		return new Login(txtName.getText(), txtPass.getPassword());
 	}
 
 	@Override
@@ -109,16 +110,6 @@ public class SwingLoginView extends JFrame implements LoginView {
 	}
 
 	@Override
-	public String getUser() {
-		return textField.getText();
-	}
-
-	@Override
-	public String getPassword() {
-		return new String(passwordField.getPassword());
-	}
-
-	@Override
 	public void failure() {
 		lblStatus.setText("<html>Falsche Daten! <br />Bitte versuchen Sie es erneut...</html>");
 		pack();
@@ -128,5 +119,10 @@ public class SwingLoginView extends JFrame implements LoginView {
 	@Override
 	public void showError(String titel, String nachricht) {
 		JOptionPane.showMessageDialog(this, nachricht, titel, JOptionPane.ERROR_MESSAGE);
+	}
+
+	@Override
+	public void addActionListener(ActionListener l) {
+		btnAnmelden.addActionListener(l);
 	}
 }

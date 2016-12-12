@@ -18,6 +18,4 @@ public interface SchuelerdatenView extends View {
 	String gebeNeuName();
 	
 	Date gebeNeuGebDat();
-	
-	void update();
 }

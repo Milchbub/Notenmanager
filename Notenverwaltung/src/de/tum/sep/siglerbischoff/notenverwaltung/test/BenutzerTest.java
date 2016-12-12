@@ -10,9 +10,9 @@ import javax.swing.ListModel;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DAO;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 
 public class BenutzerTest {	
 	
@@ -38,8 +38,8 @@ public class BenutzerTest {
 			// Vergleichsarray 1 erstellen
 			String[][] vergleichsarray1 = new String[benutzerUeberDAO.getSize()][2];
 			for (int i = 0; i < benutzerUeberDAO.getSize(); i++) {
-				vergleichsarray1[i][0] = String.valueOf(benutzerUeberDAO.getElementAt(i).getId());
-				vergleichsarray1[i][1] = benutzerUeberDAO.getElementAt(i).getName();
+				vergleichsarray1[i][0] = String.valueOf(benutzerUeberDAO.getElementAt(i).gebeId());
+				vergleichsarray1[i][1] = benutzerUeberDAO.getElementAt(i).gebeName();
 			}
 			
 			// Benutzer ueber Benutzermethode aus DB geholt
@@ -49,8 +49,8 @@ public class BenutzerTest {
 			// Vergleichsarray 2 erstellen
 			String[][] vergleichsarray2 = new String[benutzerUeberBenutzer.getSize()][2];
 			for (int i = 0; i < benutzerUeberBenutzer.getSize(); i++) {
-				vergleichsarray2[i][0] = String.valueOf(benutzerUeberBenutzer.getElementAt(i).getId());
-				vergleichsarray2[i][1] = benutzerUeberBenutzer.getElementAt(i).getName();
+				vergleichsarray2[i][0] = String.valueOf(benutzerUeberBenutzer.getElementAt(i).gebeId());
+				vergleichsarray2[i][1] = benutzerUeberBenutzer.getElementAt(i).gebeName();
 			}
 			
 			// Der eigentliche Test (es werden die Inhalte der 2 Arrays verglichen, Id und Name im genau gesagt)
@@ -84,7 +84,7 @@ public class BenutzerTest {
 			String[] vergleichsarray1 = new String[benutzerListeVorEinfuegen.getSize() + 1];
 			int i;
 			for (i = 0; i < benutzerListeVorEinfuegen.getSize(); i++) {
-				vergleichsarray1[i] = benutzerListeVorEinfuegen.getElementAt(i).getName();
+				vergleichsarray1[i] = benutzerListeVorEinfuegen.getElementAt(i).gebeName();
 			}
 			// Testbenutzer-Namen zu Array dazusetzen
 			vergleichsarray1[i] = "Test";
@@ -97,7 +97,7 @@ public class BenutzerTest {
 			String[] vergleichsarray2 = new String[benutzerListeNachEinfuegen.getSize()];
 			//String[] vergleichsarray2 = new String[benutzerListeNachEinfuegen.getSize()];
 			for (i = 0; i < benutzerListeNachEinfuegen.getSize(); i++) {
-				vergleichsarray2[i] = benutzerListeNachEinfuegen.getElementAt(i).getName();
+				vergleichsarray2[i] = benutzerListeNachEinfuegen.getElementAt(i).gebeName();
 			}
 			// Testbenutzer wieder aus DB loeschen
 			dao.benutzerLoeschen(test);

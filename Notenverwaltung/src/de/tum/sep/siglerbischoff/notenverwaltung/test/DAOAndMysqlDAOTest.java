@@ -14,8 +14,8 @@ import java.util.Properties;
 
 import org.junit.Test;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DAO;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 
 public class DAOAndMysqlDAOTest {
 

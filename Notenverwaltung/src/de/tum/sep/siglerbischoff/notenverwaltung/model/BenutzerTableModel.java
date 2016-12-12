@@ -1,27 +1,27 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
-import java.util.EventListener;
+import java.util.List;
 
-import javax.swing.ListModel;
 import javax.swing.table.AbstractTableModel;
 
 public class BenutzerTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
-	ListModel<Benutzer> benutzer;
+	List<Benutzer> benutzer;
+	Model model;
 
 	private static final String[] columnNames = new String[]{"ID", "Loginname", "Name", "Ist Admin?"};
 	private static final Class<?>[] columnTypes = new Class<?>[]{Integer.class, String.class, String.class, Boolean.class};
 	
-	public BenutzerTableModel(ListModel<Benutzer> benutzer, BenutzerListener listener) {
+	public BenutzerTableModel(List<Benutzer> benutzer, Model model) {
 		this.benutzer = benutzer;
-		listenerList.add(BenutzerListener.class, listener);
+		this.model = model;
 	}
 	
 	@Override
 	public int getRowCount() {
-		return benutzer.getSize();
+		return benutzer.size();
 	}
 
 	@Override
@@ -52,38 +52,39 @@ public class BenutzerTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch(columnIndex) {
 			case 0:
-				return benutzer.getElementAt(rowIndex).getId();
+				return benutzer.get(rowIndex).gebeId();
 			case 1: 
-				return benutzer.getElementAt(rowIndex).getLoginName();
+				return benutzer.get(rowIndex).gebeLoginName();
 			case 2:
-				return benutzer.getElementAt(rowIndex).getName();
+				return benutzer.get(rowIndex).gebeName();
 			case 3: 
-				return benutzer.getElementAt(rowIndex).istAdmin();
+				return benutzer.get(rowIndex).istAdmin();
 		}
 		throw new IllegalArgumentException();
 	}
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		Benutzer b = benutzer.getElementAt(rowIndex);
-		switch(columnIndex) {
-			case 2:
-				for(BenutzerListener l : listenerList.getListeners(BenutzerListener.class)) {
-					l.benutzerAendern(b, b.getLoginName(), (String) aValue, b.istAdmin());
-				}
-				break;
-			case 3:
-				for(BenutzerListener l : listenerList.getListeners(BenutzerListener.class)) {
-					l.benutzerAendern(b, b.getLoginName(), b.getName(), (boolean) aValue);
-				}
-				break;
+		Benutzer b = benutzer.get(rowIndex);
+		try {
+			switch(columnIndex) {
+				case 1:
+					b.setzeLoginName((String) aValue, model);
+					break;
+				case 2:
+					b.setzeName((String) aValue, model);
+					break;
+				case 3:
+					b.setzeIstAdmin((Boolean) aValue, model);
+					break;
+			}
+		} catch(DatenbankFehler e) {
+			//TODO
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
-	
-	public static interface BenutzerListener extends EventListener {
-		
-		void benutzerAendern(Benutzer benutzer, String loginName, String name, boolean istAdmin);
-		
+
+	public void hinzufuegen(String loginName, String name, char[] passwort,	boolean istAdmin) throws DatenbankFehler {
+		// TODO Auto-generated method stub
 	}
 }

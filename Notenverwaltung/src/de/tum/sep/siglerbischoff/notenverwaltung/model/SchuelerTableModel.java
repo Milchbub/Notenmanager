@@ -1,28 +1,28 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.util.Date;
-import java.util.EventListener;
+import java.util.List;
 
-import javax.swing.ListModel;
 import javax.swing.table.AbstractTableModel;
 
 public class SchuelerTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
-	ListModel<Schueler> schueler;
+	List<Schueler> schueler;
+	Model model;
 
 	private static final String[] columnNames = new String[]{"ID", "Name", "Geburtsdatum"};
 	private static final Class<?>[] columnTypes = new Class<?>[]{Integer.class, String.class, Date.class};
 	
-	public SchuelerTableModel(ListModel<Schueler> schueler, SchuelerListener listener) {
+	public SchuelerTableModel(List<Schueler> schueler, Model model) {
 		this.schueler = schueler;
-		listenerList.add(SchuelerListener.class, listener);
+		this.model = model;
 	}
 	
 	@Override
 	public int getRowCount() {
-		return schueler.getSize();
+		return schueler.size();
 	}
 
 	@Override
@@ -53,35 +53,34 @@ public class SchuelerTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch(columnIndex) {
 			case 0:
-				return schueler.getElementAt(rowIndex).getId();
+				return schueler.get(rowIndex).gebeId();
 			case 1: 
-				return schueler.getElementAt(rowIndex).getName();
+				return schueler.get(rowIndex).gebeName();
 			case 2:
-				return schueler.getElementAt(rowIndex).getGebDat();
+				return schueler.get(rowIndex).gebeGebDat();
 		}
 		throw new IllegalArgumentException();
 	}
 
 	@Override
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		switch(columnIndex) {
-			case 1:
-				for(SchuelerListener l : listenerList.getListeners(SchuelerListener.class)) {
-					l.schuelerAendern(schueler.getElementAt(rowIndex), (String) aValue, schueler.getElementAt(rowIndex).getGebDat());
-				}
-				break;
-			case 2:
-				for(SchuelerListener l : listenerList.getListeners(SchuelerListener.class)) {
-					l.schuelerAendern(schueler.getElementAt(rowIndex), schueler.getElementAt(rowIndex).getName(), (Date) aValue);
-				}
-				break;
+		Schueler s = schueler.get(rowIndex);
+		try {
+			switch(columnIndex) {
+				case 1:
+					s.setzeName((String) aValue, model);
+					break;
+				case 2:
+					s.setzeGebDat((Date) aValue, model);
+					break;
+			} 
+		}catch(DatenbankFehler e) {
+			//TODO
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
-	public static interface SchuelerListener extends EventListener {
-		
-		void schuelerAendern(Schueler schueler, String name, Date gebDat);
-		
+	public void hinzufuegen(String name, Date gebDat) throws DatenbankFehler {
+		//TODO
 	}
 }

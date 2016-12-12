@@ -24,7 +24,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerModel;
 import javax.swing.event.EventListenerList;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableModel;
@@ -118,7 +117,7 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 
 	@Override
 	public void schliessen() {
-		setVisible(false);
+		dispose();
 	}
 
 	@Override
@@ -216,11 +215,6 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	@Override
 	public Date gebeNeuGebDat() {
 		return neuDatum;
-	}
-	
-	@Override
-	public void update() {
-		((AbstractTableModel) (schuelerTable.getModel())).fireTableDataChanged();
 	}
 	
 	private static class DateCellRenderer extends DefaultTableCellRenderer {

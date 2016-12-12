@@ -10,8 +10,8 @@ import javax.swing.ListModel;
 
 import org.junit.Test;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DAO;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
 
@@ -34,7 +34,7 @@ public class SchuelerTest {
 			String[] vergleichsarray1 = new String[schuelerListeVorEinfuegen.getSize() + 1];
 			int i;
 			for (i = 0; i < schuelerListeVorEinfuegen.getSize(); i++) {
-				vergleichsarray1[i] = schuelerListeVorEinfuegen.getElementAt(i).getName();
+				vergleichsarray1[i] = schuelerListeVorEinfuegen.getElementAt(i).gebeName();
 			}
 			// Testschueler-Namen zu Array dazusetzen
 			vergleichsarray1[i] = "Schüler";
@@ -52,7 +52,7 @@ public class SchuelerTest {
 			String[] vergleichsarray2 = new String[schuelerListeNachEinfuegen.getSize()];
 			//String[] vergleichsarray2 = new String[benutzerListeNachEinfuegen.getSize()];
 			for (i = 0; i < schuelerListeNachEinfuegen.getSize(); i++) {
-				vergleichsarray2[i] = schuelerListeNachEinfuegen.getElementAt(i).getName();
+				vergleichsarray2[i] = schuelerListeNachEinfuegen.getElementAt(i).gebeName();
 			}
 			// Testschueler wieder aus DB loeschen
 			

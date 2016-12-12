@@ -2,36 +2,62 @@ package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.util.Date;
 
+import javax.swing.ListModel;
+
 public class Schueler {
 	
-	final int id;
+	private final int id;
 	private String name;
 	private Date gebDat;
 	
-	public Schueler (int id, String name, Date gebDat) {
+	Schueler (int id, String name, Date gebDat) {
 		this.id = id;
 		this.name = name;
 		this.gebDat = gebDat;
 	}
 	
-	public int getId() {
+	public int gebeId() {
 		return id;
 	}
 	
-	public String getName() {
+	public String gebeName() {
 		return name;
 	}
 	
-	public Date getGebDat() {
+	public Date gebeGebDat() {
 		return gebDat;
 	}
 	
-	public void setName(String neuerName) {
+	public ListModel<Klasse> gebeKlassen(int jahr, Model model) throws DatenbankFehler {
+		//TODO
+		return null;
+	}
+	
+	public ListModel<Kurs> gebeKurse(int jahr, Model model) throws DatenbankFehler {
+		//TODO
+		return null;
+	}
+	
+	public void setzeName(String neuerName, Model model) throws DatenbankFehler {
+		model.gebeDao().schuelerAendern(id, neuerName, gebDat);
 		name = neuerName;
 	}
 
-	public void setGebDat(Date neuesGebDat) {
+	public void setzeGebDat(Date neuesGebDat, Model model) throws DatenbankFehler {
+		model.gebeDao().schuelerAendern(id, name, neuesGebDat);
 		gebDat = neuesGebDat;
 	}
 	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	public static SchuelerTableModel gebeSchueler(Model model) throws DatenbankFehler {
+		return new SchuelerTableModel(model.gebeDao().gebeSchueler(), model);
+	}
+	
+	public static Schueler erstelleSchueler(String name, Date gebDat, Model model) throws DatenbankFehler {
+		return model.gebeDao().schuelerHinzufuegen(name, gebDat);
+	}
 }

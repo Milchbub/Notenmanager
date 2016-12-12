@@ -1,4 +1,4 @@
-package de.tum.sep.siglerbischoff.notenverwaltung.dao;
+package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,7 +13,7 @@ public class ConfigDatei extends Properties {
 
 	public ConfigDatei() throws IOException {
 		Properties defaults = new Properties();
-		defaults.setProperty("dbhost", "localhost");
+		defaults.setProperty("dbhost", "r115088.srs.swh.mhn.de");
 		defaults.setProperty("dbname", "Notenmanager");
 		this.defaults = defaults;
 		

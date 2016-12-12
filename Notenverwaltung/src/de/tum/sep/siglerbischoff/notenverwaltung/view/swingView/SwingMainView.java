@@ -7,7 +7,6 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
@@ -27,8 +26,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.EventListenerList;
 import javax.swing.table.TableModel;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
@@ -127,17 +127,17 @@ public class SwingMainView extends JFrame implements MainView {
 	}
 
 	@Override
-	public void loginBenutzer(Benutzer benutzer, ComboBoxModel<Integer> jahre, ListModel<Klasse> klassen, ListModel<Kurs> kurse) throws DatenbankFehler {
+	public void loginBenutzer(Benutzer benutzer, ListModel<Klasse> geleiteteKlassen, ListModel<Kurs> geleiteteKurse, Jahre jahre) throws DatenbankFehler {
 
-		lblHerzlichWillkommen.setText("Herzlich willkommen, " + benutzer.getName() + "!");
+		lblHerzlichWillkommen.setText("Herzlich willkommen, " + benutzer.gebeName() + "!");
 
 		int jahr = Calendar.getInstance().get(Calendar.YEAR);
 		cmbboxJahr.setModel(jahre);
 		cmbboxJahr.setSelectedItem(new Integer(jahr));
 
 		boolean istAdmin = benutzer.istAdmin();
-		boolean istKlassenleiter = klassen.getSize() > 0;
-		boolean istKursleiter = kurse.getSize() > 0;
+		boolean istKlassenleiter = geleiteteKlassen.getSize() > 0;
+		boolean istKursleiter = geleiteteKurse.getSize() > 0;
 		boolean tabs = (istAdmin && istKlassenleiter) || (istAdmin && istKursleiter)
 				|| (istKlassenleiter && istKursleiter);
 
@@ -264,7 +264,7 @@ public class SwingMainView extends JFrame implements MainView {
 			);
 
 			JList<Klasse> list = new JList<>();
-			list.setModel(klassen);
+			list.setModel(geleiteteKlassen);
 			scrollPane.setViewportView(list);
 			pnlKlassen.setLayout(gl_pnlKlassen);
 
@@ -316,7 +316,7 @@ public class SwingMainView extends JFrame implements MainView {
 					.addContainerGap()));
 
 			JList<Kurs> list_1 = new JList<>();
-			list_1.setModel(kurse);
+			list_1.setModel(geleiteteKurse);
 			scrollPane_1.setViewportView(list_1);
 			pnlKurse.setLayout(gl_pnlKurse);
 

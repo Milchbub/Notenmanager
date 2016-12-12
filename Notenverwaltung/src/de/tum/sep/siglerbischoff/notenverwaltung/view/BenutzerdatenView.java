@@ -4,9 +4,9 @@ import java.awt.event.ActionListener;
 
 public interface BenutzerdatenView extends View {
 	
-	public static final String COMMAND_SCHLIESSEN = "schliessen";
-	public static final String COMMAND_NEU = "neu";
-	public static final String COMMAND_NEU_FERTIG = "neuFertig";
+	static final String COMMAND_SCHLIESSEN = "schliessen";
+	static final String COMMAND_NEU = "neu";
+	static final String COMMAND_NEU_FERTIG = "neuFertig";
 	
 	void addActionListener(ActionListener l);
 	
@@ -18,10 +18,7 @@ public interface BenutzerdatenView extends View {
 	
 	String gebeNeuName();
 	
-	String gebeNeuPasswort();
+	char[] gebeNeuPasswort();
 	
 	boolean gebeNeuIstAdmin();
-	
-	void update();
-
 }

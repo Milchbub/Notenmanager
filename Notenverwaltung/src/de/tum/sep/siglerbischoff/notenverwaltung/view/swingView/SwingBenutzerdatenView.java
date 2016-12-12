@@ -17,7 +17,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.EventListenerList;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
@@ -32,7 +31,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 	
 	private JTable benutzerTable;
 	
-	public SwingBenutzerdatenView(JFrame parent, TableModel schueler) {
+	public SwingBenutzerdatenView(JFrame parent, TableModel benutzer) {
 		super(parent, "Benutzerdaten");
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
@@ -45,10 +44,10 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setPreferredSize(new Dimension(300,200));
 		
-		benutzerTable = new JTable(schueler);
+		benutzerTable = new JTable(benutzer);
 		benutzerTable.setFillsViewportHeight(true);
 		
-		if (schueler.getRowCount() > 0) {
+		if (benutzer.getRowCount() > 0) {
 			scrollPane.setViewportView(benutzerTable);
 		} else {
 			scrollPane.setViewportView(new JLabel(" Keine Benutzer eingetragen..."));
@@ -107,7 +106,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 
 	@Override
 	public void schliessen() {
-		setVisible(false);
+		dispose();
 	}
 
 	@Override
@@ -127,7 +126,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 
 	private String neuLoginName;
 	private String neuName;
-	private String neuPasswort;
+	private char[] neuPasswort;
 	private boolean neuIstAdmin;
 	
 	@Override
@@ -146,7 +145,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 		btnOk.addActionListener(ae -> {
 			neuLoginName = txtLoginName.getText();
 			neuName = txtName.getText();
-			neuPasswort = txtPasswort.getText();
+			neuPasswort = txtPasswort.getPassword();
 			for (ActionListener l : listeners.getListeners(ActionListener.class)) {
 				l.actionPerformed(ae);
 			}
@@ -211,17 +210,12 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 	}
 	
 	@Override
-	public String gebeNeuPasswort() {
+	public char[] gebeNeuPasswort() {
 		return neuPasswort;
 	}
 	
 	@Override
 	public boolean gebeNeuIstAdmin() {
 		return neuIstAdmin;
-	}
-	
-	@Override
-	public void update() {
-		((AbstractTableModel) (benutzerTable.getModel())).fireTableDataChanged();
 	}
 }
