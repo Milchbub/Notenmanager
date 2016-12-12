@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Properties;
-
+import java.sql.ResultSet;
 import javax.swing.ListModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
@@ -44,6 +44,9 @@ public interface DAO {
 	Kurs kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler;
 	void kursAendern(Kurs kurs, String neuerName, String neuesFach, Benutzer neuerKursleiter) throws DatenbankFehler;
 	void kursLoeschen(Kurs kurs) throws DatenbankFehler;
+	
+	void fireSQL(String sql) throws DatenbankFehler;
+	ResultSet fireSQLResult(String sql) throws DatenbankFehler;
 	
 	static DAO erstelleDAO() throws DatenbankFehler {
 		return new MysqlDAO();

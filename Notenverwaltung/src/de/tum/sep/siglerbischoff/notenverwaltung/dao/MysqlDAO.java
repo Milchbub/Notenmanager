@@ -401,6 +401,24 @@ class MysqlDAO implements DAO {
 	}
 	
 	
+	public void fireSQL(String sql) throws DatenbankFehler{
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
+	}
+	
+	public ResultSet fireSQLResult(String sql) throws DatenbankFehler{
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			return s.getGeneratedKeys();
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}	
+	}
+	
+	
 	
 	private void erstelleTabellen() throws SQLException {
 		String schuelerTblle = 
