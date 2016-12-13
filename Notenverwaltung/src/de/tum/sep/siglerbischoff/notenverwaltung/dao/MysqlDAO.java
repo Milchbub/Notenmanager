@@ -217,26 +217,67 @@ class MysqlDAO implements DAO {
 		}
 	}
 
-//TODO: Achtung! Hier muss auch der MySQL-Benutzername geändert werden! Am besten den 
-	//loginNamen als nicht änderbar festlegen. 
+	/**
+	 * Methode benutzerAendern eingeschraenkt fuer die Aenderung von den Attributen Namen und/oder istAdmin.
+	 */
 	@Override
-	public void benutzerAendern(Benutzer benutzer, String neuerLoginName, String neuerName, boolean neuIstAdmin) throws DatenbankFehler {
-		benutzer.setLoginName(neuerLoginName);
+	public void benutzerAendern(Benutzer benutzer, String neuerName, boolean neuIstAdmin) throws DatenbankFehler {
+		String alterName = benutzer.getName();
+		boolean altIstAdmin = benutzer.istAdmin();
 		benutzer.setName(neuerName);
 		benutzer.setIstAdmin(neuIstAdmin);
-		String sql = "UPDATE benutzer SET loginName = '" + neuerLoginName + "', "
-				+ "name = '" + neuerName + "', "
-				+ "istAdmin = " + neuIstAdmin + " "
-				+ "WHERE benutzerID = " + benutzer.getId();
+		// Login Name gleich, nur Namen ändern und Rechte
 		try (Statement s = dbverbindung.createStatement()) {
-			s.executeUpdate(sql);
+			if (!alterName.contentEquals(neuerName)) {
+				String sql = "UPDATE benutzer SET name = '" + neuerName + "', "
+						+ "istAdmin = " + neuIstAdmin + " "
+						+ "WHERE benutzerID = " + benutzer.getId() + ";";
+				s.addBatch(sql);
+			}
+			if (!(altIstAdmin == neuIstAdmin)) {
+				String revoke = "REVOKE ALL FROM " + benutzer.getLoginName() + ";";			
+				s.addBatch(revoke);
+				String sqlGrant = "GRANT INSERT, DELETE, SELECT, UPDATE ON Notenmanager.* "
+						+ "TO '" + benutzer.getLoginName() + "';";
+				s.addBatch(sqlGrant);
+				if(neuIstAdmin) {
+					String sqlGrantAdmin = "GRANT CREATE USER, GRANT OPTION ON *.* "
+							+ "TO '" + benutzer.getLoginName() + "';";
+					s.addBatch(sqlGrantAdmin);
+				}
+			}
+			s.executeBatch();
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
 	}
-
-
 	
+	/**
+	 * Methode benutzerAendern fuer die Aenderung von den Attributen Login Name, Passwort, Namen und istAdmin.
+	 * Bei Aenderung des Login Namen ist ein neues Passwort notwendig.
+	 */
+	@Override
+	public void benutzerAendern(Benutzer benutzer, String neuerLoginName, String neuerName, String neuesPasswort, boolean neuIstAdmin) throws DatenbankFehler {
+		String alterLoginName = benutzer.getLoginName();
+		benutzer.setLoginName(neuerLoginName);
+		// Login Name anders, löschen, neuen User mit neuen Login Namen erstellen und dann
+		// ggf. Namen und Rechte über zweite benutzerAendern(...) Methode veraendern.
+		try (Statement s = dbverbindung.createStatement()) {	
+			String sql = "DROP USER '" + alterLoginName + "'@'%'";
+			s.addBatch(sql);	
+			String sqlCreate = "CREATE USER '" + neuerLoginName + "' "
+					+ "IDENTIFIED BY '" + neuesPasswort + "'";	
+			s.addBatch(sqlCreate);
+			String updateLoginName = "UPDATE benutzer SET loginName = '" + neuerLoginName + "' "
+					+ "WHERE benutzerID = " + benutzer.getId();
+			s.addBatch(updateLoginName);
+			s.executeBatch();
+			benutzerAendern(benutzer, neuerName, neuIstAdmin);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);	
+		}
+	}
+
 	// Es wird der User aus der benutzer-Tabelle sowie als
 	// auch der dazugehoerige Datenbank-User selbst geloescht. 
 	@Override
@@ -253,7 +294,6 @@ class MysqlDAO implements DAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	

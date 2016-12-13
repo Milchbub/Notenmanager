@@ -30,7 +30,8 @@ public interface DAO {
 	ListModel<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler;
 	
 	Benutzer benutzerAnlegen(String loginName, String name, String passwort, boolean istAdmin) throws DatenbankFehler;
-	void benutzerAendern(Benutzer benutzer, String neuerLoginName, String neuerName, boolean neuIstAdmin) throws DatenbankFehler;
+	void benutzerAendern(Benutzer benutzer, String neuerName, boolean neuIstAdmin) throws DatenbankFehler;
+	void benutzerAendern(Benutzer benutzer, String neuerLoginName, String neuerName, String neuesPasswort, boolean neuIstAdmin) throws DatenbankFehler;
 	void benutzerLoeschen(Benutzer benutzer) throws DatenbankFehler;
 	
 	Schueler schuelerHinzufuegen(String name, Date gebDat) throws DatenbankFehler;
