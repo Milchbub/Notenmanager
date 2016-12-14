@@ -376,7 +376,7 @@ class MysqlDAO implements DAO {
 							+ "INNER JOIN note n ON n.schuelerID = nt.schuelerID AND n.kursID = nt.kursID "
 							+ "INNER JOIN kurs k ON k.kursID = n.kursID "
 							+ "INNER JOIN klasse kl ON kl.klasseID = iik.klasseID "
-							+ "WHERE kl.klassenlehrerID = '" + klassenlehrer.getId() + "' "
+							+ "WHERE kl.klassenlehrerID = '" + klassenlehrer.getId() + "' AND kl.schuljahr = '" + jahr + "'"
 							+ "ORDER BY name, fach;"
 							+ " "
 							+ "GRANT SELECT ON Klassenlehrersicht" + klassenlehrer.getId() + " TO " + klassenlehrer.getLoginName();	
@@ -423,7 +423,7 @@ class MysqlDAO implements DAO {
 						+ "INNER JOIN note n ON n.schuelerID = nt.schuelerID AND n.kursID = nt.kursID "
 						+ "INNER JOIN kurs k ON k.kursID = n.kursID "
 						+ "INNER JOIN klasse kl ON kl.klasseID = iik.klasseID "
-						+ "WHERE kl.klassenlehrerID = '" + neuerKlassenlehrer.getId() + "' "
+						+ "WHERE kl.klassenlehrerID = '" + neuerKlassenlehrer.getId() + "' AND kl.schuljahr = '" + klasse.getJahr() + "'"
 						+ "ORDER BY name, fach;"
 						+ " "
 						+ "GRANT SELECT ON Klassenlehrersicht" + neuerKlassenlehrer.getId() + " TO " + neuerKlassenlehrer.getLoginName();
@@ -471,6 +471,29 @@ class MysqlDAO implements DAO {
 				rs.next();
 				int id = rs.getInt(1);
 				
+				// Erstellen der View fuer den jeweiligen Kursleiter. Pro Kursleiter gibt es
+				// somit eine View (z.B. Kursleitersicht1, wobei 1==kursleiterID). 
+				Statement s1 = dbverbindung.createStatement();
+				String createViewQuery = "CREATE VIEW Kursleitersicht" + kursleiter.getId() + " "
+							+ "AS SELECT s.name AS name, "
+							+ "k.name AS kursbezeichnung, "
+							+ "k.fach AS fach"
+							+ "n.wert AS wert, "
+							+ "n.art AS art, "
+							+ "n.gewichtung AS gewichtung, "
+							+ "n.tendenz AS tendenz, "
+							+ "n.datum AS datum "
+							+ "FROM schueler s "
+							+ "INNER JOIN istInKlasse iik ON s.schuelerID = iik.schuelerID "
+							+ "INNER JOIN nimmtTeil nt ON iik.schuelerID = nt.schuelerID "
+							+ "INNER JOIN note n ON n.schuelerID = nt.schuelerID AND n.kursID = nt.kursID "
+							+ "INNER JOIN kurs k ON k.kursID = n.kursID "
+							+ "WHERE k.lehrerID = '" + kursleiter.getId() + "' AND k.schuljahr = '" + jahr + "'"
+							+ "ORDER BY name, fach;"
+							+ " "
+							+ "GRANT INSERT, DELETE, SELECT, UPDATE ON Kursleitersicht" + kursleiter.getId() + " TO " + kursleiter.getLoginName();	
+				s1.executeQuery(createViewQuery);
+				
 				return new Kurs(id, name, fach, jahr, kursleiter);
 			}
 		} catch (SQLException e) {
@@ -489,6 +512,29 @@ class MysqlDAO implements DAO {
 				+ "WHERE kursID = " + kurs.getId();
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);
+			
+			// Neuerstellen der View 
+						Statement s1 = dbverbindung.createStatement();
+						String createViewQuery = "CREATE VIEW Kursleitersicht" + neuerKursleiter.getId() + " "
+									+ "AS SELECT s.name AS name, "
+									+ "k.name AS kursbezeichnung, "
+									+ "k.fach AS fach, "
+									+ "n.wert AS wert, "
+									+ "n.art AS art, "
+									+ "n.gewichtung AS gewichtung, "
+									+ "n.tendenz AS tendenz, "
+									+ "n.datum AS datum "
+									+ "FROM schueler s "
+									+ "INNER JOIN istInKlasse iik ON s.schuelerID = iik.schuelerID "
+									+ "INNER JOIN nimmtTeil nt ON iik.schuelerID = nt.schuelerID "
+									+ "INNER JOIN note n ON n.schuelerID = nt.schuelerID AND n.kursID = nt.kursID "
+									+ "INNER JOIN kurs k ON k.kursID = n.kursID "
+									+ "WHERE k.lehrerID = '" + neuerKursleiter.getId() + "' AND k.schuljahr = '" + kurs.getJahr() + "'"
+									+ "ORDER BY name, fach;"
+									+ " "
+									+ "GRANT INSERT, DELETE, SELECT, UPDATE ON Kursleitersicht" + neuerKursleiter.getId() + " TO " + neuerKursleiter.getLoginName();
+						s1.executeQuery(createViewQuery);
+			
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
@@ -502,6 +548,13 @@ class MysqlDAO implements DAO {
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}	
+		// Loeschen der View fuer den jeweiligen Kursleiter.
+				String deleteViewQuery = "DROP VIEW Kursleitersicht" + kurs.getKursleiter().getId() + ";";
+				try (Statement s1 = dbverbindung.createStatement()){
+					s1.executeQuery(deleteViewQuery);
+				} catch (SQLException e) {
+					throw new DatenbankFehler(e);
+				}
 	}
 	
 	
