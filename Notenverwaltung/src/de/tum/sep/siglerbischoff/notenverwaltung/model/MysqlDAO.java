@@ -17,6 +17,8 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 
+import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
+
 class MysqlDAO extends DAO {
 
 	private Connection dbverbindung;
@@ -393,6 +395,24 @@ class MysqlDAO extends DAO {
 		String sql = "DELETE FROM kurs WHERE kursID = " + kurs.getId();
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}	
+	}
+	
+	
+	public void fireSQL(String sql) throws DatenbankFehler{
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
+	}
+	
+	public ResultSet fireSQLResult(String sql) throws DatenbankFehler{
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			return s.getGeneratedKeys();
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}	

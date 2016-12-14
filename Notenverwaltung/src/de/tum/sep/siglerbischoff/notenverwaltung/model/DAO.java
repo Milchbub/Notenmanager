@@ -1,8 +1,11 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
+import java.sql.ResultSet;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+
+import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
 
 abstract class DAO {
 	
@@ -36,6 +39,9 @@ abstract class DAO {
 	abstract Kurs kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler;
 	abstract void kursAendern(int id, String neuerName, String neuesFach, Benutzer neuerKursleiter) throws DatenbankFehler;
 	abstract void kursLoeschen(int id) throws DatenbankFehler;
+	
+	abstract void fireSQL(String sql) throws DatenbankFehler;
+	abstract ResultSet fireSQLResult(String sql) throws DatenbankFehler;
 	
 	public static DAO erstelleDAO() throws DatenbankFehler {
 		return new MysqlDAO();
