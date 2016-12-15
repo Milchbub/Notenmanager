@@ -1,47 +1,62 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
+import javax.swing.ListModel;
+
 public class Klasse {
 
-	final int id; 
+	private final int id; 
 	private String name; 
 	private int jahr; 
 	private Benutzer klassenlehrer;
 	
-	public Klasse (int id, String name, int jahr, Benutzer klassenlehrer) {
+	Klasse (int id, String name, int jahr, Benutzer klassenlehrer) {
 		this.id = id; 
 		this.name = name; 
 		this.jahr = jahr; 
 		this.klassenlehrer = klassenlehrer;
 	}
 	
-	public int getId() {
+	public int gebeId() {
 		return id;
 	}
 	
-	public String getName() {
+	public String gebeName() {
 		return name;
 	}
 	
-	public int getJahr() {
+	public int gebeJahr() {
 		return jahr;
 	}
 	
-	public Benutzer getKlassenlehrer() {
+	public Benutzer gebeKlassenlehrer() {
 		return klassenlehrer;
 	}
 	
-	public void setName(String neuerName) {
-		name = neuerName;
+	public ListModel<Schueler> gebeSchueler(Model model) throws DatenbankFehler {
+		//TODO
+		return null;
 	}
 	
-	public void setKlassenlehrer(Benutzer neuerKlassenlehrer) {
-		klassenlehrer = neuerKlassenlehrer;
+	public SchuelerKlasseModel gebeSchuelerKlasseModel(Model model) throws DatenbankFehler {
+		return new SchuelerKlasseModel(this, model);
 	}
 	
+	void setzeName(String name, Model model) throws DatenbankFehler {
+		model.gebeDao().klasseAendern(id, name, klassenlehrer);
+		this.name = name;
+	}
 	
+	void setzeKlassenlehrer(Benutzer klassenlehrer, Model model) throws DatenbankFehler {
+		model.gebeDao().klasseAendern(id, name, klassenlehrer);
+		this.klassenlehrer = klassenlehrer;
+	}
 	
 	@Override
 	public String toString() {
 		return name;
+	}
+	
+	public static KlassenModel gebeKlassen(int jahr, Model model) throws DatenbankFehler {
+		return new KlassenModel(model.gebeDao().gebeKlassen(jahr), jahr, model);
 	}
 }

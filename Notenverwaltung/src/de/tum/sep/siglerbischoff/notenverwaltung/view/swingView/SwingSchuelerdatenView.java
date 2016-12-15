@@ -41,7 +41,7 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	private JTable schuelerTable;
 	
 	public SwingSchuelerdatenView(JFrame parent, TableModel schueler) {
-		super(parent, "Schülerdaten");
+		super(parent, "Schülerdaten", true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		this.parent = parent;

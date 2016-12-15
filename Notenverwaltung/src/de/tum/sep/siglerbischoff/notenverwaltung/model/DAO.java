@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
-
 abstract class DAO {
 	
 	abstract Benutzer passwortPruefen(String name, String pass, Properties config) throws DatenbankFehler;
@@ -16,6 +14,12 @@ abstract class DAO {
 	abstract List<Benutzer> gebeBenutzer() throws DatenbankFehler;
 	
 	abstract List<Schueler> gebeSchueler() throws DatenbankFehler;
+
+	abstract List<Klasse> gebeKlassen(int jahr) throws DatenbankFehler;
+	abstract List<Schueler> gebeSchueler(Klasse klasse) throws DatenbankFehler;
+	
+	abstract List<Kurs> gebeKurse(int jahr) throws DatenbankFehler;
+	abstract List<Schueler> gebeSchueler(Kurs kurs) throws DatenbankFehler;
 	
 	abstract List<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler;
 
@@ -24,9 +28,10 @@ abstract class DAO {
 	abstract List<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler;
 	
 	abstract Benutzer benutzerAnlegen(String loginName, String name, char[] passwort, boolean istAdmin) throws DatenbankFehler;
-	abstract void benutzerLoginAendern(int id, String loginName);
-	abstract void benutzerAendern(int id, String neuerName, boolean neuIstAdmin) throws DatenbankFehler;
-	abstract void benutzerLoeschen(int id) throws DatenbankFehler;
+	abstract void benutzerLoginAendern(Benutzer benutzer, String neuerLoginName) throws DatenbankFehler;
+	abstract void benutzerNameAendern(int id, String neuerName) throws DatenbankFehler;
+	abstract void benutzerIstAdminAendern(Benutzer benutzer) throws DatenbankFehler;
+	abstract void benutzerLoeschen(Benutzer benutzer) throws DatenbankFehler;
 	
 	abstract Schueler schuelerHinzufuegen(String name, Date gebDat) throws DatenbankFehler;
 	abstract void schuelerAendern(int id, String neuerName, Date neuesGebDat) throws DatenbankFehler;

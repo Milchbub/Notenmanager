@@ -2,17 +2,13 @@ package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DAO;
-import de.tum.sep.siglerbischoff.notenverwaltung.dao.DatenbankFehler;
-
 public class Note {
 	
-	final int id;
+	private final int id;
 	private int wert;
 	private Date erstellungsdatum;
 	private String art;
@@ -133,17 +129,14 @@ public class Note {
 		}
 	}
 	
-	
-	
-	
 	private void aendern(Note note, int neuerWert, Date neuesErstellungsdatum, String neueArt, Float neueGewichtung, String neueTendenz, Schueler neuerSchueler, Kurs neuerKurs) throws DatenbankFehler{
 		String sql = "UPDATE note SET wert = '" + neuerWert + "', "
 				+ "datum = '" + neuesErstellungsdatum + "', "
 				+ "art = '" + neueArt + "', "
 				+ "gewichtung = '" + neueGewichtung + "', "
 				+ "tendenz = '" + neueTendenz + "', "
-				+ "schuelerID = '" + neuerSchueler.getId() + "', "
-				+ "art = '" + neuerKurs.getId() + "' "
+				+ "schuelerID = '" + neuerSchueler.gebeId() + "', "
+				+ "art = '" + neuerKurs.gebeId() + "' "
 				+ "WHERE noteID = " + note.getId();
 		dao.fireSQL(sql);
 	}
@@ -156,8 +149,8 @@ public class Note {
 				+ "('" + art + "', "
 				+ "('" + gewichtung + "', "
 				+ "('" + tendenz + "', "
-				+ "('" + schueler.getId() + "', "
-				+ "('" + kurs.getId()+ "')";
+				+ "('" + schueler.gebeId() + "', "
+				+ "('" + kurs.gebeId()+ "')";
 		ResultSet rs = dao.fireSQLResult(sql);
 		rs.next();
 		int id = rs.getInt(1);

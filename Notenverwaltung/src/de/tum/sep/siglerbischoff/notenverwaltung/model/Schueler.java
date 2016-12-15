@@ -49,6 +49,11 @@ public class Schueler {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		return o instanceof Schueler && ((Schueler) o).id == id;
+	}
+	
+	@Override
 	public String toString() {
 		return name;
 	}

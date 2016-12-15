@@ -30,7 +30,9 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
@@ -343,12 +345,22 @@ public class SwingMainView extends JFrame implements MainView {
 	public void addActionListener(ActionListener l) {
 		listeners.add(ActionListener.class, l);
 	}
+	
+	@Override
+	public void removeActionListener(ActionListener l) {
+		listeners.remove(ActionListener.class, l);
+	}
 
 	@Override
 	public LoginView getLoginView() {
 		return new SwingLoginView();
 	}
 
+	@Override
+	public int gebeJahr() {
+		return (int) cmbboxJahr.getSelectedItem();
+	}
+	
 	@Override
 	public SchuelerdatenView getSchuelerdatenView(TableModel schueler) {
 		return new SwingSchuelerdatenView(this, schueler);
@@ -360,12 +372,12 @@ public class SwingMainView extends JFrame implements MainView {
 	}
 
 	@Override
-	public KlassenverwaltungView getKlassenverwaltungView() {
-		return new SwingKlassenverwaltungView(this);
+	public KlassenverwaltungView getKlassenverwaltungView(KlassenModel klassen) {
+		return new SwingKlassenverwaltungView(this, klassen);
 	}
 
 	@Override
-	public KursverwaltungView getKursverwaltungView() {
-		return new SwingKursverwaltungView(this);
+	public KursverwaltungView getKursverwaltungView(KurseModel kurse) {
+		return new SwingKursverwaltungView(this, kurse);
 	}
 }

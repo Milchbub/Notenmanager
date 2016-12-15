@@ -2,19 +2,21 @@ package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.util.List;
 
+import javax.swing.ListModel;
+import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
 
-public class BenutzerTableModel extends AbstractTableModel {
+public class BenutzerTableModel extends AbstractTableModel implements ListModel<Benutzer> {
 
 	private static final long serialVersionUID = 1L;
 
-	List<Benutzer> benutzer;
-	Model model;
+	private List<Benutzer> benutzer;
+	private Model model;
 
 	private static final String[] columnNames = new String[]{"ID", "Loginname", "Name", "Ist Admin?"};
 	private static final Class<?>[] columnTypes = new Class<?>[]{Integer.class, String.class, String.class, Boolean.class};
 	
-	public BenutzerTableModel(List<Benutzer> benutzer, Model model) {
+	BenutzerTableModel(List<Benutzer> benutzer, Model model) {
 		this.benutzer = benutzer;
 		this.model = model;
 	}
@@ -86,5 +88,27 @@ public class BenutzerTableModel extends AbstractTableModel {
 
 	public void hinzufuegen(String loginName, String name, char[] passwort,	boolean istAdmin) throws DatenbankFehler {
 		// TODO Auto-generated method stub
+	}
+
+	//======== ListModel-Funktionalität ========
+	
+	@Override
+	public int getSize() {
+		return getRowCount();
+	}
+
+	@Override
+	public Benutzer getElementAt(int index) {
+		return benutzer.get(index);
+	}
+
+	@Override
+	public void addListDataListener(ListDataListener l) {
+		//TODO
+	}
+
+	@Override
+	public void removeListDataListener(ListDataListener l) {
+		//TODO
 	}
 }

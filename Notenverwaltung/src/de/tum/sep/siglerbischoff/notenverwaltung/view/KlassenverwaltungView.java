@@ -1,23 +1,23 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view;
 
-import java.awt.event.ActionListener;
-
 import javax.swing.ListModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 
-public interface KlassenverwaltungView {
+public interface KlassenverwaltungView extends View {
+	
+	static final String COMMAND_SCHLIESSEN = "schliessen";
+	static final String COMMAND_NEU = "neu";
+	static final String COMMAND_BEARBEITEN = "bearbeiten";
+	static final String COMMAND_NEU_FERTIG = "neuFertig";
+	static final String COMMAND_BEARBEITEN_FERTIG = "bearbeitenFertig";
 
-	void showKlassenverwaltung(ListModel<Benutzer> listModel);
+	void bearbeiten(Klasse klasse, ListModel<Benutzer> lehrer);
 	
-	void addActionListener(ActionListener l);
+	Klasse gebeAusgewaehlt();
 	
-	String getName();
+	String gebeNeuName();
 	
-	int getSchuljahr();
-	
-	Benutzer getKlassenlehrer();
-
-	void schliessen();
-
+	Benutzer gebeNeuKlassenlehrer();
 }

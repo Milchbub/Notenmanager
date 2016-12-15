@@ -1,7 +1,5 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view;
 
-import java.awt.event.ActionListener;
-
 import javax.swing.ListModel;
 import javax.swing.table.TableModel;
 
@@ -9,7 +7,9 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.swingView.SwingMainView;
 
 public interface MainView extends View {
@@ -24,15 +24,15 @@ public interface MainView extends View {
 
 	LoginView getLoginView();
 
+	int gebeJahr();
+
 	SchuelerdatenView getSchuelerdatenView(TableModel schueler);
 
 	BenutzerdatenView getBenutzerverwaltungView(TableModel benutzer);
 
-	KlassenverwaltungView getKlassenverwaltungView();
+	KlassenverwaltungView getKlassenverwaltungView(KlassenModel klassen);
 
-	KursverwaltungView getKursverwaltungView();
-	
-	void addActionListener(ActionListener l);
+	KursverwaltungView getKursverwaltungView(KurseModel kurse);
 	
 	public static MainView erstelleMainView() {
 		return new SwingMainView();

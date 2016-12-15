@@ -2,13 +2,13 @@ package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 public class Kurs {
 
-	int id; 
+	private final int id; 
 	private String name; 
 	private String fach; 
 	private int jahr; 
 	private Benutzer kursleiter;
 	
-	public Kurs (int id, String name, String fach, int jahr, Benutzer kursleiter) {
+	Kurs (int id, String name, String fach, int jahr, Benutzer kursleiter) {
 		this.id = id;
 		this.name = name; 
 		this.fach = fach;
@@ -16,39 +16,46 @@ public class Kurs {
 		this.kursleiter = kursleiter;
 	}
 	
-	public int getId() {
+	public int gebeId() {
 		return id;
 	}
-	public String getName() {
+	public String gebeName() {
 		return name;
 	}
 	
-	public String getFach() {
+	public String gebeFach() {
 		return fach;
 	}
 	
-	public int getJahr() {
+	public int gebeJahr() {
 		return jahr;
 	}
 	
-	public Benutzer getKursleiter() {
+	public Benutzer gebeKursleiter() {
 		return kursleiter;
 	}
 	
-	public void setName(String neuerName) {
-		name = neuerName;
+	void setzeName(String name, Model model) throws DatenbankFehler {
+		model.gebeDao().kursAendern(id, name, fach, kursleiter);
+		this.name = name;
 	}
 	
-	public void setFach(String neuesFach) {
-		fach = neuesFach;
+	void setzeFach(String fach, Model model) throws DatenbankFehler {
+		model.gebeDao().kursAendern(id, name, fach, kursleiter);
+		this.fach = fach;
 	}
 	
-	public void setKursleiter(Benutzer neuerKursleiter) {
-		kursleiter = neuerKursleiter;
+	void setzeKursleiter(Benutzer kursleiter, Model model) throws DatenbankFehler {
+		model.gebeDao().kursAendern(id, name, fach, kursleiter);
+		this.kursleiter = kursleiter;
 	}
 	
 	@Override
 	public String toString() {
 		return name;
+	}
+	
+	public static KurseModel gebeKurse(int jahr, Model model) throws DatenbankFehler {
+		return new KurseModel(model.gebeDao().gebeKurse(jahr), jahr, model);
 	}
 }

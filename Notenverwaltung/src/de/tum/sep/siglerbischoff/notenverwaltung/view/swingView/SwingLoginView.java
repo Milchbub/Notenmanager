@@ -125,4 +125,9 @@ public class SwingLoginView extends JFrame implements LoginView {
 	public void addActionListener(ActionListener l) {
 		btnAnmelden.addActionListener(l);
 	}
+	
+	@Override
+	public void removeActionListener(ActionListener l) {
+		btnAnmelden.removeActionListener(l);
+	}
 }

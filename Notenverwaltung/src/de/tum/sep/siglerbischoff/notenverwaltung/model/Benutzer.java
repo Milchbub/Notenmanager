@@ -54,25 +54,32 @@ public class Benutzer {
 	}
 
 	public void setzeLoginName(String loginName, Model model) throws DatenbankFehler {
-		model.gebeDao().benutzerLoginAendern(id, loginName);
+		model.gebeDao().benutzerLoginAendern(this, loginName);
 		this.loginName = loginName;
 	}
 
 	public void setzeName(String name, Model model) throws DatenbankFehler {
-		model.gebeDao().benutzerAendern(id, name, istAdmin);
+		model.gebeDao().benutzerNameAendern(id, name);
 		this.name = name;
 	}
 
 	public void setzeIstAdmin(boolean istAdmin, Model model) throws DatenbankFehler {
-		model.gebeDao().benutzerAendern(id, name, istAdmin);
-		this.istAdmin = istAdmin;
+		if(this.istAdmin != istAdmin) {
+			model.gebeDao().benutzerIstAdminAendern(this);
+			this.istAdmin = istAdmin;
+		}
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof Benutzer && ((Benutzer) o).id == id;
 	}
 	
 	@Override
 	public String toString() {
 		return name;
 	}
-
+	
 	public static BenutzerTableModel gebeBenutzer(Model model) throws DatenbankFehler {
 		return new BenutzerTableModel(model.gebeDao().gebeBenutzer(), model);
 	}

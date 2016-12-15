@@ -53,7 +53,7 @@ public class ConsoleView implements View {
 			for(int i = 0; i < klassen.size(); i++) {
 				boolean last = i + 1 == klassen.size();
 				boolean and = i + 2 == klassen.size();
-				System.out.print(klassen.get(i).getName() + (last ? "" : (and ? " und " : ", ")));
+				System.out.print(klassen.get(i).gebeName() + (last ? "" : (and ? " und " : ", ")));
 			}
 			System.out.println(". ");
 		}
@@ -67,7 +67,7 @@ public class ConsoleView implements View {
 			for(int i = 0; i < kurse.size(); i++) {
 				boolean last = i + 1 == kurse.size();
 				boolean and = i + 2 == kurse.size();
-				System.out.print("\"" + kurse.get(i).getName() + (last ? "\"" : (and ? "\" und " : "\", ")));
+				System.out.print("\"" + kurse.get(i).gebeName() + (last ? "\"" : (and ? "\" und " : "\", ")));
 			}
 			System.out.println(". ");
 		}

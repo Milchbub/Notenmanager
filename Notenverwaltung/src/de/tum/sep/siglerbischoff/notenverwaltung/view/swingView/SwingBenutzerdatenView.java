@@ -32,7 +32,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 	private JTable benutzerTable;
 	
 	public SwingBenutzerdatenView(JFrame parent, TableModel benutzer) {
-		super(parent, "Benutzerdaten");
+		super(parent, "Benutzerdaten", true);
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		
 		this.parent = parent;
@@ -41,22 +41,16 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 		
 		JLabel lblAlleSchler = new JLabel("Alle Sch\u00FCler: ");
 		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setPreferredSize(new Dimension(300,200));
-		
 		benutzerTable = new JTable(benutzer);
 		benutzerTable.setFillsViewportHeight(true);
 		
-		if (benutzer.getRowCount() > 0) {
-			scrollPane.setViewportView(benutzerTable);
-		} else {
-			scrollPane.setViewportView(new JLabel(" Keine Benutzer eingetragen..."));
-		}
+		JScrollPane scrollPane = new JScrollPane(benutzerTable);
+		scrollPane.setPreferredSize(new Dimension(300, 200));
 		
 		JButton btnHinzufuegen = new JButton("Benutzer hinzuf\u00FCgen...");
 		btnHinzufuegen.setActionCommand(COMMAND_NEU);
 		btnHinzufuegen.addActionListener(ae -> {
-			for (ActionListener l : listeners.getListeners(ActionListener.class)) {
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
 				l.actionPerformed(ae);
 			}
 		});
@@ -64,36 +58,36 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 		JButton btnOk = new JButton("Ok");
 		btnOk.setActionCommand(COMMAND_SCHLIESSEN);
 		btnOk.addActionListener(ae -> {
-			for (ActionListener l : listeners.getListeners(ActionListener.class)) {
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
 				l.actionPerformed(ae);
 			}
 		});
 		
-		GroupLayout gl_kursVerwaltung = new GroupLayout(getContentPane());
-		gl_kursVerwaltung.setHorizontalGroup(gl_kursVerwaltung.createSequentialGroup()
+		GroupLayout gl_benutzerVerwaltung = new GroupLayout(getContentPane());
+		gl_benutzerVerwaltung.setHorizontalGroup(gl_benutzerVerwaltung.createSequentialGroup()
 			.addContainerGap()
-			.addGroup(gl_kursVerwaltung.createParallelGroup(Alignment.LEADING)
+			.addGroup(gl_benutzerVerwaltung.createParallelGroup(Alignment.LEADING)
 				.addComponent(lblAlleSchler)
 				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-				.addGroup(gl_kursVerwaltung.createSequentialGroup()
+				.addGroup(gl_benutzerVerwaltung.createSequentialGroup()
 					.addComponent(btnHinzufuegen)
 					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 					.addComponent(btnOk))
 				)
 			.addContainerGap()
 		);
-		gl_kursVerwaltung.setVerticalGroup(gl_kursVerwaltung.createSequentialGroup()
+		gl_benutzerVerwaltung.setVerticalGroup(gl_benutzerVerwaltung.createSequentialGroup()
 			.addContainerGap()
 			.addComponent(lblAlleSchler)
 			.addPreferredGap(ComponentPlacement.RELATED)
 			.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addGroup(gl_kursVerwaltung.createParallelGroup(Alignment.LEADING)
+			.addGroup(gl_benutzerVerwaltung.createParallelGroup(Alignment.LEADING)
 					.addComponent(btnHinzufuegen)
 					.addComponent(btnOk))
 			.addContainerGap()
 		);
-		getContentPane().setLayout(gl_kursVerwaltung);
+		getContentPane().setLayout(gl_benutzerVerwaltung);
 		pack();
 		setMinimumSize(getSize());
 	}
