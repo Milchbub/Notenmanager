@@ -1,6 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -51,6 +52,10 @@ abstract class DAO {
 	
 	abstract void fireSQL(String sql) throws DatenbankFehler;
 	abstract ResultSet fireSQLResult(String sql) throws DatenbankFehler;
+	
+	abstract Note noteHinzufuegen(int wert, Date erstellungsdatum, String art, Float gewichtung, String tendenz, Schueler schueler, Kurs kurs) throws DatenbankFehler; 
+	abstract void noteAendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Float neueGewichtung, String neueTendenz, int neueSchuelerID, int neueKursID) throws DatenbankFehler;
+	abstract void noteLoeschen(int id) throws DatenbankFehler;
 	
 	public static DAO erstelleDAO() throws DatenbankFehler {
 		return new MysqlDAO();

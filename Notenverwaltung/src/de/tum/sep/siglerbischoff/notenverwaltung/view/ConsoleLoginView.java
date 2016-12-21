@@ -8,6 +8,8 @@ import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Login;
+
 public class ConsoleLoginView implements LoginView {
 
 	private List<ActionListener> list;
@@ -22,7 +24,6 @@ public class ConsoleLoginView implements LoginView {
 		list = new Vector<>();
 	}
 	
-	@Override
 	public void login() {
 		SwingUtilities.invokeLater(() -> {
 			System.out.println("Geben Sie Ihren Benutzernamen ein: ");
@@ -35,22 +36,18 @@ public class ConsoleLoginView implements LoginView {
 		});
 	}
 	
-	@Override
 	public void addLoginListener(ActionListener l) {
 		list.add(l);
 	}
 
-	@Override
 	public String getUser() {
 		return user;
 	}
 
-	@Override
 	public String getPassword() {
 		return passwort;
 	}
 
-	@Override
 	public void success() {
 		System.out.println("Erfolg!");
 	}
@@ -61,4 +58,46 @@ public class ConsoleLoginView implements LoginView {
 		login();
 	}
 
+	/* Folgende Methoden wurden nur autogeneriert, um die Java Fehlermeldung auszumerzen.
+	 * Evtl nicht benoetigte Methoden aus Superklassen bzw. Interfaces entfernen.
+	 * Waere ansich sauberer. 
+	 * (non-Javadoc)
+	 * @see de.tum.sep.siglerbischoff.notenverwaltung.view.View#zeigen()
+	 */
+	@Override
+	public void zeigen() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void schliessen() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void showError(String titel, String nachricht) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeActionListener(ActionListener l) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Login gebeLogin() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addActionListener(ActionListener l) {
+		// TODO Auto-generated method stub
+		
+	}
+	/* Ende des autogenerierten Blocks */
 }
