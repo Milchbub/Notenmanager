@@ -11,11 +11,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
-import de.tum.sep.siglerbischoff.notenverwaltung.model.DAO;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 
 public class BenutzerTest {	
-	
+
+	/* BLOCK KOMMENTAR UEBER GANZE KLASSE!!!
+	 * TODO AUF AKTUELLE STRUKTUR UMAENDERN
+	 
 	private DAO dao;
 	
 	@Before
@@ -240,4 +242,6 @@ public class BenutzerTest {
 			dao.benutzerLoeschen("Testlogin");
 		}
 	 }
+	 
+	 BLOCK KOMMENTAR ENDE */
 }

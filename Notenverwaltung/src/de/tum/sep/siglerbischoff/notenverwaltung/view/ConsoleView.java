@@ -24,17 +24,14 @@ public class ConsoleView implements View {
 		e.printStackTrace(System.err);
 	}
 
-	@Override
 	public LoginView getLoginView() {
 		return new ConsoleLoginView(scan);
 	}
 
-	@Override
 	public void loginBenutzer(Benutzer benutzer) throws DatenbankFehler {
 		System.out.println("Herzlich willkommen, " + benutzer.gebeName() + "! ");
 		int jahr = Calendar.getInstance().get(Calendar.YEAR);
 		System.out.println("Das aktuell eingestellte Jahr ist " + jahr + ". ");
-		
 		List<Klasse> klassen = benutzer.gebeGeleiteteKlassen(jahr);
 		boolean hatKlassen = !klassen.isEmpty();
 		

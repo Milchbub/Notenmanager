@@ -9,8 +9,6 @@ import java.text.SimpleDateFormat;
 import javax.swing.ListModel;
 
 import org.junit.Test;
-
-import de.tum.sep.siglerbischoff.notenverwaltung.model.DAO;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
@@ -18,7 +16,8 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
 public class SchuelerTest {
 
-	
+	/* BLOCK KOMMENTAR UEBER GANZE KLASSE!!!
+	 * TODO AUF AKTUELLE STRUKTUR UMAENDERN
 	
 	@Test
 	public void schuelerHinzufuegenTest() {
@@ -65,5 +64,7 @@ public class SchuelerTest {
 			e.printStackTrace();
 		}	
 	}
+	
+	 BLOCK KOMMENTAR ENDE */
 
 }
