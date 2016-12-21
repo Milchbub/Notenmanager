@@ -32,7 +32,7 @@ class MysqlDAO extends DAO {
 					benutzerName, 
 					passwort);
 			try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
-					//erstelleTabellen();
+					erstelleTabellen();
 					s.setString(1, benutzerName);
 				try (ResultSet rs = s.executeQuery()) {
 					if (rs.next()) {
@@ -485,7 +485,7 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void kursAendern(int id, String neuerName, String neuesFach, Benutzer neuerKursleiter) throws DatenbankFehler {
-		String sql = "UPDATE klasse SET name = '" + neuerName + "', "
+		String sql = "UPDATE kurs SET name = '" + neuerName + "', "
 				+ "fach = '" + neuesFach + "', "
 				+ "lehrerID = '" + neuerKursleiter.gebeId() + "' "
 				+ "WHERE kursID = " + id;

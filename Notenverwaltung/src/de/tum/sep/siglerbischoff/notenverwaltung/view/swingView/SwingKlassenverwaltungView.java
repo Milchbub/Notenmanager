@@ -21,6 +21,8 @@ import javax.swing.event.EventListenerList;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.SchuelerKlasseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 
 public class SwingKlassenverwaltungView extends JDialog implements KlassenverwaltungView {
@@ -158,7 +160,7 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 	private Benutzer neuKlassenlehrer;
 	
 	@Override
-	public void bearbeiten(Klasse klasse, ListModel<Benutzer> lehrer) {
+	public void bearbeiten(Klasse klasse, ListModel<Benutzer> lehrer, SchuelerKlasseModel schueler) {
 		JDialog dialog = new JDialog(this);
 		
 		JLabel lblName = new JLabel("Name: ");
@@ -170,7 +172,14 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		JLabel lblLehrer = new JLabel("Klassenlehrer: ");
 		JList<Benutzer> list = new JList<>(lehrer);
 		JScrollPane scrollPane = new JScrollPane(list);
-		scrollPane.setPreferredSize(new Dimension(300, 200));
+
+		JLabel lblZuordnen = new JLabel("Schüler zuordnen: ");
+		JList<Schueler> listIn = new JList<>(schueler.gebeIn());
+		JScrollPane scrollListIn = new JScrollPane(listIn);
+		JList<Schueler> listOut = new JList<>(schueler.gebeOut());
+		JScrollPane scrollListOut = new JScrollPane(listOut);
+		JButton btnIn = new JButton("< hinzufügen");
+		JButton btnOut = new JButton("entfernen >");
 		
 		if(klasse == null) {
 			dialog.setTitle("Neue Klasse");
@@ -204,35 +213,66 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 				.addComponent(txtName)
 				.addComponent(lblJahr)
 				.addComponent(lblLehrer)
-				.addComponent(scrollPane)
+				.addComponent(scrollPane, 150, 150, Short.MAX_VALUE)
 				.addGroup(gl_neuer_Schueler.createSequentialGroup()
 					.addComponent(btnOk)
 					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 					.addComponent(btnAbbr))
+			)
+			.addPreferredGap(ComponentPlacement.UNRELATED)
+			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblZuordnen)
+				.addGroup(gl_neuer_Schueler.createSequentialGroup()
+					.addComponent(scrollListIn, 150, 150, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnIn)
+						.addComponent(btnOut)
+					)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(scrollListOut, 150, 150, Short.MAX_VALUE)
+				)
 			)
 			.addContainerGap()
 		);
 		
 		gl_neuer_Schueler.setVerticalGroup(gl_neuer_Schueler.createSequentialGroup()
 			.addContainerGap()
-			.addComponent(lblName)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(txtName)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addComponent(lblJahr)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addComponent(lblLehrer)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(scrollPane)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
 			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-				.addComponent(btnOk)
-				.addComponent(btnAbbr))
+				.addGroup(gl_neuer_Schueler.createSequentialGroup()
+					.addComponent(lblName)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(txtName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblJahr)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblLehrer)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+						.addComponent(btnOk)
+						.addComponent(btnAbbr))
+				)
+				.addGroup(gl_neuer_Schueler.createSequentialGroup()
+					.addComponent(lblZuordnen)
+					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollListIn)
+						.addGroup(gl_neuer_Schueler.createSequentialGroup()
+							.addComponent(btnIn)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnOut)
+						)
+						.addComponent(scrollListOut)
+					)
+				)
+			)
 			.addContainerGap()
 		);
 		
 		dialog.setLayout(gl_neuer_Schueler);
 		dialog.pack();
+		dialog.setMinimumSize(dialog.getSize());
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
 	}

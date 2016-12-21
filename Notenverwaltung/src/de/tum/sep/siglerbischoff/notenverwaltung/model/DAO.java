@@ -40,10 +40,14 @@ abstract class DAO {
 	abstract Klasse klasseEinrichten(String name, int jahr, Benutzer klassenlehrer) throws DatenbankFehler;
 	abstract void klasseAendern(int id, String neuerName, Benutzer neuerKlassenlehrer) throws DatenbankFehler;
 	abstract void klasseLoeschen(int id) throws DatenbankFehler;
+	abstract void zuKlasseHinzufuegen(int klasseId, int schuelerId);
+	abstract void ausKlasseLoeschen(int klasseId, int schuelerId);
 	
 	abstract Kurs kursEinrichten(String name, String fach, int jahr, Benutzer kursleiter) throws DatenbankFehler;
 	abstract void kursAendern(int id, String neuerName, String neuesFach, Benutzer neuerKursleiter) throws DatenbankFehler;
 	abstract void kursLoeschen(int id) throws DatenbankFehler;
+	abstract void zuKursHinzufuegen(int klasseId, int schuelerId);
+	abstract void ausKursLoeschen(int klasseId, int schuelerId);
 	
 	abstract void fireSQL(String sql) throws DatenbankFehler;
 	abstract ResultSet fireSQLResult(String sql) throws DatenbankFehler;

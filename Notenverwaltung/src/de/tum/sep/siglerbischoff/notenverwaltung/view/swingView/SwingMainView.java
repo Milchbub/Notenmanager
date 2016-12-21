@@ -358,6 +358,9 @@ public class SwingMainView extends JFrame implements MainView {
 
 	@Override
 	public int gebeJahr() {
+		if(cmbboxJahr.getSelectedItem() == null) {
+			return 0;
+		}
 		return (int) cmbboxJahr.getSelectedItem();
 	}
 	
