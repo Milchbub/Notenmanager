@@ -51,6 +51,14 @@ public class Klasse {
 		this.klassenlehrer = klassenlehrer;
 	}
 	
+	void schuelerHinzufuegen(Schueler schueler, Model model) {
+		model.gebeDao().zuKlasseHinzufuegen(id, schueler.gebeId());
+	}
+	
+	void schuelerEntfernen(Schueler schueler, Model model) {
+		model.gebeDao().ausKlasseLoeschen(id, schueler.gebeId());
+	}
+	
 	@Override
 	public String toString() {
 		return name;

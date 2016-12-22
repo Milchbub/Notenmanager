@@ -5,22 +5,22 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 
-public class SchuelerKlasseModel {
+public class SchuelerKursModel {
 	
-	private Klasse klasse;
+	private Kurs kurs;
 	private DefaultListModel<Schueler> schuelerIn;
 	private DefaultListModel<Schueler> schuelerOut;
 	
 	private Model model;
 
-	SchuelerKlasseModel(Klasse klasse, Model model) throws DatenbankFehler {
-		this.klasse = klasse;
+	SchuelerKursModel(Kurs kurs, Model model) throws DatenbankFehler {
+		this.kurs = kurs;
 		this.model = model;
 		
 		schuelerIn = new DefaultListModel<>();
 		schuelerOut = new DefaultListModel<>();
 		
-		for(Schueler s : model.gebeDao().gebeSchueler(klasse)) {
+		for(Schueler s : model.gebeDao().gebeSchueler(kurs)) {
 			schuelerIn.addElement(s);
 		}
 		
@@ -45,7 +45,7 @@ public class SchuelerKlasseModel {
 			if(!schuelerIn.contains(s)) {
 				schuelerIn.addElement(s);
 			}
-			klasse.schuelerHinzufuegen(s, model);
+			kurs.schuelerHinzufuegen(s, model);
 		}
 	}
 	
@@ -55,7 +55,8 @@ public class SchuelerKlasseModel {
 			if(!schuelerOut.contains(s)) {
 				schuelerOut.addElement(s);
 			}
-			klasse.schuelerEntfernen(s, model);
+			kurs.schuelerEntfernen(s, model);
 		}
 	}
+
 }

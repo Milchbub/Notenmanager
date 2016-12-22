@@ -32,7 +32,7 @@ class MysqlDAO extends DAO {
 					benutzerName, 
 					passwort);
 			try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
-					erstelleTabellen();
+					//erstelleTabellen();
 					s.setString(1, benutzerName);
 				try (ResultSet rs = s.executeQuery()) {
 					if (rs.next()) {
@@ -527,12 +527,12 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void zuKlasseHinzufuegen(int klasseId, int schuelerId) {
-		
+		//TODO
 	}
 	
 	@Override
 	void ausKlasseLoeschen(int klasseId, int schuelerId) {
-		
+		//TODO
 	}
 	
 	/*
@@ -669,12 +669,12 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void zuKursHinzufuegen(int klasseId, int schuelerId) {
-		
+		//TODO
 	}
 	
 	@Override
 	void ausKursLoeschen(int klasseId, int schuelerId) {
-		
+		//TODO
 	}
 	
 	void fireSQL(String sql) throws DatenbankFehler{
@@ -799,7 +799,7 @@ class MysqlDAO extends DAO {
 				+ "tendenz ENUM('+','-'), "
 				+ "schuelerID INT, "
 				+ "kursID INT,"
-				+ "benutzerID INT" //kursleiterID
+				+ "benutzerID INT, " //kursleiterID
 				+ "FOREIGN KEY (schuelerID) REFERENCES schueler (schuelerID) ON DELETE CASCADE,"
 				+ "FOREIGN KEY (kursID) REFERENCES kurs (kursID) ON DELETE CASCADE)";
 

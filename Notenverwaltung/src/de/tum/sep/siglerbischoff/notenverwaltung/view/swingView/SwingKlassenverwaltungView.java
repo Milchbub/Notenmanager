@@ -162,6 +162,7 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 	@Override
 	public void bearbeiten(Klasse klasse, ListModel<Benutzer> lehrer, SchuelerKlasseModel schueler) {
 		JDialog dialog = new JDialog(this);
+		dialog.setModal(true);
 		
 		JLabel lblName = new JLabel("Name: ");
 		JTextField txtName = new JTextField();
@@ -172,14 +173,6 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		JLabel lblLehrer = new JLabel("Klassenlehrer: ");
 		JList<Benutzer> list = new JList<>(lehrer);
 		JScrollPane scrollPane = new JScrollPane(list);
-
-		JLabel lblZuordnen = new JLabel("Schüler zuordnen: ");
-		JList<Schueler> listIn = new JList<>(schueler.gebeIn());
-		JScrollPane scrollListIn = new JScrollPane(listIn);
-		JList<Schueler> listOut = new JList<>(schueler.gebeOut());
-		JScrollPane scrollListOut = new JScrollPane(listOut);
-		JButton btnIn = new JButton("< hinzufügen");
-		JButton btnOut = new JButton("entfernen >");
 		
 		if(klasse == null) {
 			dialog.setTitle("Neue Klasse");
@@ -204,33 +197,51 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		btnAbbr.addActionListener(ae -> {
 			dialog.dispose();
 		});
+
+		JLabel lblZuordnen = new JLabel("Schüler zuordnen: ");
+		JList<Schueler> listIn = new JList<>(schueler.gebeIn());
+		JScrollPane scrollListIn = new JScrollPane(listIn);
+		JList<Schueler> listOut = new JList<>(schueler.gebeOut());
+		JScrollPane scrollListOut = new JScrollPane(listOut);
+		
+		JButton btnIn = new JButton("< hinzufügen");
+		btnIn.addActionListener(ae -> {
+			schueler.moveIn(listOut.getSelectedValuesList());
+		});
+		
+		JButton btnOut = new JButton("entfernen >");
+		btnOut.addActionListener(ae -> {
+			if(listIn.getSelectedValue() != null) {
+				schueler.moveOut(listIn.getSelectedValuesList());
+			}
+		});
 		
 		GroupLayout gl_neuer_Schueler = new GroupLayout(dialog.getContentPane());
 		gl_neuer_Schueler.setHorizontalGroup(gl_neuer_Schueler.createSequentialGroup()
 			.addContainerGap()
-			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
 				.addComponent(lblName)
 				.addComponent(txtName)
 				.addComponent(lblJahr)
 				.addComponent(lblLehrer)
-				.addComponent(scrollPane, 150, 150, Short.MAX_VALUE)
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 150, GroupLayout.DEFAULT_SIZE)
 				.addGroup(gl_neuer_Schueler.createSequentialGroup()
 					.addComponent(btnOk)
-					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnAbbr))
 			)
 			.addPreferredGap(ComponentPlacement.UNRELATED)
 			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
 				.addComponent(lblZuordnen)
 				.addGroup(gl_neuer_Schueler.createSequentialGroup()
-					.addComponent(scrollListIn, 150, 150, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnIn)
-						.addComponent(btnOut)
+					.addComponent(scrollListIn, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(scrollListOut, 150, 150, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
 				)
 			)
 			.addContainerGap()
@@ -250,18 +261,22 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-						.addComponent(btnOk)
-						.addComponent(btnAbbr))
+					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnOk, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(btnAbbr, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				)
 				.addGroup(gl_neuer_Schueler.createSequentialGroup()
 					.addComponent(lblZuordnen)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrollListIn)
 						.addGroup(gl_neuer_Schueler.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 							.addComponent(btnIn)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnOut)
+							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+							.addGap(0)
 						)
 						.addComponent(scrollListOut)
 					)

@@ -35,6 +35,10 @@ public class Kurs {
 		return kursleiter;
 	}
 	
+	public SchuelerKursModel gebeSchuelerKursModel(Model model) throws DatenbankFehler {
+		return new SchuelerKursModel(this, model);
+	}
+	
 	void setzeName(String name, Model model) throws DatenbankFehler {
 		model.gebeDao().kursAendern(id, name, fach, kursleiter);
 		this.name = name;
@@ -48,6 +52,14 @@ public class Kurs {
 	void setzeKursleiter(Benutzer kursleiter, Model model) throws DatenbankFehler {
 		model.gebeDao().kursAendern(id, name, fach, kursleiter);
 		this.kursleiter = kursleiter;
+	}
+	
+	void schuelerHinzufuegen(Schueler schueler, Model model) {
+		model.gebeDao().zuKursHinzufuegen(id, schueler.gebeId());
+	}
+	
+	void schuelerEntfernen(Schueler schueler, Model model) {
+		model.gebeDao().ausKursLoeschen(id, schueler.gebeId());
 	}
 	
 	@Override

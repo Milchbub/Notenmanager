@@ -21,6 +21,8 @@ import javax.swing.event.EventListenerList;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.SchuelerKursModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 
 public class SwingKursverwaltungView extends JDialog implements KursverwaltungView {
@@ -159,8 +161,9 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 	private Benutzer neuLehrer;
 	
 	@Override
-	public void bearbeiten(Kurs kurs, ListModel<Benutzer> lehrer) {
+	public void bearbeiten(Kurs kurs, ListModel<Benutzer> lehrer, SchuelerKursModel schueler) {
 		JDialog dialog = new JDialog(this);
+		dialog.setModal(true);
 		
 		JLabel lblName = new JLabel("Name: ");
 		JTextField txtName = new JTextField();
@@ -199,22 +202,54 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 		btnAbbr.addActionListener(ae -> {
 			dialog.dispose();
 		});
+
+		JLabel lblZuordnen = new JLabel("Schüler zuordnen: ");
+		JList<Schueler> listIn = new JList<>(schueler.gebeIn());
+		JScrollPane scrollListIn = new JScrollPane(listIn);
+		JList<Schueler> listOut = new JList<>(schueler.gebeOut());
+		JScrollPane scrollListOut = new JScrollPane(listOut);
+		
+		JButton btnIn = new JButton("< hinzufügen");
+		btnIn.addActionListener(ae -> {
+			schueler.moveIn(listOut.getSelectedValuesList());
+		});
+		
+		JButton btnOut = new JButton("entfernen >");
+		btnOut.addActionListener(ae -> {
+			if(listIn.getSelectedValue() != null) {
+				schueler.moveOut(listIn.getSelectedValuesList());
+			}
+		});
 		
 		GroupLayout gl_neuer_Schueler = new GroupLayout(dialog.getContentPane());
 		gl_neuer_Schueler.setHorizontalGroup(gl_neuer_Schueler.createSequentialGroup()
 			.addContainerGap()
-			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
 				.addComponent(lblName)
 				.addComponent(txtName)
 				.addComponent(lblFach)
 				.addComponent(txtFach)
 				.addComponent(lblJahr)
 				.addComponent(lblLehrer)
-				.addComponent(scrollPane)
+				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 150, GroupLayout.DEFAULT_SIZE)
 				.addGroup(gl_neuer_Schueler.createSequentialGroup()
 					.addComponent(btnOk)
-					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnAbbr))
+			)
+			.addPreferredGap(ComponentPlacement.UNRELATED)
+			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblZuordnen)
+				.addGroup(gl_neuer_Schueler.createSequentialGroup()
+					.addComponent(scrollListIn, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+				)
 			)
 			.addContainerGap()
 		);
@@ -238,6 +273,22 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
 				.addComponent(btnOk)
 				.addComponent(btnAbbr))
+			.addGroup(gl_neuer_Schueler.createSequentialGroup()
+					.addComponent(lblZuordnen)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollListIn)
+						.addGroup(gl_neuer_Schueler.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+							.addComponent(btnIn)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnOut)
+							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+							.addGap(0)
+						)
+						.addComponent(scrollListOut)
+					)
+				)
 			.addContainerGap()
 		);
 		
