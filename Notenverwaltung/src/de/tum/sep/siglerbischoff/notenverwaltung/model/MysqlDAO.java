@@ -526,13 +526,25 @@ class MysqlDAO extends DAO {
 	}
 	
 	@Override
-	void zuKlasseHinzufuegen(int klasseId, int schuelerId) {
-		//TODO
+	void zuKlasseHinzufuegen(int klasseId, int schuelerId) throws DatenbankFehler {		
+		String sql = "INSERT INTO istInKlasse (klasseID, schuelerID) VALUES "
+				+ "('" + klasseId + "', "
+				+ "'" + schuelerId + "')";
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
 	}
 	
 	@Override
-	void ausKlasseLoeschen(int klasseId, int schuelerId) {
-		//TODO
+	void ausKlasseLoeschen(int klasseId, int schuelerId) throws DatenbankFehler{
+		String sql = "DELETE FROM istInKlasse WHERE klasseID = " + klasseId + "AND schuelerID = " + schuelerId;
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
 	}
 	
 	/*
@@ -668,13 +680,25 @@ class MysqlDAO extends DAO {
 	}
 	
 	@Override
-	void zuKursHinzufuegen(int klasseId, int schuelerId) {
-		//TODO
+	void zuKursHinzufuegen(int kursId, int schuelerId) throws DatenbankFehler {
+		String sql = "INSERT INTO nimmtTeil (kursID, schuelerID) VALUES "
+				+ "('" + kursId + "', "
+				+ "'" + schuelerId + "')";
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
 	}
 	
 	@Override
-	void ausKursLoeschen(int klasseId, int schuelerId) {
-		//TODO
+	void ausKursLoeschen(int kursId, int schuelerId) throws DatenbankFehler{
+		String sql = "DELETE FROM nimmtTeil WHERE kursID = " + kursId + "AND schuelerID = " + schuelerId;
+		try (Statement s = dbverbindung.createStatement()) {
+			s.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
 	}
 	
 	void fireSQL(String sql) throws DatenbankFehler{
