@@ -13,20 +13,20 @@ public class Note {
 	private Date erstellungsdatum;
 	private String art;
 	private Float gewichtung;
-	private String tendenz; 
 	private int schuelerID;
 	private int kursID;
+	private int benutzerID;
 		
 	private DAO dao;
 
-	public Note (int id, int wert, Date erstellungsdatum, String art, Float gewichtung, String tendenz, Schueler schueler, Kurs kurs) {
+	public Note (int id, int wert, Date erstellungsdatum, String art, Float gewichtung, Schueler schueler, Kurs kurs, Benutzer benutzer) {
 		this.id = id;
 		this.erstellungsdatum = erstellungsdatum;
 		this.art = art;
 		this.gewichtung = gewichtung;
-		this.tendenz = tendenz;
 		this.schuelerID = schueler.gebeId();
 		this.kursID = kurs.gebeId();
+		this.benutzerID = benutzer.gebeId();
 	}
 	
 	public int getId() {
@@ -45,10 +45,6 @@ public class Note {
 		return gewichtung;
 	}
 	
-	public String getTendenz() {
-		return tendenz;
-	}
-	
 	public int getSchuelerID(){
 		return schuelerID;
 	}
@@ -61,7 +57,7 @@ public class Note {
 	public void wertAendern(int neuerWert) {
 		this.wert = neuerWert;
 		try {
-			aendern(this.getId(), neuerWert, erstellungsdatum, art, gewichtung, tendenz, schuelerID, kursID);
+			aendern(this.getId(), neuerWert, erstellungsdatum, art, gewichtung, schuelerID, kursID);
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,7 +67,7 @@ public class Note {
 	public void erstellungsdatumAendern(Date neuesErstellungsdatum) {
 		this.erstellungsdatum = neuesErstellungsdatum;
 		try {
-			aendern(this.getId(), wert, neuesErstellungsdatum, art, gewichtung, tendenz, schuelerID, kursID);
+			aendern(this.getId(), wert, neuesErstellungsdatum, art, gewichtung, schuelerID, kursID);
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -81,7 +77,7 @@ public class Note {
 	public void artAendern(String neueArt) {
 		this.art = neueArt;
 		try {
-			aendern(this.getId(), wert, erstellungsdatum, neueArt, gewichtung, tendenz, schuelerID, kursID);
+			aendern(this.getId(), wert, erstellungsdatum, neueArt, gewichtung, schuelerID, kursID);
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -91,17 +87,7 @@ public class Note {
 	public void gewichtungAendern(Float neueGewichtung) {
 		this.gewichtung = neueGewichtung;
 		try {
-			aendern(this.getId(), wert, erstellungsdatum, art, neueGewichtung, tendenz, schuelerID, kursID);
-		} catch (DatenbankFehler e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void tendenzAendern(String neueTendenz) {
-		this.tendenz = neueTendenz;
-		try {
-			aendern(this.getId(), wert, erstellungsdatum, art, gewichtung, neueTendenz, schuelerID, kursID);
+			aendern(this.getId(), wert, erstellungsdatum, art, neueGewichtung, schuelerID, kursID);
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -111,7 +97,7 @@ public class Note {
 	public void schuelerAendern(int neueSchuelerID) {
 		this.schuelerID = neueSchuelerID;
 		try {
-			aendern(this.getId(), wert, erstellungsdatum, art, gewichtung, tendenz, schuelerID, kursID);
+			aendern(this.getId(), wert, erstellungsdatum, art, gewichtung, schuelerID, kursID);
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,19 +107,18 @@ public class Note {
 	public void kursAendern(int neueKursID) {
 		this.kursID = neueKursID;
 		try {
-			aendern(this.getId(), wert, erstellungsdatum, art, gewichtung, tendenz, schuelerID, kursID);
+			aendern(this.getId(), wert, erstellungsdatum, art, gewichtung, schuelerID, kursID);
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void aendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Float neueGewichtung, String neueTendenz, int neueSchuelerID, int neueKursID) throws DatenbankFehler {
-		dao.noteAendern(noteID, neuerWert, neuesErstellungsdatum, neueArt, neueGewichtung, neueTendenz, neueSchuelerID, neueKursID);
+	public void aendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Float neueGewichtung, int neueSchuelerID, int neueKursID) throws DatenbankFehler {
+		dao.noteAendern(noteID, neuerWert, neuesErstellungsdatum, neueArt, neueGewichtung, neueArt, neueSchuelerID, neueKursID);
 	}
 	
-	
-		
-	
-
+	public static Note noteEintragen(Model model, int wert, Date erstellungsdatum, String art, Float gewichtung, Schueler schueler, Kurs kurs) throws DatenbankFehler {
+		return model.gebeDao().noteHinzufuegen(wert, erstellungsdatum, art, gewichtung, art, schueler, kurs, kurs.gebeKursleiter());
+	}
 }

@@ -1,5 +1,10 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
+import java.util.List;
+
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
+
 public class Kurs {
 
 	private final int id; 
@@ -33,6 +38,15 @@ public class Kurs {
 	
 	public Benutzer gebeKursleiter() {
 		return kursleiter;
+	}
+
+	public ListModel<Schueler> gebeSchueler(Model model) throws DatenbankFehler {
+		List<Schueler> schueler = model.gebeDao().gebeSchueler(this);
+		DefaultListModel<Schueler> list = new DefaultListModel<>();
+		for(Schueler s : schueler) {
+			list.addElement(s);
+		}
+		return list;
 	}
 	
 	public SchuelerKursModel gebeSchuelerKursModel(Model model) throws DatenbankFehler {

@@ -33,11 +33,13 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.MainView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.NotenHinzufuegenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
 
 public class SwingMainView extends JFrame implements MainView {
@@ -382,5 +384,10 @@ public class SwingMainView extends JFrame implements MainView {
 	@Override
 	public KursverwaltungView getKursverwaltungView(KurseModel kurse) {
 		return new SwingKursverwaltungView(this, kurse);
+	}
+	
+	@Override
+	public NotenHinzufuegenView getNotenHinzufuegenView(ListModel<Schueler> schueler, Kurs kurs) {
+		return new SwingNotenHinzufuegenView(this, schueler, kurs);
 	}
 }

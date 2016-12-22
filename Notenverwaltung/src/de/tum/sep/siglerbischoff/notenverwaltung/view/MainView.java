@@ -10,6 +10,7 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.swingView.SwingMainView;
 
 public interface MainView extends View {
@@ -33,6 +34,8 @@ public interface MainView extends View {
 	KlassenverwaltungView getKlassenverwaltungView(KlassenModel klassen);
 
 	KursverwaltungView getKursverwaltungView(KurseModel kurse);
+	
+	NotenHinzufuegenView getNotenHinzufuegenView(ListModel<Schueler> schueler, Kurs kurs);
 	
 	public static MainView erstelleMainView() {
 		return new SwingMainView();
