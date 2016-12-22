@@ -718,16 +718,16 @@ class MysqlDAO extends DAO {
 		}
 	}
 	
-	Note noteHinzufuegen(int wert, Date erstellungsdatum, String art, Float gewichtung, String tendenz, Schueler schueler, Kurs kurs) throws DatenbankFehler {
+	Note noteHinzufuegen(int wert, Date erstellungsdatum, String art, Float gewichtung, Schueler schueler, Kurs kurs, Benutzer benutzer) throws DatenbankFehler {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		String sql = "INSERT INTO note (wert, datum, art, gewichtung, tendenz, schuelerID, kursID) VALUES "
 				+ "('" + wert + "', "
 				+ "'" + df.format(erstellungsdatum) +"',"
 				+ "('" + art + "', "
 				+ "('" + gewichtung + "', "
-				+ "('" + tendenz + "', "
 				+ "('" + schueler.gebeId() + "', "
-				+ "('" + kurs.gebeId()+ "')";
+				+ "('" + kurs.gebeId()+ "',"
+				+ "('" + benutzer.gebeId()+ "')";
 		
 		try (Statement s1 = dbverbindung.createStatement()) {
 			s1.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
@@ -735,7 +735,7 @@ class MysqlDAO extends DAO {
 			try (ResultSet rs = s1.getGeneratedKeys()) {
 				rs.next();
 				int id = rs.getInt(1);
-				return new Note(id, wert, erstellungsdatum, art, gewichtung, tendenz, schueler, kurs);
+				return new Note(id, wert, erstellungsdatum, art, gewichtung, schueler, kurs, benutzer);
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -743,12 +743,11 @@ class MysqlDAO extends DAO {
 		
 	}
 	
-	void noteAendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Float neueGewichtung, String neueTendenz, int neueSchuelerID, int neueKursID) throws DatenbankFehler {
+	void noteAendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Float neueGewichtung, int neueSchuelerID, int neueKursID) throws DatenbankFehler {
 		String sql = "UPDATE note SET wert = '" + neuerWert + "', "
 				+ "datum = '" + neuesErstellungsdatum + "', "
 				+ "art = '" + neueArt + "', "
 				+ "gewichtung = '" + neueGewichtung + "', "
-				+ "tendenz = '" + neueTendenz + "', "
 				+ "schuelerID = '" + neueSchuelerID + "', "
 				+ "art = '" + neueKursID + "' "
 				+ "WHERE noteID = " + noteID;
