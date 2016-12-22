@@ -54,11 +54,11 @@ public class Kurs {
 		this.kursleiter = kursleiter;
 	}
 	
-	void schuelerHinzufuegen(Schueler schueler, Model model) {
+	void schuelerHinzufuegen(Schueler schueler, Model model) throws DatenbankFehler {
 		model.gebeDao().zuKursHinzufuegen(id, schueler.gebeId());
 	}
 	
-	void schuelerEntfernen(Schueler schueler, Model model) {
+	void schuelerEntfernen(Schueler schueler, Model model) throws DatenbankFehler{
 		model.gebeDao().ausKursLoeschen(id, schueler.gebeId());
 	}
 	

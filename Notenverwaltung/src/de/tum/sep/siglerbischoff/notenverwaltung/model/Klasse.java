@@ -51,11 +51,11 @@ public class Klasse {
 		this.klassenlehrer = klassenlehrer;
 	}
 	
-	void schuelerHinzufuegen(Schueler schueler, Model model) {
+	void schuelerHinzufuegen(Schueler schueler, Model model) throws DatenbankFehler {
 		model.gebeDao().zuKlasseHinzufuegen(id, schueler.gebeId());
 	}
 	
-	void schuelerEntfernen(Schueler schueler, Model model) {
+	void schuelerEntfernen(Schueler schueler, Model model) throws DatenbankFehler{
 		model.gebeDao().ausKlasseLoeschen(id, schueler.gebeId());
 	}
 	
