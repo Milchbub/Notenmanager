@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.GroupLayout;
@@ -37,6 +39,7 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	private Component parent;
 	
 	private EventListenerList listeners;
+	private List<JButton> buttons;
 	
 	private JTable schuelerTable;
 	
@@ -47,6 +50,7 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		this.parent = parent;
 		
 		listeners = new EventListenerList();
+		buttons = new Vector<>();
 		
 		JLabel lblAlleSchler = new JLabel("Alle Sch\u00FCler: ");
 		
@@ -64,21 +68,21 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 			scrollPane.setViewportView(new JLabel(" Keine Sch\u00FCler eingetragen..."));
 		}
 		
-		JButton btnHinzufuegen = new JButton("Sch\u00FCler hinzuf\u00FCgen...");
-		btnHinzufuegen.setActionCommand(COMMAND_NEU);
-		btnHinzufuegen.addActionListener(ae -> {
-			for (ActionListener l : listeners.getListeners(ActionListener.class)) {
-				l.actionPerformed(ae);
+		schueler.addTableModelListener(te -> {
+			if (schueler.getRowCount() > 0) {
+				scrollPane.setViewportView(schuelerTable);
+			} else {
+				scrollPane.setViewportView(new JLabel(" Keine Sch\u00FCler eingetragen..."));
 			}
 		});
 		
+		JButton btnHinzufuegen = new JButton("Sch\u00FCler hinzuf\u00FCgen...");
+		btnHinzufuegen.setActionCommand(COMMAND_NEU);
+		buttons.add(btnHinzufuegen);
+		
 		JButton btnOk = new JButton("Ok");
 		btnOk.setActionCommand(COMMAND_SCHLIESSEN);
-		btnOk.addActionListener(ae -> {
-			for (ActionListener l : listeners.getListeners(ActionListener.class)) {
-				l.actionPerformed(ae);
-			}
-		});
+		buttons.add(btnOk);
 		
 		GroupLayout gl_kursVerwaltung = new GroupLayout(getContentPane());
 		gl_kursVerwaltung.setHorizontalGroup(gl_kursVerwaltung.createSequentialGroup()
@@ -128,11 +132,17 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	@Override
 	public void addActionListener(ActionListener l) {
 		listeners.add(ActionListener.class, l);
+		for(JButton button : buttons) {
+			button.addActionListener(l);
+		}
 	}
 
 	@Override
 	public void removeActionListener(ActionListener l) {
 		listeners.remove(ActionListener.class, l);
+		for(JButton button : buttons) {
+			button.removeActionListener(l);
+		}
 	}
 
 	private String neuName;
@@ -147,13 +157,11 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		JLabel lblDatum = new JLabel("Geburtsdatum: ");
 		
 		Calendar calendar = Calendar.getInstance();
-	    Date initDate = calendar.getTime();
+	    Date heute = calendar.getTime();
 	    calendar.add(Calendar.YEAR, -100);
-	    Date earliestDate = calendar.getTime();
-	    calendar.add(Calendar.YEAR, 200);
-	    Date latestDate = calendar.getTime();
-		JSpinner sprDatum = new JSpinner(new SpinnerDateModel(initDate, earliestDate, latestDate, Calendar.YEAR));
-		sprDatum.setEditor(new DateEditor(sprDatum, "yyyy-MM-dd"));
+	    Date fruehestes = calendar.getTime();
+		JSpinner sprDatum = new JSpinner(new SpinnerDateModel(heute, fruehestes, heute, Calendar.YEAR));
+		sprDatum.setEditor(new DateEditor(sprDatum, "dd.MM.yyyy"));
 		
 		JButton btnOk = new JButton("Ok");
 		btnOk.setActionCommand(COMMAND_NEU_FERTIG);
@@ -220,7 +228,7 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	private static class DateCellRenderer extends DefaultTableCellRenderer {
 
 	    private static final long serialVersionUID = 1L;
-		private SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+		private SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy");
 
 	    public Component getTableCellRendererComponent(JTable table,
 	            Object value, boolean isSelected, boolean hasFocus,
@@ -238,15 +246,13 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		
 		public DateCellEditor() {
 		    Calendar calendar = Calendar.getInstance();
-		    Date initDate = calendar.getTime();
+		    Date heute = calendar.getTime();
 		    calendar.add(Calendar.YEAR, -100);
-		    Date earliestDate = calendar.getTime();
-		    calendar.add(Calendar.YEAR, 200);
-		    Date latestDate = calendar.getTime();
+		    Date fruehestes = calendar.getTime();
 			SpinnerModel dateModel = new SpinnerDateModel(
-					initDate, earliestDate,	latestDate, Calendar.YEAR);
+					heute, fruehestes, heute, Calendar.DAY_OF_MONTH);
 			spinner = new JSpinner(dateModel);
-			spinner.setEditor(new JSpinner.DateEditor(spinner, "yyyy-MM-dd"));
+			spinner.setEditor(new JSpinner.DateEditor(spinner, "dd.MM.yyyy"));
 		}
 		
 		public Object getCellEditorValue() {

@@ -38,8 +38,6 @@ class KlassenManager implements ActionListener {
 		switch (ae.getActionCommand()) {
 			case KlassenverwaltungView.COMMAND_NEU:
 				try {
-					//TODO hier muss eine Art leeres SchuelerKlasseModel übergeben werden, welches
-					//Aktiviert wird, sobald die Daten der Klasse eingegeben sind
 					view.bearbeiten(null, Benutzer.gebeBenutzer(model), null);
 				} catch (DatenbankFehler e) {
 					view.showError(e);
@@ -56,10 +54,19 @@ class KlassenManager implements ActionListener {
 					}
 				}
 				break;
+			case KlassenverwaltungView.COMMAND_LOESCHEN: 
+				if(view.gebeAusgewaehlt() == null) {
+					view.showError("Fehler", "Keine Klasse ausgewählt...");
+				} else {
+					try {
+						klassen.loeschen(view.gebeAusgewaehlt());
+					} catch (DatenbankFehler e) {
+						 view.showError(e);
+					}
+				}
 			case KlassenverwaltungView.COMMAND_NEU_FERTIG:
 				try {
-					klassen.hinzufuegen(view.gebeNeuName(), 
-							view.gebeNeuKlassenlehrer());
+					klassen.hinzufuegen(view.gebeNeuName(), view.gebeNeuKlassenlehrer());
 				} catch (DatenbankFehler e) {
 					view.showError(e);
 				}

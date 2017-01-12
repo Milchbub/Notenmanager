@@ -191,6 +191,29 @@ class MysqlDAO extends DAO {
 	}
 	
 	@Override
+	List<Note> gebeNoten(Schueler schueler, Kurs kurs) throws DatenbankFehler {
+		String sql = "SELECT noteID, wert, datum, art, gewichtung "
+				+ "FROM note "
+				+ "WHERE schuelerID = ? AND "
+					+ "kursID = ? "
+				+ "ORDER BY datum";
+		try (PreparedStatement s = dbverbindung.prepareStatement(sql)) {
+			s.setInt(1, schueler.gebeId());
+			s.setInt(2, kurs.gebeId());
+			Vector<Note> list = new Vector<>();
+			try (ResultSet rs = s.executeQuery()) {
+				while(rs.next()) {
+					list.addElement(new Note(rs.getInt(1), rs.getInt(2), 
+							rs.getDate(3), rs.getString(4), rs.getFloat(5), schueler, kurs));
+				}
+				return list;
+			}
+		} catch (SQLException e) {
+			throw new DatenbankFehler(e);
+		}
+	}
+	
+	@Override
 	List<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler {
 		String sql = "SELECT kurs.kursID, kurs.name, kurs.fach, "
 						+ "benutzer.benutzerID, benutzer.loginName, benutzer.name, benutzer.istAdmin "
@@ -429,7 +452,7 @@ class MysqlDAO extends DAO {
 				rs.next();
 				int id = rs.getInt(1);
 				
-				// Erstellen der View fuer die jeweilige Klasse eines Lehrers. Pro Klasse gibt es
+/*				// Erstellen der View fuer die jeweilige Klasse eines Lehrers. Pro Klasse gibt es
 				// somit eine View (z.B. Klassenlehrersicht1, wobei 1==klasseID). Parametrische
 				// Views sind hier ein Problem, da bei jedem Erstellen einer Klasse eine View erzeugt wird.
 				Statement s1 = dbverbindung.createStatement();
@@ -452,7 +475,7 @@ class MysqlDAO extends DAO {
 							+ " "
 							+ "GRANT SELECT ON Klassenlehrersicht" + klassenlehrer.gebeId() + " TO " + klassenlehrer.gebeLoginName();	
 				s1.executeQuery(createViewQuery);
-				
+*/ //TODO				
 				return new Klasse(id, name, jahr, klassenlehrer);
 			}
 		} catch (SQLException e) {
@@ -462,13 +485,14 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void klasseAendern(int id, String neuerName, Benutzer neuerKlassenlehrer) throws DatenbankFehler {
-		// Loeschen der alten View fuer den jeweiligen Klassenlehrer.
+/*		// Loeschen der alten View fuer den jeweiligen Klassenlehrer.
 		String deleteViewQuery = "DROP VIEW Klassenlehrersicht" + id + ";";
 		try (Statement s1 = dbverbindung.createStatement()){
 			s1.executeQuery(deleteViewQuery);
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
+*/
 		// Aenderungen in Klassenobjekt und DB vornehmen
 		String sql = "UPDATE klasse SET name = '" + neuerName + "', "
 				+ "klassenlehrerID = '" + neuerKlassenlehrer.gebeId() + "' "
@@ -476,7 +500,7 @@ class MysqlDAO extends DAO {
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);
 			// Jahr der Klasse aus DB query'n
-			String jahrSQL = "SELECT schuljahr FROM klasse WHERE klasseID = " + id + ";";
+/*			String jahrSQL = "SELECT schuljahr FROM klasse WHERE klasseID = " + id + ";";
 			Statement s1 = dbverbindung.createStatement();
 			ResultSet jahrRS = s1.executeQuery(jahrSQL);
 			jahrRS.next();
@@ -501,6 +525,7 @@ class MysqlDAO extends DAO {
 						+ " "
 						+ "GRANT SELECT ON Klassenlehrersicht" + neuerKlassenlehrer.gebeId() + " TO " + neuerKlassenlehrer.gebeLoginName();
 			s2.executeQuery(createViewQuery);
+*/
 		} catch (SQLException e) {
 				throw new DatenbankFehler(e);
 		}
@@ -516,10 +541,11 @@ class MysqlDAO extends DAO {
 		String sql = "DELETE FROM klasse WHERE klasseID = " + id;
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);
-			// Loeschen der View fuer den jeweiligen Klassenlehrer.
+/*			// Loeschen der View fuer den jeweiligen Klassenlehrer.
 			String deleteViewQuery = "DROP VIEW Klassenlehrersicht" + id + ";";
 			Statement s1 = dbverbindung.createStatement();
 			s1.executeQuery(deleteViewQuery);
+*/
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
@@ -539,7 +565,7 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void ausKlasseLoeschen(int klasseId, int schuelerId) throws DatenbankFehler{
-		String sql = "DELETE FROM istInKlasse WHERE klasseID = " + klasseId + "AND schuelerID = " + schuelerId;
+		String sql = "DELETE FROM istInKlasse WHERE klasseID = " + klasseId + " AND schuelerID = " + schuelerId;
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);
 		} catch (SQLException e) {
@@ -608,7 +634,7 @@ class MysqlDAO extends DAO {
 					rs.next();
 					int id = rs.getInt(1);
 					
-					// Erstellen der View fuer den jeweiligen Kurs. Pro Kurs gibt es
+/*					// Erstellen der View fuer den jeweiligen Kurs. Pro Kurs gibt es
 					// somit eine View (z.B. Kursleitersicht1, wobei 1==kursID). 
 					Statement s1 = dbverbindung.createStatement();
 					String createViewQuery = "CREATE VIEW Kursleitersicht" + id + " "
@@ -619,7 +645,7 @@ class MysqlDAO extends DAO {
 								+ " "
 								+ "GRANT SELECT, INSERT, DELETE, UPDATE ON Kursleitersicht" + kursleiter.gebeId() + " TO " + kursleiter.gebeLoginName();	
 					s1.executeQuery(createViewQuery);
-					
+*/					
 					return new Kurs(id, name, fach, jahr, kursleiter);
 				}
 			} catch (SQLException e) {
@@ -628,20 +654,21 @@ class MysqlDAO extends DAO {
 		}	
 	@Override
 	void kursAendern(int id, String neuerName, String neuesFach, Benutzer neuerKursleiter) throws DatenbankFehler {
-		// Loeschen der alten View fuer den jeweiligen Klassenlehrer.
+/*		// Loeschen der alten View fuer den jeweiligen Klassenlehrer.
 		String deleteViewQuery = "DROP VIEW Kursleitersicht" + id + ";";
 		try (Statement s1 = dbverbindung.createStatement()){
 			s1.executeQuery(deleteViewQuery);
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
+*/
 		String sql = "UPDATE kurs SET name = '" + neuerName + "', "
 				+ "fach = '" + neuesFach + "', "
 				+ "lehrerID = '" + neuerKursleiter.gebeId() + "' "
 				+ "WHERE kursID = " + id;
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);
-			// Jahr der Klasse aus DB query'n
+/*			// Jahr der Klasse aus DB query'n
 			String jahrSQL = "SELECT schuljahr FROM kurs WHERE kursID = " + id + ";";
 			Statement s1 = dbverbindung.createStatement();
 			ResultSet jahrRS = s1.executeQuery(jahrSQL);
@@ -656,7 +683,7 @@ class MysqlDAO extends DAO {
 					+ " "
 					+ "GRANT SELECT, INSERT, DELETE, UPDATE ON Kursleitersicht" + neuerKursleiter.gebeId() + " TO " + neuerKursleiter.gebeLoginName();	
 			s2.executeQuery(createViewQuery);
-			
+*/		
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
@@ -667,13 +694,14 @@ class MysqlDAO extends DAO {
 		String sql = "DELETE FROM kurs WHERE kursID = " + id;
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);
-			// Loeschen der View fuer den jeweiligen Kursleiter.
+/*			// Loeschen der View fuer den jeweiligen Kursleiter.
 			String deleteViewQuery = "DROP VIEW Kursleitersicht" + id + ";";
 			try (Statement s1 = dbverbindung.createStatement()){
 				s1.executeQuery(deleteViewQuery);
 			} catch (SQLException e) {
 				throw new DatenbankFehler(e);
 			}	
+*/
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
@@ -693,7 +721,7 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void ausKursLoeschen(int kursId, int schuelerId) throws DatenbankFehler{
-		String sql = "DELETE FROM nimmtTeil WHERE kursID = " + kursId + "AND schuelerID = " + schuelerId;
+		String sql = "DELETE FROM nimmtTeil WHERE kursID = " + kursId + " AND schuelerID = " + schuelerId;
 		try (Statement s = dbverbindung.createStatement()) {
 			s.executeUpdate(sql);
 		} catch (SQLException e) {
@@ -720,14 +748,13 @@ class MysqlDAO extends DAO {
 	
 	Note noteHinzufuegen(int wert, Date erstellungsdatum, String art, Float gewichtung, Schueler schueler, Kurs kurs, Benutzer benutzer) throws DatenbankFehler {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		String sql = "INSERT INTO note (wert, datum, art, gewichtung, tendenz, schuelerID, kursID) VALUES "
-				+ "('" + wert + "', "
+		String sql = "INSERT INTO note (wert, datum, art, gewichtung, schuelerID, kursID) VALUES "
+				+ "(" + wert + ", "
 				+ "'" + df.format(erstellungsdatum) +"',"
-				+ "('" + art + "', "
-				+ "('" + gewichtung + "', "
-				+ "('" + schueler.gebeId() + "', "
-				+ "('" + kurs.gebeId()+ "',"
-				+ "('" + benutzer.gebeId()+ "')";
+				+ "'" + art + "', "
+				+ "" + gewichtung + ", "
+				+ "" + schueler.gebeId() + ", "
+				+ "" + kurs.gebeId() + ")";
 		
 		try (Statement s1 = dbverbindung.createStatement()) {
 			s1.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
@@ -735,7 +762,7 @@ class MysqlDAO extends DAO {
 			try (ResultSet rs = s1.getGeneratedKeys()) {
 				rs.next();
 				int id = rs.getInt(1);
-				return new Note(id, wert, erstellungsdatum, art, gewichtung, schueler, kurs, benutzer);
+				return new Note(id, wert, erstellungsdatum, art, gewichtung, schueler, kurs);
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -815,15 +842,13 @@ class MysqlDAO extends DAO {
 		String noteTblle = 
 				  "CREATE TABLE IF NOT EXISTS note (" 
 				+ "noteID INT PRIMARY KEY AUTO_INCREMENT, "
-				+ "wert DECIMAL(3,2) UNSIGNED ZEROFILL NOT NULL, "
+				+ "wert INT UNSIGNED ZEROFILL NOT NULL, "
 				+ "datum DATE, "
 				+ "art VARCHAR(50), "
 				+ "gewichtung DECIMAL(4,2) UNSIGNED ZEROFILL DEFAULT 1, "
-				+ "tendenz ENUM('+','-'), "
 				+ "schuelerID INT, "
 				+ "kursID INT,"
-				+ "benutzerID INT, " //kursleiterID
-				+ "FOREIGN KEY (schuelerID) REFERENCES schueler (schuelerID) ON DELETE CASCADE,"
+				+ "FOREIGN KEY (schuelerID) REFERENCES schueler (schuelerID) ON DELETE CASCADE, "
 				+ "FOREIGN KEY (kursID) REFERENCES kurs (kursID) ON DELETE CASCADE)";
 
 		try (Statement stmt = dbverbindung.createStatement()) {

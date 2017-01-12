@@ -1,28 +1,26 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 
-import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.NotenHinzufuegenView;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.JSpinner;
-import javax.swing.JButton;
 
 class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView {
 	
@@ -30,7 +28,6 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 	
 	private Kurs kurs;
 	
-	private Component parent;
 	private JTextField txtArt;
 	private JTextField txtGewichtung;
 	private JTextField txtDatum;
@@ -43,11 +40,7 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 		super(parent, "Note hinzufuegen");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
-		this.parent = parent;
-		
 		this.kurs = kurs;
-
-		setMinimumSize(getSize());
 		
 		JLabel lblSchler = new JLabel("Sch\u00FCler: ");
 		
@@ -74,8 +67,11 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 		txtDatum.setColumns(10);
 		
 		btnSpeichern = new JButton("Speichern");
+		btnSpeichern.setActionCommand(COMMAND_NOTE_EINTRAGEN);
 		
 		btnAbbrechen = new JButton("Abbrechen");
+		btnAbbrechen.setActionCommand(COMMAND_SCHLIESSEN);
+		
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -144,7 +140,7 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 	
 	@Override
 	public void zeigen() {
-		setLocationRelativeTo(parent);
+		setLocationRelativeTo(getParent());
 		setVisible(true);
 	}
 
@@ -178,7 +174,7 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 	//TODO
 	@Override
 	public Date gebeNeuErstellungsdatum() {
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 		try {
 			return format.parse(txtDatum.getText());
 		} catch (ParseException e) {

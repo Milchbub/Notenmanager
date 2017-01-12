@@ -30,6 +30,13 @@ public class KlassenModel extends AbstractListModel<Klasse> {
 		int i = klassen.indexOf(klasse);
 		fireContentsChanged(this, i, i);
 	}
+
+	public void loeschen(Klasse klasse) throws DatenbankFehler {
+		klassen.remove(klasse);
+		model.gebeDao().klasseLoeschen(klasse.gebeId());
+		int i = klassen.indexOf(klasse);
+		fireIntervalRemoved(this, i, i);
+	}
 	
 	public int gebeJahr() {
 		return jahr;

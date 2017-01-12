@@ -42,6 +42,7 @@ class NotenHinzufuegenManager implements ActionListener {
 				} catch (DatenbankFehler e) {
 					view.showError(e);
 				}
+				view.schliessen();
 				break;
 		}
 	}

@@ -2,11 +2,14 @@ package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
 
+import javax.swing.ComboBoxEditor;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
@@ -18,9 +21,13 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.EventListenerList;
@@ -32,6 +39,7 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KursNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
@@ -52,6 +60,9 @@ public class SwingMainView extends JFrame implements MainView {
 	private JPanel pnlContent;
 	
 	private EventListenerList listeners;
+
+	private JList<Klasse> listKlasse;
+	private JList<Kurs> listKurse;
 
 	public SwingMainView() {
 		setTitle("Notenmanager");
@@ -131,22 +142,38 @@ public class SwingMainView extends JFrame implements MainView {
 	}
 
 	@Override
-	public void loginBenutzer(Benutzer benutzer, ListModel<Klasse> geleiteteKlassen, ListModel<Kurs> geleiteteKurse, Jahre jahre) throws DatenbankFehler {
+	public void loginBenutzer(Benutzer benutzer, Jahre jahre) throws DatenbankFehler {
 
 		lblHerzlichWillkommen.setText("Herzlich willkommen, " + benutzer.gebeName() + "!");
 
-		int jahr = Calendar.getInstance().get(Calendar.YEAR);
 		cmbboxJahr.setModel(jahre);
-		cmbboxJahr.setSelectedItem(new Integer(jahr));
-
+		cmbboxJahr.setEditable(true);
+		cmbboxJahr.setSelectedItem(jahre.gebeLetztesAktuellesJahr());
+		cmbboxJahr.setEditor(new JahreEditor(jahre.gebeLetztesAktuellesJahr()));
+		cmbboxJahr.setActionCommand(COMMAND_JAHR_GEAENDERT);
+		cmbboxJahr.addActionListener(ae -> {
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				l.actionPerformed(ae);
+			}
+		});
+		
+		pack();
+	}
+	
+	@Override
+	public void updateContent(Benutzer benutzer, ListModel<Klasse> geleiteteKlassen, 
+			ListModel<Kurs> geleiteteKurse) {
+		pnlContent.removeAll();
+		
 		boolean istAdmin = benutzer.istAdmin();
 		boolean istKlassenleiter = geleiteteKlassen.getSize() > 0;
 		boolean istKursleiter = geleiteteKurse.getSize() > 0;
-		boolean tabs = (istAdmin && istKlassenleiter) || (istAdmin && istKursleiter)
-				|| (istKlassenleiter && istKursleiter);
+		boolean tabs = (istKlassenleiter && istKursleiter) || (istAdmin && istKursleiter)
+			|| (istAdmin && istKlassenleiter);
 
-		if (!(istAdmin || istKlassenleiter || istKursleiter)) {
-			JLabel lblLeer = new JLabel("<html><center>Sie sind leider weder Admin, <br />"
+		if (!(istKursleiter || istKlassenleiter || istAdmin)) {
+			JLabel lblLeer = new JLabel("<html><center>Sie sind im ausgewählten Jahr "
+					+ "leider weder Admin, <br />"
 					+ "noch haben Sie Klassen oder Kurse.</center></html>");
 			lblLeer.setHorizontalAlignment(SwingConstants.CENTER);
 			pnlContent.add(lblLeer);
@@ -267,9 +294,9 @@ public class SwingMainView extends JFrame implements MainView {
 				.addContainerGap()
 			);
 
-			JList<Klasse> list = new JList<>();
-			list.setModel(geleiteteKlassen);
-			scrollPane.setViewportView(list);
+			listKlasse = new JList<>();
+			listKlasse.setModel(geleiteteKlassen);
+			scrollPane.setViewportView(listKlasse);
 			pnlKlassen.setLayout(gl_pnlKlassen);
 
 			if (tabs) {
@@ -284,11 +311,19 @@ public class SwingMainView extends JFrame implements MainView {
 
 			JButton btnNotenAnzeigen_1 = new JButton("Noten anzeigen");
 			btnNotenAnzeigen_1.setEnabled(false);
+			btnNotenAnzeigen_1.setActionCommand(COMMAND_KURS_NOTEN_ANZEIGEN);
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				btnNotenAnzeigen_1.addActionListener(l);
+			}
 
-			JButton btnKlassenarbeitEintagen = new JButton("Klassenarbeit eintragen");
+			//JButton btnKlassenarbeitEintagen = new JButton("Klassenarbeit eintragen");
 
 			JButton button_2 = new JButton("Einzelnote");
 			button_2.setEnabled(false);
+			button_2.setActionCommand(COMMAND_NOTE_EINTRAGEN);
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				button_2.addActionListener(l);
+			}
 
 			JScrollPane scrollPane_1 = new JScrollPane();
 
@@ -304,7 +339,8 @@ public class SwingMainView extends JFrame implements MainView {
 					.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING, false)
 						.addComponent(btnNotenAnzeigen_1, GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
 						.addComponent(button_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-					.addComponent(btnKlassenarbeitEintagen, GroupLayout.PREFERRED_SIZE, 216, GroupLayout.PREFERRED_SIZE))
+					//.addComponent(btnKlassenarbeitEintagen, GroupLayout.PREFERRED_SIZE, 216, GroupLayout.PREFERRED_SIZE)
+					)
 				.addContainerGap(232, Short.MAX_VALUE)
 			);
 			gl_pnlKurse.setVerticalGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING).addGroup(gl_pnlKurse
@@ -314,14 +350,20 @@ public class SwingMainView extends JFrame implements MainView {
 							.addGroup(gl_pnlKurse.createSequentialGroup().addComponent(button_2)
 									.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnNotenAnzeigen_1)
 									.addPreferredGap(ComponentPlacement.RELATED, 310, Short.MAX_VALUE)
-									.addComponent(btnKlassenarbeitEintagen))
+									//.addComponent(btnKlassenarbeitEintagen)
+									)
 							.addComponent(scrollPane_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 406,
 									Short.MAX_VALUE))
 					.addContainerGap()));
 
-			JList<Kurs> list_1 = new JList<>();
-			list_1.setModel(geleiteteKurse);
-			scrollPane_1.setViewportView(list_1);
+			listKurse = new JList<>();
+			listKurse.setModel(geleiteteKurse);
+			listKurse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			listKurse.addListSelectionListener(se -> {
+				btnNotenAnzeigen_1.setEnabled(true);
+				button_2.setEnabled(true);
+			});
+			scrollPane_1.setViewportView(listKurse);
 			pnlKurse.setLayout(gl_pnlKurse);
 
 			if (tabs) {
@@ -335,7 +377,8 @@ public class SwingMainView extends JFrame implements MainView {
 			pnlContent.add(tabbedPane, BorderLayout.CENTER);
 		}
 		
-		pack();
+		pnlContent.repaint();
+		pnlContent.revalidate();
 	}
 
 	@Override
@@ -361,7 +404,7 @@ public class SwingMainView extends JFrame implements MainView {
 	@Override
 	public int gebeJahr() {
 		if(cmbboxJahr.getSelectedItem() == null) {
-			return 0;
+			return Calendar.getInstance().get(Calendar.YEAR);
 		}
 		return (int) cmbboxJahr.getSelectedItem();
 	}
@@ -389,5 +432,66 @@ public class SwingMainView extends JFrame implements MainView {
 	@Override
 	public NotenHinzufuegenView getNotenHinzufuegenView(ListModel<Schueler> schueler, Kurs kurs) {
 		return new SwingNotenHinzufuegenView(this, schueler, kurs);
+	}
+
+	@Override
+	public void kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs kurs) {
+		new SwingKursNotenAnzeigenView(this, kursNotenModel, schueler, kurs).zeigen();
+	}
+
+	@Override
+	public Kurs getSelectedKurs() {
+		return listKurse.getSelectedValue();
+	}
+	
+	private class JahreEditor implements ComboBoxEditor {
+
+		private JSpinner editor;
+		private EventListenerList listeners;
+		
+		private JahreEditor(int letztesAktuellesJahr) {
+			SpinnerModel model = new SpinnerNumberModel(letztesAktuellesJahr, 1990, 2100, 1);
+			editor = new JSpinner(model);
+			editor.setEditor(new JSpinner.NumberEditor(editor, "#"));
+			listeners = new EventListenerList();
+			editor.addChangeListener(ce -> {
+				for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+					l.actionPerformed(new ActionEvent(editor, 0, ""));
+				}
+			});
+		}
+		
+		@Override
+		public Component getEditorComponent() {
+			return editor;
+		}
+
+		@Override
+		public void setItem(Object anObject) {
+			if(anObject == null) {
+				anObject = 0;
+			}
+			editor.setValue(anObject);
+		}
+
+		@Override
+		public Object getItem() {
+			return editor.getValue();
+		}
+
+		@Override
+		public void selectAll() {
+		}
+
+		@Override
+		public void addActionListener(ActionListener l) {
+			listeners.add(ActionListener.class, l);
+		}
+
+		@Override
+		public void removeActionListener(ActionListener l) {
+			listeners.remove(ActionListener.class, l);
+		}
+		
 	}
 }

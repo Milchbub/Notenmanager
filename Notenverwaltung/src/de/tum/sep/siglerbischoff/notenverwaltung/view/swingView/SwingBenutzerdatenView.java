@@ -3,6 +3,8 @@ package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -28,6 +30,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 	private Component parent;
 	
 	private EventListenerList listeners;
+	private List<JButton> buttons;
 	
 	private JTable benutzerTable;
 	
@@ -38,6 +41,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 		this.parent = parent;
 		
 		listeners = new EventListenerList();
+		buttons = new Vector<>();
 		
 		JLabel lblAlleSchler = new JLabel("Alle Sch\u00FCler: ");
 		
@@ -49,19 +53,11 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 		
 		JButton btnHinzufuegen = new JButton("Benutzer hinzuf\u00FCgen...");
 		btnHinzufuegen.setActionCommand(COMMAND_NEU);
-		btnHinzufuegen.addActionListener(ae -> {
-			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
-				l.actionPerformed(ae);
-			}
-		});
+		buttons.add(btnHinzufuegen);
 		
 		JButton btnOk = new JButton("Ok");
 		btnOk.setActionCommand(COMMAND_SCHLIESSEN);
-		btnOk.addActionListener(ae -> {
-			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
-				l.actionPerformed(ae);
-			}
-		});
+		buttons.add(btnOk);
 		
 		GroupLayout gl_benutzerVerwaltung = new GroupLayout(getContentPane());
 		gl_benutzerVerwaltung.setHorizontalGroup(gl_benutzerVerwaltung.createSequentialGroup()
@@ -111,11 +107,17 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 	@Override
 	public void addActionListener(ActionListener l) {
 		listeners.add(ActionListener.class, l);
+		for(JButton button : buttons) {
+			button.addActionListener(l);
+		}
 	}
 
 	@Override
 	public void removeActionListener(ActionListener l) {
 		listeners.remove(ActionListener.class, l);
+		for(JButton button : buttons) {
+			button.removeActionListener(l);
+		}
 	}
 
 	private String neuLoginName;

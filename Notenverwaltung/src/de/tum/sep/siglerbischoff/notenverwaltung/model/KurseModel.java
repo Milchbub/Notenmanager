@@ -31,6 +31,13 @@ public class KurseModel extends AbstractListModel<Kurs> {
 		int i = kurse.indexOf(kurs);
 		fireContentsChanged(this, i, i);
 	}
+
+	public void loeschen(Kurs kurs) throws DatenbankFehler {
+		int i = kurse.indexOf(kurs);
+		kurse.remove(kurs);
+		model.gebeDao().kursLoeschen(kurs.gebeId());
+		fireIntervalRemoved(this, i, i);
+	}
 	
 	public int gebeJahr() {
 		return jahr;

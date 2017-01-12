@@ -1,8 +1,5 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,22 +12,25 @@ public class Note {
 	private Float gewichtung;
 	private int schuelerID;
 	private int kursID;
-	private int benutzerID;
 		
 	private DAO dao;
 
-	public Note (int id, int wert, Date erstellungsdatum, String art, Float gewichtung, Schueler schueler, Kurs kurs, Benutzer benutzer) {
+	public Note (int id, int wert, Date erstellungsdatum, String art, Float gewichtung, Schueler schueler, Kurs kurs) {
 		this.id = id;
+		this.wert = wert;
 		this.erstellungsdatum = erstellungsdatum;
 		this.art = art;
 		this.gewichtung = gewichtung;
 		this.schuelerID = schueler.gebeId();
 		this.kursID = kurs.gebeId();
-		this.benutzerID = benutzer.gebeId();
 	}
 	
 	public int getId() {
 		return id;
+	}
+	
+	public int getWert() {
+		return wert;
 	}
 	
 	public Date getErstellungsdatum() {
@@ -51,6 +51,17 @@ public class Note {
 	
 	public int getKursID(){
 		return kursID;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof Note && ((Note) obj).id == id;
+	}
+	
+	@Override
+	public String toString() {
+		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		return format.format(erstellungsdatum) + ", " + art;
 	}
 	
 	
@@ -115,10 +126,10 @@ public class Note {
 	}
 	
 	public void aendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Float neueGewichtung, int neueSchuelerID, int neueKursID) throws DatenbankFehler {
-		dao.noteAendern(noteID, neuerWert, neuesErstellungsdatum, neueArt, neueGewichtung, neueArt, neueSchuelerID, neueKursID);
+		dao.noteAendern(noteID, neuerWert, neuesErstellungsdatum, neueArt, neueGewichtung, neueSchuelerID, neueKursID);
 	}
 	
 	public static Note noteEintragen(Model model, int wert, Date erstellungsdatum, String art, Float gewichtung, Schueler schueler, Kurs kurs) throws DatenbankFehler {
-		return model.gebeDao().noteHinzufuegen(wert, erstellungsdatum, art, gewichtung, art, schueler, kurs, kurs.gebeKursleiter());
+		return model.gebeDao().noteHinzufuegen(wert, erstellungsdatum, art, gewichtung, schueler, kurs, kurs.gebeKursleiter());
 	}
 }

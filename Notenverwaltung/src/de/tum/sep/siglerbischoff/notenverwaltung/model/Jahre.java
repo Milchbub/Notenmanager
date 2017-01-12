@@ -23,7 +23,7 @@ public class Jahre implements ComboBoxModel<Integer> {
 	
 	public int gebeLetztesAktuellesJahr() {
 		int aktuell = Calendar.getInstance().get(Calendar.YEAR);
-		int best = 0;
+		int best = aktuell;
 		for(int jahr : jahre) {
 			if (jahr > best && jahr <= aktuell) {
 				best = jahr;

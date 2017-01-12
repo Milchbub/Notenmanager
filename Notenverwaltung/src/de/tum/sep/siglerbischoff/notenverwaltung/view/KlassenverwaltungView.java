@@ -11,6 +11,7 @@ public interface KlassenverwaltungView extends View {
 	static final String COMMAND_SCHLIESSEN = "schliessen";
 	static final String COMMAND_NEU = "neu";
 	static final String COMMAND_BEARBEITEN = "bearbeiten";
+	static final String COMMAND_LOESCHEN = "löschen";
 	static final String COMMAND_NEU_FERTIG = "neuFertig";
 	static final String COMMAND_BEARBEITEN_FERTIG = "bearbeitenFertig";
 

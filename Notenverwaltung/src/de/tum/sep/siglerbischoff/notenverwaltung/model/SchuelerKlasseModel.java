@@ -29,7 +29,7 @@ public class SchuelerKlasseModel {
 				schuelerOut.addElement(s);
 			}
 		}
-	}	
+	}
 	
 	public ListModel<Schueler> gebeIn() {
 		return schuelerIn;
@@ -39,7 +39,7 @@ public class SchuelerKlasseModel {
 		return schuelerOut;
 	}
 	
-	public void moveIn(List<Schueler> schueler) {
+	public void moveIn(List<Schueler> schueler) throws DatenbankFehler {
 		for(Schueler s : schueler) {
 			schuelerOut.removeElement(s);
 			if(!schuelerIn.contains(s)) {
@@ -49,7 +49,7 @@ public class SchuelerKlasseModel {
 		}
 	}
 	
-	public void moveOut(List<Schueler> schueler) {
+	public void moveOut(List<Schueler> schueler) throws DatenbankFehler {
 		for(Schueler s : schueler) {
 			schuelerIn.removeElement(s);
 			if(!schuelerOut.contains(s)) {

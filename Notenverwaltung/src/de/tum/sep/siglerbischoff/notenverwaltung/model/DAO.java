@@ -1,7 +1,6 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -21,6 +20,7 @@ abstract class DAO {
 	
 	abstract List<Kurs> gebeKurse(int jahr) throws DatenbankFehler;
 	abstract List<Schueler> gebeSchueler(Kurs kurs) throws DatenbankFehler;
+	abstract List<Note> gebeNoten(Schueler schueler, Kurs kurs) throws DatenbankFehler;
 	
 	abstract List<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler;
 

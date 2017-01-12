@@ -38,20 +38,32 @@ class KursManager implements ActionListener {
 		switch (ae.getActionCommand()) {
 			case KursverwaltungView.COMMAND_NEU:
 				try {
-					//TODO hier muss eine Art leeres SchuelerKlasseModel übergeben werden, welches
-					//Aktiviert wird, sobald die Daten der Klasse eingegeben sind
 					view.bearbeiten(null, Benutzer.gebeBenutzer(model), null);
 				} catch (DatenbankFehler e) {
 					view.showError(e);
 				}
 				break;
 			case KursverwaltungView.COMMAND_BEARBEITEN:
-				try {
-					view.bearbeiten(view.gebeAusgewaehlt(), Benutzer.gebeBenutzer(model), view.gebeAusgewaehlt().gebeSchuelerKursModel(model));
-				} catch (DatenbankFehler e) {
-					view.showError(e);
+				if(view.gebeAusgewaehlt() == null) {
+					view.showError("Fehler", "Kein Kurs ausgewählt...");
+				} else {
+					try {
+						view.bearbeiten(view.gebeAusgewaehlt(), Benutzer.gebeBenutzer(model), view.gebeAusgewaehlt().gebeSchuelerKursModel(model));
+					} catch (DatenbankFehler e) {
+						view.showError(e);
+					}
 				}
 				break;
+			case KursverwaltungView.COMMAND_LOESCHEN: 
+				if(view.gebeAusgewaehlt() == null) {
+					view.showError("Fehler", "Keine Kurs ausgewählt...");
+				} else {
+					try {
+						kurse.loeschen(view.gebeAusgewaehlt());
+					} catch (DatenbankFehler e) {
+						 view.showError(e);
+					}
+				}
 			case KursverwaltungView.COMMAND_NEU_FERTIG:
 				try {
 					kurse.hinzufuegen(view.gebeNeuName(), view.gebeNeuFach(), view.gebeNeulehrer());

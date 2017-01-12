@@ -80,7 +80,8 @@ public class SchuelerTableModel extends AbstractTableModel {
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
-	public void hinzufuegen(String name, Date gebDat) throws DatenbankFehler {
-		//TODO
+	public void hinzufuegen(String name, Date gebDat, Model model) throws DatenbankFehler {
+		schueler.add(model.gebeDao().schuelerHinzufuegen(name, gebDat));
+		fireTableRowsInserted(getColumnCount() - 1,	getColumnCount() - 1);
 	}
 }

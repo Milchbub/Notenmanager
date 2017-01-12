@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -19,6 +21,7 @@ import javax.swing.ListModel;
 import javax.swing.event.EventListenerList;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
@@ -37,7 +40,7 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 	private JList<Kurs> jList;
 	
 	public SwingKursverwaltungView(JFrame parent, KurseModel kurse) {
-		super(parent, "Klassenverwaltung: " + kurse.gebeJahr(), true);
+		super(parent, "Kursverwaltung: " + kurse.gebeJahr(), true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		this.parent = parent;
@@ -76,8 +79,11 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 		});
 		
 		JButton btnLoeschen = new JButton("Kurs löschen");
+		btnLoeschen.setActionCommand(COMMAND_LOESCHEN);
 		btnLoeschen.addActionListener(ae -> {
-			//TODO
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				l.actionPerformed(ae);
+			}
 		});
 		
 		JButton btnOk = new JButton("Ok");
@@ -171,23 +177,11 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 		JTextField txtFach = new JTextField();
 		JLabel lblJahr = new JLabel("Jahr: "+ kurse.gebeJahr());
 		
-		JButton btnOk = new JButton("Ok");
-		
 		JLabel lblLehrer = new JLabel("Kursleiter: ");
 		JList<Benutzer> list = new JList<>(lehrer);
 		JScrollPane scrollPane = new JScrollPane(list);
-		scrollPane.setPreferredSize(new Dimension(300, 200));
 		
-		if(kurs == null) {
-			dialog.setTitle("Neuer Kurs");
-			btnOk.setActionCommand(COMMAND_NEU_FERTIG);
-		} else {
-			dialog.setTitle("Kurs \"" + kurs.gebeName() + "\" bearbeiten");
-			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
-			txtName.setText(kurs.gebeName());
-			list.setSelectedValue(kurs.gebeKursleiter(), true);
-		}
-		
+		JButton btnOk = new JButton("Ok");
 		btnOk.addActionListener(ae -> {
 			neuName = txtName.getText();
 			neuFach = txtFach.getText();
@@ -202,27 +196,9 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 		btnAbbr.addActionListener(ae -> {
 			dialog.dispose();
 		});
-
-		JLabel lblZuordnen = new JLabel("Schüler zuordnen: ");
-		JList<Schueler> listIn = new JList<>(schueler.gebeIn());
-		JScrollPane scrollListIn = new JScrollPane(listIn);
-		JList<Schueler> listOut = new JList<>(schueler.gebeOut());
-		JScrollPane scrollListOut = new JScrollPane(listOut);
-		
-		JButton btnIn = new JButton("< hinzufügen");
-		btnIn.addActionListener(ae -> {
-			schueler.moveIn(listOut.getSelectedValuesList());
-		});
-		
-		JButton btnOut = new JButton("entfernen >");
-		btnOut.addActionListener(ae -> {
-			if(listIn.getSelectedValue() != null) {
-				schueler.moveOut(listIn.getSelectedValuesList());
-			}
-		});
 		
 		GroupLayout gl_neuer_Schueler = new GroupLayout(dialog.getContentPane());
-		gl_neuer_Schueler.setHorizontalGroup(gl_neuer_Schueler.createSequentialGroup()
+		SequentialGroup horizontalGroup = gl_neuer_Schueler.createSequentialGroup()
 			.addContainerGap()
 			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
 				.addComponent(lblName)
@@ -236,44 +212,81 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 					.addComponent(btnOk)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnAbbr))
-			)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-				.addComponent(lblZuordnen)
-				.addGroup(gl_neuer_Schueler.createSequentialGroup()
-					.addComponent(scrollListIn, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
-				)
-			)
-			.addContainerGap()
-		);
+			);
 		
-		gl_neuer_Schueler.setVerticalGroup(gl_neuer_Schueler.createSequentialGroup()
-			.addContainerGap()
-			.addComponent(lblName)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(txtName)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addComponent(lblFach)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(txtFach)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addComponent(lblJahr)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addComponent(lblLehrer)
-			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(scrollPane)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-				.addComponent(btnOk)
-				.addComponent(btnAbbr))
+		ParallelGroup verticalParallelGroup = gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
 			.addGroup(gl_neuer_Schueler.createSequentialGroup()
+				.addContainerGap()
+				.addComponent(lblName)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(txtName)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addComponent(lblFach)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(txtFach)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addComponent(lblJahr)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addComponent(lblLehrer)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(scrollPane)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+					.addComponent(btnOk)
+					.addComponent(btnAbbr))
+			);
+		
+		if(kurs == null) {
+			dialog.setTitle("Neuer Kurs");
+			btnOk.setActionCommand(COMMAND_NEU_FERTIG);
+		} else {
+			JLabel lblZuordnen = new JLabel("Schüler zuordnen: ");
+			JList<Schueler> listIn = new JList<>(schueler.gebeIn());
+			JScrollPane scrollListIn = new JScrollPane(listIn);
+			JList<Schueler> listOut = new JList<>(schueler.gebeOut());
+			JScrollPane scrollListOut = new JScrollPane(listOut);
+			
+			JButton btnIn = new JButton("< hinzufügen");
+			btnIn.addActionListener(ae -> {
+				try {
+					schueler.moveIn(listOut.getSelectedValuesList());
+				} catch (DatenbankFehler e) {
+					showError(e);
+				}
+			});
+			
+			JButton btnOut = new JButton("entfernen >");
+			btnOut.addActionListener(ae -> {
+				if(listIn.getSelectedValue() != null) {
+					try {
+						schueler.moveOut(listIn.getSelectedValuesList());
+					} catch (DatenbankFehler e) {
+						showError(e);
+					}
+				}
+			});
+			dialog.setTitle("Kurs \"" + kurs.gebeName() + "\" bearbeiten");
+			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
+			txtName.setText(kurs.gebeName());
+			list.setSelectedValue(kurs.gebeKursleiter(), true);
+			
+			horizontalGroup
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+					.addComponent(lblZuordnen)
+					.addGroup(gl_neuer_Schueler.createSequentialGroup()
+						.addComponent(scrollListIn, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(btnIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+					)
+				);
+			verticalParallelGroup
+				.addGroup(gl_neuer_Schueler.createSequentialGroup()
 					.addComponent(lblZuordnen)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
@@ -288,12 +301,21 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 						)
 						.addComponent(scrollListOut)
 					)
-				)
+				);
+		}
+		
+		horizontalGroup.addContainerGap();
+		gl_neuer_Schueler.setHorizontalGroup(horizontalGroup);
+		
+		gl_neuer_Schueler.setVerticalGroup(gl_neuer_Schueler.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(verticalParallelGroup)
 			.addContainerGap()
 		);
 		
 		dialog.setLayout(gl_neuer_Schueler);
 		dialog.pack();
+		dialog.setMinimumSize(dialog.getSize());
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);
 	}

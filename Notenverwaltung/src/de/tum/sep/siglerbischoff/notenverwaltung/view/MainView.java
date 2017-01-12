@@ -9,19 +9,27 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KursNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.swingView.SwingMainView;
 
 public interface MainView extends View {
 	
-	public static final String COMMAND_SCHUELERDATEN = "schuelerdaten";
-	public static final String COMMAND_BENUTZERVERWALTUNG = "benutzerverwaltung";
-	public static final String COMMAND_KLASSEN_ANLEGEN = "klassenAnlegen";
-	public static final String COMMAND_KURSE_ANLEGEN = "kurseAnlegen";
+	static final String COMMAND_JAHR_GEAENDERT = "jahrAendern";
+	
+	static final String COMMAND_SCHUELERDATEN = "schuelerdaten";
+	static final String COMMAND_BENUTZERVERWALTUNG = "benutzerverwaltung";
+	static final String COMMAND_KLASSEN_ANLEGEN = "klassenAnlegen";
+	static final String COMMAND_KURSE_ANLEGEN = "kurseAnlegen";
+	
+	static final String COMMAND_NOTE_EINTRAGEN = "noteEintragen";
+	static final String COMMAND_KURS_NOTEN_ANZEIGEN = "kursNotenAnzeigen";
 
-	void loginBenutzer(Benutzer benutzer, ListModel<Klasse> geleiteteKlassen, ListModel<Kurs> geleiteteKurse,
-			Jahre jahre) throws DatenbankFehler;
+	void loginBenutzer(Benutzer benutzer, Jahre jahre) throws DatenbankFehler;
+	
+	void updateContent(Benutzer benutzer, ListModel<Klasse> geleiteteKlassen, 
+			ListModel<Kurs> geleiteteKurse);
 
 	LoginView getLoginView();
 
@@ -36,6 +44,10 @@ public interface MainView extends View {
 	KursverwaltungView getKursverwaltungView(KurseModel kurse);
 	
 	NotenHinzufuegenView getNotenHinzufuegenView(ListModel<Schueler> schueler, Kurs kurs);
+	
+	void kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs selectedKurs);
+
+	Kurs getSelectedKurs();
 	
 	public static MainView erstelleMainView() {
 		return new SwingMainView();

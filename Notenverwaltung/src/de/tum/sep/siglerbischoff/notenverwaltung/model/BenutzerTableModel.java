@@ -82,12 +82,14 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 			}
 		} catch(DatenbankFehler e) {
 			//TODO
+			e.printStackTrace();
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 
 	public void hinzufuegen(String loginName, String name, char[] passwort,	boolean istAdmin) throws DatenbankFehler {
-		// TODO Auto-generated method stub
+		benutzer.add(model.gebeDao().benutzerAnlegen(loginName, name, passwort, istAdmin));
+		fireTableRowsInserted(getRowCount() - 1, getColumnCount() - 1); 
 	}
 
 	//======== ListModel-Funktionalität ========

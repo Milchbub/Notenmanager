@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.GroupLayout.ParallelGroup;
+import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -19,6 +21,7 @@ import javax.swing.ListModel;
 import javax.swing.event.EventListenerList;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
@@ -76,8 +79,11 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		});
 		
 		JButton btnLoeschen = new JButton("Klasse löschen");
+		btnLoeschen.setActionCommand(COMMAND_LOESCHEN);
 		btnLoeschen.addActionListener(ae -> {
-			//TODO
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				l.actionPerformed(ae);
+			}
 		});
 		
 		JButton btnOk = new JButton("Ok");
@@ -168,22 +174,11 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		JTextField txtName = new JTextField();
 		JLabel lblJahr = new JLabel("Jahr: "+ klassen.gebeJahr());
 		
-		JButton btnOk = new JButton("Ok");
-		
 		JLabel lblLehrer = new JLabel("Klassenlehrer: ");
 		JList<Benutzer> list = new JList<>(lehrer);
 		JScrollPane scrollPane = new JScrollPane(list);
 		
-		if(klasse == null) {
-			dialog.setTitle("Neue Klasse");
-			btnOk.setActionCommand(COMMAND_NEU_FERTIG);
-		} else {
-			dialog.setTitle("Klasse \"" + klasse.gebeName() + "\" bearbeiten");
-			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
-			txtName.setText(klasse.gebeName());
-			list.setSelectedValue(klasse.gebeKlassenlehrer(), true);
-		}
-		
+		JButton btnOk = new JButton("Ok");
 		btnOk.addActionListener(ae -> {
 			neuName = txtName.getText();
 			neuKlassenlehrer = list.getSelectedValue();
@@ -197,27 +192,9 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		btnAbbr.addActionListener(ae -> {
 			dialog.dispose();
 		});
-
-		JLabel lblZuordnen = new JLabel("Schüler zuordnen: ");
-		JList<Schueler> listIn = new JList<>(schueler.gebeIn());
-		JScrollPane scrollListIn = new JScrollPane(listIn);
-		JList<Schueler> listOut = new JList<>(schueler.gebeOut());
-		JScrollPane scrollListOut = new JScrollPane(listOut);
-		
-		JButton btnIn = new JButton("< hinzufügen");
-		btnIn.addActionListener(ae -> {
-			schueler.moveIn(listOut.getSelectedValuesList());
-		});
-		
-		JButton btnOut = new JButton("entfernen >");
-		btnOut.addActionListener(ae -> {
-			if(listIn.getSelectedValue() != null) {
-				schueler.moveOut(listIn.getSelectedValuesList());
-			}
-		});
 		
 		GroupLayout gl_neuer_Schueler = new GroupLayout(dialog.getContentPane());
-		gl_neuer_Schueler.setHorizontalGroup(gl_neuer_Schueler.createSequentialGroup()
+		SequentialGroup horizontalGroup = gl_neuer_Schueler.createSequentialGroup()
 			.addContainerGap()
 			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
 				.addComponent(lblName)
@@ -229,42 +206,75 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 					.addComponent(btnOk)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnAbbr))
-			)
-			.addPreferredGap(ComponentPlacement.UNRELATED)
-			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-				.addComponent(lblZuordnen)
-				.addGroup(gl_neuer_Schueler.createSequentialGroup()
-					.addComponent(scrollListIn, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
-				)
-			)
-			.addContainerGap()
-		);
+			);
+		ParallelGroup verticalParallelGroup = gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+			.addGroup(gl_neuer_Schueler.createSequentialGroup()
+				.addComponent(lblName)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(txtName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addComponent(lblJahr)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addComponent(lblLehrer)
+				.addPreferredGap(ComponentPlacement.RELATED)
+				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+					.addComponent(btnOk, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnAbbr, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+			);
 		
-		gl_neuer_Schueler.setVerticalGroup(gl_neuer_Schueler.createSequentialGroup()
-			.addContainerGap()
-			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_neuer_Schueler.createSequentialGroup()
-					.addComponent(lblName)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(txtName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(lblJahr)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(lblLehrer)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnOk, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(btnAbbr, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				)
+		if(klasse == null) {
+			dialog.setTitle("Neue Klasse");
+			btnOk.setActionCommand(COMMAND_NEU_FERTIG);
+		} else {
+			JLabel lblZuordnen = new JLabel("Schüler zuordnen: ");
+			JList<Schueler> listIn = new JList<>(schueler.gebeIn());
+			JScrollPane scrollListIn = new JScrollPane(listIn);
+			JList<Schueler> listOut = new JList<>(schueler.gebeOut());
+			JScrollPane scrollListOut = new JScrollPane(listOut);
+			
+			JButton btnIn = new JButton("< hinzufügen");
+			btnIn.addActionListener(ae -> {
+				try {
+					schueler.moveIn(listOut.getSelectedValuesList());
+				} catch (DatenbankFehler e) {
+					showError(e);
+				}
+			});
+			
+			JButton btnOut = new JButton("entfernen >");
+			btnOut.addActionListener(ae -> {
+				if(listIn.getSelectedValue() != null) {
+					try {
+						schueler.moveOut(listIn.getSelectedValuesList());
+					} catch (DatenbankFehler e) {
+						showError(e);
+					}
+				}
+			});
+			dialog.setTitle("Klasse \"" + klasse.gebeName() + "\" bearbeiten");
+			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
+			txtName.setText(klasse.gebeName());
+			list.setSelectedValue(klasse.gebeKlassenlehrer(), true);
+			
+			horizontalGroup
+				.addPreferredGap(ComponentPlacement.UNRELATED)
+				.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+					.addComponent(lblZuordnen)
+					.addGroup(gl_neuer_Schueler.createSequentialGroup()
+						.addComponent(scrollListIn, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(btnIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						)
+						.addPreferredGap(ComponentPlacement.RELATED)
+						.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+					)
+				);
+			
+			verticalParallelGroup
 				.addGroup(gl_neuer_Schueler.createSequentialGroup()
 					.addComponent(lblZuordnen)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -280,8 +290,15 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 						)
 						.addComponent(scrollListOut)
 					)
-				)
-			)
+				);
+		}
+		
+		horizontalGroup.addContainerGap();
+		gl_neuer_Schueler.setHorizontalGroup(horizontalGroup);
+		
+		gl_neuer_Schueler.setVerticalGroup(gl_neuer_Schueler.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(verticalParallelGroup)
 			.addContainerGap()
 		);
 		

@@ -11,7 +11,7 @@ public interface View {
 	void showError(String titel, String nachricht);
 
 	default void showError(Throwable e) {
-		showError("Fehler", e.getMessage());
+		showError("Fehler", "<html><body width=\"1000\">" + e.getMessage().replaceAll("\n", "<br />") + "</body></html>");
 	}
 	
 	void addActionListener(ActionListener l);

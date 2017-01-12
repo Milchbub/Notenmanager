@@ -12,10 +12,13 @@ import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
 
 class SchuelerdatenManager implements ActionListener {
 	
+	private Model model;
+	
 	private SchuelerdatenView view;
 	private SchuelerTableModel schueler;
 	
 	SchuelerdatenManager (MainView mainView, Model model) {
+		this.model = model;
 		try {
 			schueler = Schueler.gebeSchueler(model);
 			view = mainView.getSchuelerdatenView(schueler);
@@ -37,7 +40,7 @@ class SchuelerdatenManager implements ActionListener {
 				break;
 			case SchuelerdatenView.COMMAND_NEU_FERTIG:
 				try {
-					schueler.hinzufuegen(view.gebeNeuName(), view.gebeNeuGebDat());
+					schueler.hinzufuegen(view.gebeNeuName(), view.gebeNeuGebDat(), model);
 				} catch (DatenbankFehler e1) {
 					view.showError(e1);
 				}
