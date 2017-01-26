@@ -12,13 +12,15 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 
 	private List<Benutzer> benutzer;
 	private Model model;
+	private Benutzer loggedIn;
 
 	private static final String[] columnNames = new String[]{"ID", "Loginname", "Name", "Ist Admin?"};
 	private static final Class<?>[] columnTypes = new Class<?>[]{Integer.class, String.class, String.class, Boolean.class};
 	
-	BenutzerTableModel(List<Benutzer> benutzer, Model model) {
+	BenutzerTableModel(List<Benutzer> benutzer, Model model, Benutzer loggedIn) {
 		this.benutzer = benutzer;
 		this.model = model;
+		this.loggedIn = loggedIn;
 	}
 	
 	@Override
@@ -44,6 +46,8 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if(columnIndex <= 1) {
+			return false;
+		} else if(columnIndex == 3 && benutzer.indexOf(loggedIn) == rowIndex) {
 			return false;
 		} else {
 			return true;
@@ -85,6 +89,15 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 			e.printStackTrace();
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
+	}
+	
+	public boolean contains(String loginName) {
+		for(Benutzer b : benutzer) {
+			if(b.gebeLoginName().equals(loginName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void hinzufuegen(String loginName, String name, char[] passwort,	boolean istAdmin) throws DatenbankFehler {

@@ -2,6 +2,8 @@ package de.tum.sep.siglerbischoff.notenverwaltung.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
+import java.util.Date;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
@@ -17,7 +19,10 @@ class SchuelerdatenManager implements ActionListener {
 	private SchuelerdatenView view;
 	private SchuelerTableModel schueler;
 	
-	SchuelerdatenManager (MainView mainView, Model model) {
+	private Main parent;
+	
+	SchuelerdatenManager (MainView mainView, Model model, Main parent) {
+		this.parent = parent;
 		this.model = model;
 		try {
 			schueler = Schueler.gebeSchueler(model);
@@ -33,16 +38,32 @@ class SchuelerdatenManager implements ActionListener {
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
+	public void actionPerformed(ActionEvent ae) {
+		switch (ae.getActionCommand()) {
 			case SchuelerdatenView.COMMAND_NEU:
 				view.neu();
 				break;
 			case SchuelerdatenView.COMMAND_NEU_FERTIG:
-				try {
-					schueler.hinzufuegen(view.gebeNeuName(), view.gebeNeuGebDat(), model);
-				} catch (DatenbankFehler e1) {
-					view.showError(e1);
+				String name = view.gebeNeuName();
+				Date gebDat = view.gebeNeuGebDat();
+				
+				if(name.equals("")) {
+					view.showError("Fehler", "Bitte geben Sie einen Namen ein. ");
+				} else {
+					Calendar c = Calendar.getInstance();
+					c.setTime(gebDat);
+					c.add(Calendar.YEAR, 3);
+					if (c.after(Calendar.getInstance())) {
+						view.showError("Fehler", "Schüler dürfen nicht jünger als drei Jahre alt sein. ");
+					} else {
+						try {
+						schueler.hinzufuegen(name, gebDat, model);
+						//TODO Hier soll nicht die große view, sondern nur der "neu"-Dialog geschlossen werden. 
+						//view.schliessen();
+						} catch (DatenbankFehler e) {
+							view.showError(e);
+						}
+					}
 				}
 				break;
 			case SchuelerdatenView.COMMAND_SCHLIESSEN: 

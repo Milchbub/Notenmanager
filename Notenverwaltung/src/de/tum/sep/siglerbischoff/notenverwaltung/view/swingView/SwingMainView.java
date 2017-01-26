@@ -1,9 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,12 +35,14 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KlasseNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KursNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenarbeitView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
@@ -54,7 +54,6 @@ public class SwingMainView extends JFrame implements MainView {
 
 	private static final long serialVersionUID = 1L;
 
-	private JPanel contentPane;
 	private JComboBox<Integer> cmbboxJahr;
 	private JLabel lblHerzlichWillkommen;
 	private JPanel pnlContent;
@@ -67,17 +66,12 @@ public class SwingMainView extends JFrame implements MainView {
 	public SwingMainView() {
 		setTitle("Notenmanager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		contentPane = new JPanel();
-		contentPane.setBackground(new Color(240, 240, 240));
-		contentPane.setBorder(new EmptyBorder(0, 0, 0, 0));
-		contentPane.setPreferredSize(new Dimension(700, 600));
-		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		GroupLayout gl_content = new GroupLayout(getContentPane()); 
 		
 		listeners = new EventListenerList();
 
 		JPanel pnlHeader = new JPanel();
-		contentPane.add(pnlHeader, BorderLayout.NORTH);
 
 		lblHerzlichWillkommen = new JLabel("TEST");
 		lblHerzlichWillkommen.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -88,10 +82,10 @@ public class SwingMainView extends JFrame implements MainView {
 		gl_pnlHeader.setHorizontalGroup(gl_pnlHeader.createSequentialGroup()
 			.addContainerGap()
 			.addComponent(lblHerzlichWillkommen)
-			.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+			.addPreferredGap(ComponentPlacement.UNRELATED, 30, Short.MAX_VALUE)
 			.addComponent(lblJahr)
 			.addPreferredGap(ComponentPlacement.RELATED)
-			.addComponent(cmbboxJahr, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
+			.addComponent(cmbboxJahr, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 			.addContainerGap()
 		);
 		gl_pnlHeader.setVerticalGroup(gl_pnlHeader.createSequentialGroup()
@@ -99,22 +93,21 @@ public class SwingMainView extends JFrame implements MainView {
 			.addGroup(gl_pnlHeader.createParallelGroup(Alignment.BASELINE)
 				.addComponent(lblHerzlichWillkommen)
 				.addComponent(lblJahr)
-				.addComponent(cmbboxJahr, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+				.addComponent(cmbboxJahr))
 			.addContainerGap()
 		);
 		pnlHeader.setLayout(gl_pnlHeader);
 
 		pnlContent = new JPanel();
 		pnlContent.setBorder(new EmptyBorder(0, 8, 0, 8));
-		contentPane.add(pnlContent, BorderLayout.CENTER);
 		pnlContent.setLayout(new BorderLayout(0, 0));
 
 		JPanel pnlFooter = new JPanel();
-		contentPane.add(pnlFooter, BorderLayout.SOUTH);
 
 		JButton button = new JButton("");
-		button.setIcon(
-				new ImageIcon(SwingMainView.class.getResource("/com/sun/java/swing/plaf/windows/icons/JavaCup32.png")));
+		button.setIcon(new ImageIcon(
+				SwingMainView.class.
+				getResource("/com/sun/java/swing/plaf/windows/icons/JavaCup32.png")));
 		
 		GroupLayout gl_pnlFooter = new GroupLayout(pnlFooter);
 		gl_pnlFooter.setHorizontalGroup(gl_pnlFooter.createSequentialGroup()
@@ -123,11 +116,24 @@ public class SwingMainView extends JFrame implements MainView {
 			.addContainerGap()
 		);
 		gl_pnlFooter.setVerticalGroup(gl_pnlFooter.createSequentialGroup()
-			.addGap(8)
+			.addContainerGap()
 			.addComponent(button, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
-			.addGap(8)
+			.addContainerGap()
 		);
 		pnlFooter.setLayout(gl_pnlFooter);
+		
+		gl_content.setHorizontalGroup(gl_content.createSequentialGroup()
+			.addGroup(gl_content.createParallelGroup(Alignment.LEADING)
+				.addComponent(pnlHeader)
+				.addComponent(pnlContent)
+				.addComponent(pnlFooter))
+		);
+		gl_content.setVerticalGroup(gl_content.createSequentialGroup()
+			.addComponent(pnlHeader)
+			.addComponent(pnlContent)
+			.addComponent(pnlFooter)
+		);
+		getContentPane().setLayout(gl_content);
 	}
 
 	@Override
@@ -156,8 +162,6 @@ public class SwingMainView extends JFrame implements MainView {
 				l.actionPerformed(ae);
 			}
 		});
-		
-		pack();
 	}
 	
 	@Override
@@ -178,207 +182,217 @@ public class SwingMainView extends JFrame implements MainView {
 			lblLeer.setHorizontalAlignment(SwingConstants.CENTER);
 			pnlContent.add(lblLeer);
 			lblLeer.setHorizontalTextPosition(SwingConstants.CENTER);
-		}
+		} else {
 
-		JTabbedPane tabbedPane = null;
-		if (tabs) {
-			tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		}
-
-		JPanel pnlAdmin = null;
-		JPanel pnlKlassen = null;
-		JPanel pnlKurse = null;
-
-		if (istAdmin) {
-			pnlAdmin = new JPanel();
-			
-			JButton btnSchlerdaten = new JButton("Sch\u00FClerdaten...");
-			btnSchlerdaten.setActionCommand(COMMAND_SCHUELERDATEN);
-
-			JButton btnBenutzerverwaltung = new JButton("Benutzerverwaltung...");
-			btnBenutzerverwaltung.setActionCommand(COMMAND_BENUTZERVERWALTUNG);
-
-			JButton btnKlassenAnlegen = new JButton("Klassen anlegen...");
-			btnKlassenAnlegen.setActionCommand(COMMAND_KLASSEN_ANLEGEN);
-
-			JButton btnKurseAnlegen = new JButton("Kurse anlegen...");
-			btnKurseAnlegen.setActionCommand(COMMAND_KURSE_ANLEGEN);
-			
-			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
-				btnSchlerdaten.addActionListener(l);
-				btnBenutzerverwaltung.addActionListener(l);
-				btnKlassenAnlegen.addActionListener(l);
-				btnKurseAnlegen.addActionListener(l);
-			}
-			
-			GroupLayout gl_pnlAdmin = new GroupLayout(pnlAdmin);
-			gl_pnlAdmin.setHorizontalGroup(gl_pnlAdmin.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(gl_pnlAdmin.createParallelGroup(Alignment.LEADING, false)
-					.addComponent(btnKurseAnlegen, GroupLayout.DEFAULT_SIZE,	GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(btnKlassenAnlegen, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(btnSchlerdaten, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(btnBenutzerverwaltung, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-			);
-			gl_pnlAdmin.setVerticalGroup(gl_pnlAdmin.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(btnSchlerdaten)
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(btnBenutzerverwaltung)
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(btnKlassenAnlegen)
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(btnKurseAnlegen)
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-			);
-			pnlAdmin.setLayout(gl_pnlAdmin);
-
+			JTabbedPane tabbedPane = null;
 			if (tabs) {
-				tabbedPane.add("Admin", pnlAdmin);
-			} else {
-				pnlContent.add(pnlAdmin, BorderLayout.CENTER);
+				tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 			}
-		}
+	
+			JPanel pnlAdmin = null;
+			JPanel pnlKlassen = null;
+			JPanel pnlKurse = null;
+	
+			if (istAdmin) {
+				pnlAdmin = new JPanel();
+				
+				ActionListener listener = ae -> {
+					for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+						l.actionPerformed(ae);
+					}
+				};
+				
+				JButton btnSchlerdaten = new JButton("Sch\u00FClerdaten");
+				btnSchlerdaten.setActionCommand(COMMAND_SCHUELERDATEN);
+				btnSchlerdaten.addActionListener(listener);
+	
+				JButton btnBenutzerverwaltung = new JButton("Benutzerverwaltung");
+				btnBenutzerverwaltung.setActionCommand(COMMAND_BENUTZERVERWALTUNG);
+				btnBenutzerverwaltung.addActionListener(listener);
+	
+				JButton btnKlassenAnlegen = new JButton("Klassenverwaltung");
+				btnKlassenAnlegen.setActionCommand(COMMAND_KLASSEN_ANLEGEN);
+				btnKlassenAnlegen.addActionListener(listener);
+	
+				JButton btnKurseAnlegen = new JButton("Kursverwaltung");
+				btnKurseAnlegen.setActionCommand(COMMAND_KURSE_ANLEGEN);
+				btnKurseAnlegen.addActionListener(listener);
+				
+				GroupLayout gl_pnlAdmin = new GroupLayout(pnlAdmin);
+				gl_pnlAdmin.setHorizontalGroup(gl_pnlAdmin.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_pnlAdmin.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnKurseAnlegen, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+						.addComponent(btnKlassenAnlegen, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+						.addComponent(btnSchlerdaten, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+						.addComponent(btnBenutzerverwaltung, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE))
+					.addContainerGap()
+				);
+				gl_pnlAdmin.setVerticalGroup(gl_pnlAdmin.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(btnSchlerdaten)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnBenutzerverwaltung)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnKlassenAnlegen)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(btnKurseAnlegen)
+					.addContainerGap()
+				);
+				pnlAdmin.setLayout(gl_pnlAdmin);
+	
+				if (tabs) {
+					tabbedPane.add("Admin", pnlAdmin);
+				} else {
+					pnlContent.add(pnlAdmin, BorderLayout.CENTER);
+				}
+			}
+	
+			if (istKlassenleiter) {
+				pnlKlassen = new JPanel();
 
-		if (istKlassenleiter) {
-			pnlKlassen = new JPanel();
-
-			JScrollPane scrollPane = new JScrollPane();
-
-			JButton btnNewButton = new JButton("Speichern unter...");
-
-			JLabel lblZeugnisse = new JLabel("Zeugnisse: ");
-
-			JLabel lblIhreGeleitetenKlassen = new JLabel("Ihre geleiteten Klassen: ");
-
-			JButton btnZeugnisbemerkungen = new JButton("Zeugnisbemerkungen...");
-			btnZeugnisbemerkungen.setEnabled(false);
-
-			JButton btnGefhrdungenAnzeigen = new JButton("Gef\u00E4hrdungen anzeigen...");
-
-			JButton btnNotenAnzeigen = new JButton("Noten anzeigen...");
-			btnNotenAnzeigen.setEnabled(false);
-			GroupLayout gl_pnlKlassen = new GroupLayout(pnlKlassen);
-			gl_pnlKlassen.setHorizontalGroup(gl_pnlKlassen.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING, false)
+				JLabel lblIhreGeleitetenKlassen = new JLabel("Ihre geleiteten Klassen: ");
+				JScrollPane scrollPane = new JScrollPane();
+	
+				//JButton btnNewButton = new JButton("Speichern unter...");	
+				//JLabel lblZeugnisse = new JLabel("Zeugnisse: ");		
+				//JButton btnZeugnisbemerkungen = new JButton("Zeugnisbemerkungen...");
+				//btnZeugnisbemerkungen.setEnabled(false);	
+				//JButton btnGefhrdungenAnzeigen = new JButton("Gef\u00E4hrdungen anzeigen...");
+	
+				JButton btnNotenAnzeigen = new JButton("Noten anzeigen...");
+				btnNotenAnzeigen.setEnabled(false);
+				btnNotenAnzeigen.setActionCommand(COMMAND_KLASSE_NOTEN_ANZEIGEN);
+				btnNotenAnzeigen.addActionListener(ae -> {
+					for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+						l.actionPerformed(ae);
+					}
+				});
+				
+				GroupLayout gl_pnlKlassen = new GroupLayout(pnlKlassen);
+				gl_pnlKlassen.setHorizontalGroup(gl_pnlKlassen.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblIhreGeleitetenKlassen)	
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING, false)
+						.addComponent(btnNotenAnzeigen, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE))
+					.addContainerGap()
+				);
+				gl_pnlKlassen.setVerticalGroup(gl_pnlKlassen.createSequentialGroup()
+					.addContainerGap()
 					.addComponent(lblIhreGeleitetenKlassen)
-					.addGroup(gl_pnlKlassen.createSequentialGroup()
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-						.addPreferredGap(ComponentPlacement.UNRELATED)
-						.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING, false)
-							.addComponent(btnNotenAnzeigen)
-							.addComponent(btnGefhrdungenAnzeigen)
-							.addComponent(btnNewButton)
-							.addComponent(lblZeugnisse)
-							.addComponent(btnZeugnisbemerkungen))))
-				.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-			);
-			gl_pnlKlassen.setVerticalGroup(gl_pnlKlassen.createSequentialGroup()
-				.addContainerGap()
-				.addComponent(lblIhreGeleitetenKlassen)
-				.addPreferredGap(ComponentPlacement.RELATED)
-				.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING)
-					.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 406, Short.MAX_VALUE)
-					.addGroup(gl_pnlKlassen.createSequentialGroup()
-						.addComponent(btnZeugnisbemerkungen)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnNotenAnzeigen)
-						.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-						.addComponent(btnGefhrdungenAnzeigen)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(lblZeugnisse)
-						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(btnNewButton)))
-				.addContainerGap()
-			);
-
-			listKlasse = new JList<>();
-			listKlasse.setModel(geleiteteKlassen);
-			scrollPane.setViewportView(listKlasse);
-			pnlKlassen.setLayout(gl_pnlKlassen);
-
-			if (tabs) {
-				tabbedPane.add("Klassen", pnlKlassen);
-			} else {
-				pnlContent.add(pnlKlassen, BorderLayout.CENTER);
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 200, Short.MAX_VALUE)
+						.addComponent(btnNotenAnzeigen))
+					.addContainerGap()
+				);
+	
+				listKlasse = new JList<>(geleiteteKlassen);
+				listKlasse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+				listKlasse.addListSelectionListener(se -> {
+					btnNotenAnzeigen.setEnabled(true);
+				});
+				scrollPane.setViewportView(listKlasse);
+				pnlKlassen.setLayout(gl_pnlKlassen);
+	
+				if (tabs) {
+					tabbedPane.add("Klassen", pnlKlassen);
+				} else {
+					pnlContent.add(pnlKlassen, BorderLayout.CENTER);
+				}
 			}
-		}
+	
+			if (istKursleiter) {
+				pnlKurse = new JPanel();
 
-		if (istKursleiter) {
-			pnlKurse = new JPanel();
-
-			JButton btnNotenAnzeigen_1 = new JButton("Noten anzeigen");
-			btnNotenAnzeigen_1.setEnabled(false);
-			btnNotenAnzeigen_1.setActionCommand(COMMAND_KURS_NOTEN_ANZEIGEN);
-			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
-				btnNotenAnzeigen_1.addActionListener(l);
-			}
-
-			//JButton btnKlassenarbeitEintagen = new JButton("Klassenarbeit eintragen");
-
-			JButton button_2 = new JButton("Einzelnote");
-			button_2.setEnabled(false);
-			button_2.setActionCommand(COMMAND_NOTE_EINTRAGEN);
-			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
-				button_2.addActionListener(l);
-			}
-
-			JScrollPane scrollPane_1 = new JScrollPane();
-
-			JLabel lblIhreKurse = new JLabel("Ihre Kurse: ");
-			GroupLayout gl_pnlKurse = new GroupLayout(pnlKurse);
-			gl_pnlKurse.setHorizontalGroup(gl_pnlKurse.createSequentialGroup()
-				.addContainerGap()
-				.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING)
-					.addComponent(lblIhreKurse)
-					.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 207, GroupLayout.PREFERRED_SIZE))
-				.addPreferredGap(ComponentPlacement.UNRELATED)
-				.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING)
+				JLabel lblIhreKurse = new JLabel("Ihre Kurse: ");
+				JScrollPane scrollPane = new JScrollPane();
+	
+				JButton btnNotenAnzeigen = new JButton("Noten anzeigen");
+				btnNotenAnzeigen.setEnabled(false);
+				btnNotenAnzeigen.setActionCommand(COMMAND_KURS_NOTEN_ANZEIGEN);
+				btnNotenAnzeigen.addActionListener(ae -> {
+					for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+						l.actionPerformed(ae);
+					}
+				});
+	
+				JButton btnNoteEintragen = new JButton("Einzelnote eintragen");
+				btnNoteEintragen.setEnabled(false);
+				btnNoteEintragen.setActionCommand(COMMAND_NOTE_EINTRAGEN);
+				btnNoteEintragen.addActionListener(ae -> {
+					for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+						l.actionPerformed(ae);
+					}
+				});
+	
+				JButton btnKlassenarbeitEintagen = new JButton("Klassenarbeit eintragen");
+				btnKlassenarbeitEintagen.setEnabled(false);
+				btnKlassenarbeitEintagen.setActionCommand(COMMAND_KLASSENARBEIT_EINTRAGEN);
+				btnKlassenarbeitEintagen.addActionListener(ae -> {
+					for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+						l.actionPerformed(ae);
+					}
+				});
+				
+				GroupLayout gl_pnlKurse = new GroupLayout(pnlKurse);
+				gl_pnlKurse.setHorizontalGroup(gl_pnlKurse.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblIhreKurse)
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnNotenAnzeigen_1, GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
-						.addComponent(button_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-					//.addComponent(btnKlassenarbeitEintagen, GroupLayout.PREFERRED_SIZE, 216, GroupLayout.PREFERRED_SIZE)
-					)
-				.addContainerGap(232, Short.MAX_VALUE)
-			);
-			gl_pnlKurse.setVerticalGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING).addGroup(gl_pnlKurse
-					.createSequentialGroup().addContainerGap().addComponent(lblIhreKurse)
+						.addComponent(btnNotenAnzeigen, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+						.addComponent(btnNoteEintragen, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+						.addComponent(btnKlassenarbeitEintagen, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE))
+					.addContainerGap()
+				);
+				gl_pnlKurse.setVerticalGroup(gl_pnlKurse.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblIhreKurse)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_pnlKurse.createParallelGroup(Alignment.LEADING)
-							.addGroup(gl_pnlKurse.createSequentialGroup().addComponent(button_2)
-									.addPreferredGap(ComponentPlacement.RELATED).addComponent(btnNotenAnzeigen_1)
-									.addPreferredGap(ComponentPlacement.RELATED, 310, Short.MAX_VALUE)
-									//.addComponent(btnKlassenarbeitEintagen)
-									)
-							.addComponent(scrollPane_1, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 406,
-									Short.MAX_VALUE))
-					.addContainerGap()));
-
-			listKurse = new JList<>();
-			listKurse.setModel(geleiteteKurse);
-			listKurse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			listKurse.addListSelectionListener(se -> {
-				btnNotenAnzeigen_1.setEnabled(true);
-				button_2.setEnabled(true);
-			});
-			scrollPane_1.setViewportView(listKurse);
-			pnlKurse.setLayout(gl_pnlKurse);
-
-			if (tabs) {
-				tabbedPane.add("Kurse", pnlKurse);
-			} else {
-				pnlContent.add(pnlKurse, BorderLayout.CENTER);
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 200, Short.MAX_VALUE)
+						.addGroup(gl_pnlKurse.createSequentialGroup()
+							.addComponent(btnNoteEintragen)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnNotenAnzeigen)
+							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+							.addComponent(btnKlassenarbeitEintagen))
+						)
+					.addContainerGap()
+				);
+	
+				listKurse = new JList<>(geleiteteKurse);
+				listKurse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+				listKurse.addListSelectionListener(se -> {
+					btnNotenAnzeigen.setEnabled(true);
+					btnNoteEintragen.setEnabled(true);
+					btnKlassenarbeitEintagen.setEnabled(true);
+				});
+				scrollPane.setViewportView(listKurse);
+				pnlKurse.setLayout(gl_pnlKurse);
+	
+				if (tabs) {
+					tabbedPane.add("Kurse", pnlKurse);
+				} else {
+					pnlContent.add(pnlKurse, BorderLayout.CENTER);
+				}
 			}
+	
+			if (tabs) {
+				pnlContent.add(tabbedPane);
+			}
+			
 		}
-
-		if (tabs) {
-			pnlContent.add(tabbedPane, BorderLayout.CENTER);
-		}
-		
 		pnlContent.repaint();
 		pnlContent.revalidate();
+		pack();
+		setMinimumSize(getSize());
 	}
 
 	@Override
@@ -433,6 +447,21 @@ public class SwingMainView extends JFrame implements MainView {
 	public NotenHinzufuegenView getNotenHinzufuegenView(ListModel<Schueler> schueler, Kurs kurs) {
 		return new SwingNotenHinzufuegenView(this, schueler, kurs);
 	}
+	
+	@Override
+	public KlassenarbeitView getKlassenarbeitView(ListModel<Schueler> schueler, Kurs kurs) {
+		return new SwingKlassenarbeitView(this, schueler, kurs);
+	}
+	
+	@Override
+	public void klasseNotenAnzeigen(KlasseNotenModel klasseNotenModel, Klasse selectedKlasse) {
+		new SwingKlasseNotenAnzeigenView(this, klasseNotenModel, selectedKlasse).zeigen();
+	}
+	
+	@Override
+	public Klasse getSelectedKlasse() {
+		return listKlasse.getSelectedValue();
+	}
 
 	@Override
 	public void kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs kurs) {
@@ -480,8 +509,7 @@ public class SwingMainView extends JFrame implements MainView {
 		}
 
 		@Override
-		public void selectAll() {
-		}
+		public void selectAll() {}
 
 		@Override
 		public void addActionListener(ActionListener l) {

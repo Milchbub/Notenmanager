@@ -1,20 +1,20 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view;
 
 import java.util.Date;
+import java.util.List;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 
-public interface NotenHinzufuegenView extends View {
+public interface KlassenarbeitView extends View {
 
-	static final String COMMAND_SCHLIESSEN = "schliessen";
-	static final String COMMAND_NOTE_EINTRAGEN = "noteEintragen";
+	static final String COMMAND_ABBRECHEN = "abbrechen";
+	static final String COMMAND_NOTEN_EINTRAGEN = "notenEintragen";
 	
-	int gebeNeuWert();
+	List<Integer> gebeNeuWerte();
 	Date gebeNeuErstellungsdatum();
 	Double gebeNeuGewichtung();
-	Schueler gebeNeuSchueler();
+	List<Schueler> gebeNeuSchueler();
 	Kurs gebeNeuKurs();
 	String gebeNeuArt(); 
-	
 }

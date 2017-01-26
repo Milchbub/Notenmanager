@@ -19,6 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
 import javax.swing.event.EventListenerList;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
@@ -61,6 +63,26 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		} else {
 			scrollPane.setViewportView(new JLabel(" Es sind noch keine Klassen eingetragen..."));
 		}
+
+		klassen.addListDataListener(new ListDataListener() {
+
+			@Override
+			public void intervalAdded(ListDataEvent e) {a();}
+
+			@Override
+			public void intervalRemoved(ListDataEvent e) {a();}
+
+			@Override
+			public void contentsChanged(ListDataEvent e) {a();}
+			
+			private void a() {
+				if (klassen.getSize() > 0) {
+					scrollPane.setViewportView(jList);
+				} else {
+					scrollPane.setViewportView(new JLabel(" Es sind noch keine Klassen eingetragen..."));
+				}
+			}
+		});
 		
 		JButton btnBearbeiten = new JButton("Bearbeiten...");
 		btnBearbeiten.setActionCommand(COMMAND_BEARBEITEN);
@@ -171,7 +193,7 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		dialog.setModal(true);
 		
 		JLabel lblName = new JLabel("Name: ");
-		JTextField txtName = new JTextField();
+		JTextField txtName = new JTextField(klasse.gebeName());
 		JLabel lblJahr = new JLabel("Jahr: "+ klassen.gebeJahr());
 		
 		JLabel lblLehrer = new JLabel("Klassenlehrer: ");
@@ -193,22 +215,22 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 			dialog.dispose();
 		});
 		
-		GroupLayout gl_neuer_Schueler = new GroupLayout(dialog.getContentPane());
-		SequentialGroup horizontalGroup = gl_neuer_Schueler.createSequentialGroup()
+		GroupLayout gl_neue_Klasse = new GroupLayout(dialog.getContentPane());
+		SequentialGroup horizontalGroup = gl_neue_Klasse.createSequentialGroup()
 			.addContainerGap()
-			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+			.addGroup(gl_neue_Klasse.createParallelGroup(Alignment.LEADING, false)
 				.addComponent(lblName)
 				.addComponent(txtName)
 				.addComponent(lblJahr)
 				.addComponent(lblLehrer)
 				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 150, GroupLayout.DEFAULT_SIZE)
-				.addGroup(gl_neuer_Schueler.createSequentialGroup()
+				.addGroup(gl_neue_Klasse.createSequentialGroup()
 					.addComponent(btnOk)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnAbbr))
 			);
-		ParallelGroup verticalParallelGroup = gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-			.addGroup(gl_neuer_Schueler.createSequentialGroup()
+		ParallelGroup verticalParallelGroup = gl_neue_Klasse.createParallelGroup(Alignment.LEADING)
+			.addGroup(gl_neue_Klasse.createSequentialGroup()
 				.addComponent(lblName)
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(txtName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -219,7 +241,7 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 				.addPreferredGap(ComponentPlacement.UNRELATED)
-				.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+				.addGroup(gl_neue_Klasse.createParallelGroup(Alignment.LEADING, false)
 					.addComponent(btnOk, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addComponent(btnAbbr, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 			);
@@ -255,17 +277,16 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 			});
 			dialog.setTitle("Klasse \"" + klasse.gebeName() + "\" bearbeiten");
 			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
-			txtName.setText(klasse.gebeName());
 			list.setSelectedValue(klasse.gebeKlassenlehrer(), true);
 			
 			horizontalGroup
 				.addPreferredGap(ComponentPlacement.UNRELATED)
-				.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_neue_Klasse.createParallelGroup(Alignment.LEADING)
 					.addComponent(lblZuordnen)
-					.addGroup(gl_neuer_Schueler.createSequentialGroup()
+					.addGroup(gl_neue_Klasse.createSequentialGroup()
 						.addComponent(scrollListIn, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_neue_Klasse.createParallelGroup(Alignment.LEADING, false)
 							.addComponent(btnIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						)
@@ -275,12 +296,12 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 				);
 			
 			verticalParallelGroup
-				.addGroup(gl_neuer_Schueler.createSequentialGroup()
+				.addGroup(gl_neue_Klasse.createSequentialGroup()
 					.addComponent(lblZuordnen)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_neue_Klasse.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrollListIn)
-						.addGroup(gl_neuer_Schueler.createSequentialGroup()
+						.addGroup(gl_neue_Klasse.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 							.addComponent(btnIn)
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -294,15 +315,16 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		}
 		
 		horizontalGroup.addContainerGap();
-		gl_neuer_Schueler.setHorizontalGroup(horizontalGroup);
+		gl_neue_Klasse.setHorizontalGroup(horizontalGroup);
 		
-		gl_neuer_Schueler.setVerticalGroup(gl_neuer_Schueler.createSequentialGroup()
+		gl_neue_Klasse.setVerticalGroup(gl_neue_Klasse.createSequentialGroup()
 			.addContainerGap()
 			.addGroup(verticalParallelGroup)
 			.addContainerGap()
 		);
 		
-		dialog.setLayout(gl_neuer_Schueler);
+		dialog.setLayout(gl_neue_Klasse);
+		dialog.getRootPane().setDefaultButton(btnOk);
 		dialog.pack();
 		dialog.setMinimumSize(dialog.getSize());
 		dialog.setLocationRelativeTo(this);

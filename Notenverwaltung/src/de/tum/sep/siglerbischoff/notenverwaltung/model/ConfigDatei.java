@@ -13,7 +13,7 @@ public class ConfigDatei extends Properties {
 
 	public ConfigDatei() throws IOException {
 		Properties defaults = new Properties();
-		defaults.setProperty("dbhost", "r115088.srs.swh.mhn.de");
+		defaults.setProperty("dbhost", "localhost");
 		defaults.setProperty("dbname", "Notenmanager");
 		this.defaults = defaults;
 		

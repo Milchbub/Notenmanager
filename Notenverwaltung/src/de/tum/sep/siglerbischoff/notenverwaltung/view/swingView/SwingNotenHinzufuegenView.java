@@ -1,22 +1,28 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 
 import java.awt.event.ActionListener;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JSpinner.DateEditor;
+import javax.swing.JSpinner.NumberEditor;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
+import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.EventListenerList;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
@@ -28,111 +34,123 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 	
 	private Kurs kurs;
 	
+	private EventListenerList listeners;
+	
+	private JComboBox<Integer> cmbBxWert;
+	private JSpinner sprDatum;
 	private JTextField txtArt;
-	private JTextField txtGewichtung;
-	private JTextField txtDatum;
-	private JButton btnSpeichern;
-	private JButton btnAbbrechen;
-	private JTextField txtWert;
+	private JSpinner sprGewichtung;
 	private JList<Schueler> list;
 	
 	SwingNotenHinzufuegenView(JFrame parent, ListModel<Schueler> schueler, Kurs kurs) {
-		super(parent, "Note hinzufuegen");
+		super(parent, "Note hinzufuegen", true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		this.kurs = kurs;
 		
+		listeners = new EventListenerList();
+		
 		JLabel lblSchler = new JLabel("Sch\u00FCler: ");
-		
 		JScrollPane scrollPane = new JScrollPane();
-		
-		JLabel lblNotenwert = new JLabel("Notenwert: ");
-		
-		txtWert = new JTextField();
-		txtWert.setColumns(10);
-		
-		JLabel lblDatum = new JLabel("Datum: ");
-		
-		JLabel lblArt = new JLabel("Art: ");
-		
-		txtArt = new JTextField();
-		txtArt.setColumns(10);
-		
-		JLabel lblGewichtung = new JLabel("Gewichtung:");
-		
-		txtGewichtung = new JTextField();
-		txtGewichtung.setColumns(10);
-		
-		txtDatum = new JTextField();
-		txtDatum.setColumns(10);
-		
-		btnSpeichern = new JButton("Speichern");
-		btnSpeichern.setActionCommand(COMMAND_NOTE_EINTRAGEN);
-		
-		btnAbbrechen = new JButton("Abbrechen");
-		btnAbbrechen.setActionCommand(COMMAND_SCHLIESSEN);
-		
-		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblSchler)
-							.addGap(170)
-							.addComponent(lblNotenwert))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-								.addComponent(btnAbbrechen, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(lblGewichtung)
-								.addComponent(lblArt)
-								.addComponent(lblDatum)
-								.addComponent(btnSpeichern, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(txtWert, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(txtArt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(txtGewichtung, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(txtDatum, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(197, Short.MAX_VALUE))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblSchler)
-						.addComponent(lblNotenwert)
-						.addComponent(txtWert, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 300, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(16)
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addComponent(lblDatum)
-								.addComponent(txtDatum, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblArt)
-								.addComponent(txtArt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblGewichtung)
-								.addComponent(txtGewichtung, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addGap(57)
-							.addComponent(btnSpeichern)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnAbbrechen)))
-					.addContainerGap(122, Short.MAX_VALUE))
-		);
-		
 		list = new JList<>(schueler);
 		scrollPane.setViewportView(list);
+		
+		JLabel lblNotenwert = new JLabel("Notenwert: ");
+		cmbBxWert = new JComboBox<>(new Integer[]{1,2,3,4,5,6});
+				
+		JLabel lblDatum = new JLabel("Datum: ");
+		Calendar cal = Calendar.getInstance();
+		Date heute = cal.getTime();
+		cal.add(Calendar.YEAR, -100);
+		Date fruehestes = cal.getTime();
+		sprDatum = new JSpinner(new SpinnerDateModel(heute, fruehestes, heute, Calendar.YEAR));
+		sprDatum.setEditor(new DateEditor(sprDatum, "dd.MM.yyyy"));
+		
+		JLabel lblArt = new JLabel("Art: ");
+		txtArt = new JTextField();
+		
+		JLabel lblGewichtung = new JLabel("Gewichtung: ");
+		sprGewichtung = new JSpinner(new SpinnerNumberModel(1.0, 0.05, 20.0, 0.25));
+		sprGewichtung.setEditor(new NumberEditor(sprGewichtung, "0.00"));
+		
+		JButton btnSpeichern = new JButton("Speichern");
+		btnSpeichern.setActionCommand(COMMAND_NOTE_EINTRAGEN);
+		btnSpeichern.addActionListener(ae -> {
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				l.actionPerformed(ae);
+			}
+			//TODO Der Dialog sollte vom Controller geschlossen werden, nur falls die Angaben korrekt sind.
+			dispose();
+		});
+		
+		JButton btnAbbrechen = new JButton("Abbrechen");
+		btnAbbrechen.setActionCommand(COMMAND_SCHLIESSEN);
+		btnAbbrechen.addActionListener(ae -> {
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				l.actionPerformed(ae);
+			}
+		});
+		
+		GroupLayout groupLayout = new GroupLayout(getContentPane());
+		groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblSchler)
+				.addComponent(scrollPane, 150, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE))
+			.addPreferredGap(ComponentPlacement.UNRELATED)
+			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblNotenwert)
+						.addComponent(lblDatum)
+						.addComponent(lblArt)
+						.addComponent(lblGewichtung))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(cmbBxWert)
+						.addComponent(sprDatum)
+						.addComponent(txtArt)
+						.addComponent(sprGewichtung))
+				)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addComponent(btnSpeichern)
+					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnAbbrechen))
+				)
+			.addContainerGap()
+		);
+		
+		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
+			.addContainerGap()
+			.addComponent(lblSchler)
+			.addPreferredGap(ComponentPlacement.RELATED)
+			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addComponent(scrollPane, 200, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNotenwert)
+						.addComponent(cmbBxWert))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblDatum)
+						.addComponent(sprDatum))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblArt)
+						.addComponent(txtArt))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblGewichtung)
+						.addComponent(sprGewichtung))
+					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnSpeichern)
+						.addComponent(btnAbbrechen))
+				)
+			)
+			.addContainerGap()
+		);
+		
 		getContentPane().setLayout(groupLayout);
 		pack();
 		setMinimumSize(getSize());
@@ -156,36 +174,27 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 
 	@Override
 	public void addActionListener(ActionListener l) {
-		btnSpeichern.addActionListener(l);
-		btnAbbrechen.addActionListener(l);
+		listeners.add(ActionListener.class, l);
 	}
 
 	@Override
 	public void removeActionListener(ActionListener l) {
-		btnSpeichern.removeActionListener(l);
-		btnAbbrechen.removeActionListener(l);
+		listeners.remove(ActionListener.class, l);
 	}
 
 	@Override
 	public int gebeNeuWert() {
-		return Integer.parseInt(txtWert.getText());
+		return (int) cmbBxWert.getSelectedItem();
 	}
 
-	//TODO
 	@Override
 	public Date gebeNeuErstellungsdatum() {
-		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-		try {
-			return format.parse(txtDatum.getText());
-		} catch (ParseException e) {
-			showError(e);
-			throw new RuntimeException();
-		}
+		return (Date) sprDatum.getValue();
 	}
 
 	@Override
-	public Float gebeNeuGewichtung() {
-		return Float.parseFloat(txtGewichtung.getText());
+	public Double gebeNeuGewichtung() {
+		return (Double) sprGewichtung.getValue();
 	}
 
 	@Override

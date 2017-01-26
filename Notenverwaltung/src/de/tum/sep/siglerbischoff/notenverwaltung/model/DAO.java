@@ -53,11 +53,11 @@ abstract class DAO {
 	abstract void fireSQL(String sql) throws DatenbankFehler;
 	abstract ResultSet fireSQLResult(String sql) throws DatenbankFehler;
 	
-	abstract Note noteHinzufuegen(int wert, Date erstellungsdatum, String art, Float gewichtung, Schueler schueler, Kurs kurs, Benutzer benutzer) throws DatenbankFehler; 
-	abstract void noteAendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Float neueGewichtung, int neueSchuelerID, int neueKursID) throws DatenbankFehler;
+	abstract Note noteHinzufuegen(int wert, Date erstellungsdatum, String art, Double gewichtung, Schueler schueler, Kurs kurs) throws DatenbankFehler; 
+	abstract void noteAendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Double neueGewichtung) throws DatenbankFehler;
 	abstract void noteLoeschen(int id) throws DatenbankFehler;
 	
-	public static DAO erstelleDAO() throws DatenbankFehler {
+	public static DAO erstelleDAO() {
 		return new MysqlDAO();
 	}
 }

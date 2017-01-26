@@ -80,8 +80,8 @@ public class Benutzer {
 		return name;
 	}
 	
-	public static BenutzerTableModel gebeBenutzer(Model model) throws DatenbankFehler {
-		return new BenutzerTableModel(model.gebeDao().gebeBenutzer(), model);
+	public static BenutzerTableModel gebeBenutzer(Model model, Benutzer loggedIn) throws DatenbankFehler {
+		return new BenutzerTableModel(model.gebeDao().gebeBenutzer(), model, loggedIn);
 	}
 	
 	public static Benutzer erstelleBenutzer(String loginName, String name, char[] passwort, boolean istAdmin, Model model) throws DatenbankFehler {

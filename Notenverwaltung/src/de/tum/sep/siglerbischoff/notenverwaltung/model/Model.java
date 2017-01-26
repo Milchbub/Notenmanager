@@ -7,7 +7,7 @@ public class Model {
 	private DAO dao;
 	private ConfigDatei config;
 	
-	public Model() throws DatenbankFehler, IOException {
+	public Model() throws IOException {
 		dao = DAO.erstelleDAO();
 		config = new ConfigDatei();
 	}

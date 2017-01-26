@@ -1,6 +1,8 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
 import javax.swing.GroupLayout;
@@ -24,76 +26,69 @@ import de.tum.sep.siglerbischoff.notenverwaltung.view.KursNotenAnzeigenView;
 public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnzeigenView {
 
 	private static final long serialVersionUID = 1L;
-	private JLabel lblWert;
-	private JLabel lblGewichtung;
-	private JLabel lblArt;
-	private JLabel lblDatum;
 
 	SwingKursNotenAnzeigenView(JFrame parent, KursNotenModel noten, 
 			ListModel<Schueler> schueler, Kurs kurs) {
-		super(parent, "Noten von \"" + kurs.gebeName() + "\":");
-		setModal(true);
+		super(parent, "Noten von \"" + kurs.gebeName() + "\"", true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		JScrollPane scrollPaneSchueler = new JScrollPane();
 		
-		JLabel lblSchler = new JLabel("Sch\u00FCler: ");
-		
+		JLabel lblSchueler = new JLabel("Sch\u00FCler: ");		
 		JScrollPane scrollPaneNoten = new JScrollPane();
 		
-		JLabel lblNoten = new JLabel("Note: ");
+		JLabel lblNoten = new JLabel("Note: ");		
+		JLabel lblDaten = new JLabel("Daten: ");
+		JLabel lblWert = new JLabel("Wert: ");
+		JLabel lblGewichtung = new JLabel("Gewichtung: ");
+		JLabel lblArt = new JLabel("Art: ");
+		JLabel lblDatum = new JLabel("Datum: ");
 		
-		lblWert = new JLabel("Wert: ");
+		JLabel lblDurchschnitt = new JLabel("Durchschnitt:");
 		
-		//JLabel lblDurchschnitt = new JLabel("Durchschnitt:");
-		
-		lblGewichtung = new JLabel("Gewichtung: ");
-		
-		lblArt = new JLabel("Art: ");
-		
-		lblDatum = new JLabel("Datum: ");
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblSchler)
-						.addComponent(scrollPaneSchueler, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblNoten)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(scrollPaneNoten, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE)
-							.addGap(18)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblDatum)
-								.addComponent(lblArt)
-								.addComponent(lblGewichtung)
-								.addComponent(lblWert))))
-					.addContainerGap(180, Short.MAX_VALUE))
+		groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblSchueler)
+				.addComponent(scrollPaneSchueler, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE))
+			.addPreferredGap(ComponentPlacement.UNRELATED)
+			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblNoten)
+				.addComponent(scrollPaneNoten, GroupLayout.PREFERRED_SIZE, 200, GroupLayout.PREFERRED_SIZE))
+			.addPreferredGap(ComponentPlacement.UNRELATED)
+			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+				.addComponent(lblDaten, 180, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+				.addComponent(lblWert)
+				.addComponent(lblArt)
+				.addComponent(lblGewichtung)
+				.addComponent(lblDatum)
+				.addComponent(lblDurchschnitt))
+			.addContainerGap()
 		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
+		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
+			.addContainerGap()
+			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblSchler)
-						.addComponent(lblNoten))
+					.addComponent(lblSchueler)
+					.addComponent(scrollPaneSchueler, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addComponent(lblNoten)
+					.addComponent(scrollPaneNoten, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addComponent(lblDaten)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblWert)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblWert)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblGewichtung)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblArt)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblDatum)
-							.addPreferredGap(ComponentPlacement.RELATED, 130, Short.MAX_VALUE))
-						.addComponent(scrollPaneSchueler, GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
-						.addComponent(scrollPaneNoten, GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE))
-					.addContainerGap())
+					.addComponent(lblGewichtung)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblArt)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblDatum)
+					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+					.addComponent(lblDurchschnitt))
+			)
+			.addContainerGap()
 		);
 		
 		JList<Note> lstNoten = new JList<>(noten);
@@ -118,6 +113,19 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 				lblArt.setText("Art: ");
 				lblDatum.setText("Datum: ");
 				lblGewichtung.setText("Gewichtung: ");
+				if(noten.getSize() > 0) {
+					double gewicht = 0.0;
+					double summe = 0.0;
+					for(int i = 0; i < noten.getSize(); i++) {
+						Note n = noten.getElementAt(i);
+						gewicht += n.getGewichtung();
+						summe += n.getGewichtung() * n.getWert();
+					}
+					NumberFormat f = new DecimalFormat("0.00");
+					lblDurchschnitt.setText("Durchschnitt: " + f.format(summe / gewicht));
+				} else {
+					lblDurchschnitt.setText("Durchschnitt: -");
+				}
 				lstNoten.clearSelection();
 			} catch (DatenbankFehler e) {
 				showError(e);

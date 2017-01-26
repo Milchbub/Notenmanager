@@ -1,8 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.util.Date;
-
-import javax.swing.ListModel;
+import java.util.List;
 
 public class Schueler {
 	
@@ -28,14 +27,13 @@ public class Schueler {
 		return gebDat;
 	}
 	
-	public ListModel<Klasse> gebeKlassen(int jahr, Model model) throws DatenbankFehler {
+	public List<Klasse> gebeKlassen(int jahr, Model model) throws DatenbankFehler {
 		//TODO
 		return null;
 	}
 	
-	public ListModel<Kurs> gebeKurse(int jahr, Model model) throws DatenbankFehler {
-		//TODO
-		return null;
+	public List<Kurs> gebeKurse(int jahr, Model model) throws DatenbankFehler {
+		return model.gebeDao().gebeKurse(this, jahr);
 	}
 	
 	public void setzeName(String neuerName, Model model) throws DatenbankFehler {

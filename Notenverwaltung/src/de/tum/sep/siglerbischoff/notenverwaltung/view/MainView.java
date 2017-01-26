@@ -7,6 +7,7 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KlasseNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KursNotenModel;
@@ -23,8 +24,11 @@ public interface MainView extends View {
 	static final String COMMAND_KLASSEN_ANLEGEN = "klassenAnlegen";
 	static final String COMMAND_KURSE_ANLEGEN = "kurseAnlegen";
 	
+	static final String COMMAND_KLASSE_NOTEN_ANZEIGEN = "klasseNotenAnzeigen";
+	
 	static final String COMMAND_NOTE_EINTRAGEN = "noteEintragen";
 	static final String COMMAND_KURS_NOTEN_ANZEIGEN = "kursNotenAnzeigen";
+	static final String COMMAND_KLASSENARBEIT_EINTRAGEN = "klassenarbeitEintragen";
 
 	void loginBenutzer(Benutzer benutzer, Jahre jahre) throws DatenbankFehler;
 	
@@ -45,6 +49,10 @@ public interface MainView extends View {
 	
 	NotenHinzufuegenView getNotenHinzufuegenView(ListModel<Schueler> schueler, Kurs kurs);
 	
+	void klasseNotenAnzeigen(KlasseNotenModel klasseNotenModel, Klasse selectedKlasse);
+
+	Klasse getSelectedKlasse();
+	
 	void kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs selectedKurs);
 
 	Kurs getSelectedKurs();
@@ -52,4 +60,6 @@ public interface MainView extends View {
 	public static MainView erstelleMainView() {
 		return new SwingMainView();
 	}
+
+	KlassenarbeitView getKlassenarbeitView(ListModel<Schueler> gebeSchueler, Kurs kurs);
 }

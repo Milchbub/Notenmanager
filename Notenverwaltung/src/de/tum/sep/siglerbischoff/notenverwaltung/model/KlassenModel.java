@@ -32,9 +32,9 @@ public class KlassenModel extends AbstractListModel<Klasse> {
 	}
 
 	public void loeschen(Klasse klasse) throws DatenbankFehler {
+		int i = klassen.indexOf(klasse);
 		klassen.remove(klasse);
 		model.gebeDao().klasseLoeschen(klasse.gebeId());
-		int i = klassen.indexOf(klasse);
 		fireIntervalRemoved(this, i, i);
 	}
 	

@@ -15,9 +15,12 @@ class BenutzerdatenManager implements ActionListener {
 	private BenutzerdatenView view;
 	private BenutzerTableModel benutzer;
 	
-	BenutzerdatenManager (MainView mainView, Model model) {
+	private Main parent;
+	
+	BenutzerdatenManager (MainView mainView, Model model, Main parent) {
+		this.parent = parent;
 		try {
-			benutzer = Benutzer.gebeBenutzer(model);
+			benutzer = Benutzer.gebeBenutzer(model, parent.getLoggedIn());
 			view = mainView.getBenutzerverwaltungView(benutzer);
 			view.addActionListener(this);
 		} catch (DatenbankFehler e) {
@@ -36,11 +39,27 @@ class BenutzerdatenManager implements ActionListener {
 				view.neu();
 				break;
 			case BenutzerdatenView.COMMAND_NEU_FERTIG:
-				try {
-					benutzer.hinzufuegen(view.gebeNeuLoginName(), 
-							view.gebeNeuName(), view.gebeNeuPasswort(), view.gebeNeuIstAdmin());
-				} catch (DatenbankFehler e) {
-					view.showError(e);
+				String loginName = view.gebeNeuLoginName();
+				String name = view.gebeNeuName();
+				char[] passwort = view.gebeNeuPasswort();
+				boolean istAdmin = view.gebeNeuIstAdmin();
+				
+				if(benutzer.contains(loginName)) {
+					view.showError("Fehler", "Dieser Benutzername existiert bereits. ");
+				} else if (loginName.equals("")) {
+					view.showError("Fehler", "Bitte geben Sie einen Login-Namen ein. ");
+				} else if (name.equals("")) {
+					view.showError("Fehler", "Bitte geben Sie einen Namen ein. ");
+				} else if (passwort.length == 0) {
+					view.showError("Fehler", "Bitte geben Sie ein Passwort ein. ");
+				} else {
+					try {
+					benutzer.hinzufuegen(loginName, name, passwort, istAdmin);
+					//TODO Hier soll nicht die groﬂe view, sondern nur der "neu"-Dialog geschlossen werden. 
+					//view.schliessen();
+					} catch (DatenbankFehler e) {
+						view.showError(e);
+					}
 				}
 				break;
 			case BenutzerdatenView.COMMAND_SCHLIESSEN: 

@@ -18,7 +18,10 @@ class KlassenManager implements ActionListener {
 	
 	private Model model;
 	
-	KlassenManager(MainView mainView, Model model) {
+	private Main parent;
+	
+	KlassenManager(MainView mainView, Model model, Main parent) {
+		this.parent = parent;
 		try {
 			klassen = Klasse.gebeKlassen(mainView.gebeJahr(), model);
 			view = mainView.getKlassenverwaltungView(klassen);
@@ -38,7 +41,7 @@ class KlassenManager implements ActionListener {
 		switch (ae.getActionCommand()) {
 			case KlassenverwaltungView.COMMAND_NEU:
 				try {
-					view.bearbeiten(null, Benutzer.gebeBenutzer(model), null);
+					view.bearbeiten(null, Benutzer.gebeBenutzer(model, parent.getLoggedIn()), null);
 				} catch (DatenbankFehler e) {
 					view.showError(e);
 				}
@@ -48,7 +51,7 @@ class KlassenManager implements ActionListener {
 					view.showError("Fehler", "Keine Klasse ausgewählt...");
 				} else {
 					try {
-						view.bearbeiten(view.gebeAusgewaehlt(), Benutzer.gebeBenutzer(model), view.gebeAusgewaehlt().gebeSchuelerKlasseModel(model));
+						view.bearbeiten(view.gebeAusgewaehlt(), Benutzer.gebeBenutzer(model, parent.getLoggedIn()), view.gebeAusgewaehlt().gebeSchuelerKlasseModel(model));
 					} catch (DatenbankFehler e) {
 						view.showError(e);
 					}
@@ -64,19 +67,38 @@ class KlassenManager implements ActionListener {
 						 view.showError(e);
 					}
 				}
-			case KlassenverwaltungView.COMMAND_NEU_FERTIG:
-				try {
-					klassen.hinzufuegen(view.gebeNeuName(), view.gebeNeuKlassenlehrer());
-				} catch (DatenbankFehler e) {
-					view.showError(e);
+				break;
+			case KlassenverwaltungView.COMMAND_NEU_FERTIG: { //Hier Klammern, um 'name' und 'lehrer' wiederverwenden zu können
+				String name = view.gebeNeuName();
+				Benutzer lehrer = view.gebeNeuKlassenlehrer();
+				if(name.equals("")) {
+					view.showError("Fehler", "Bitte tragen Sie einen Namen ein. ");
+				} else if (lehrer == null) {
+					view.showError("Fehler", "Kein Klassenleiter ausgewählt..." );
+				} else {
+					try {
+						klassen.hinzufuegen(name, lehrer);
+					} catch (DatenbankFehler e) {
+						//TODO Fehlermeldung zu doppeltem Klassenname-Schuljahr-Eintrag
+						view.showError(e);
+					}						
 				}
 				break;
+			}
 			case KlassenverwaltungView.COMMAND_BEARBEITEN_FERTIG: 
-				try {
-					klassen.bearbeiten(view.gebeAusgewaehlt(), 
-							view.gebeNeuName(), view.gebeNeuKlassenlehrer());
-				} catch (DatenbankFehler e) {
-					view.showError(e);
+				String name = view.gebeNeuName();
+				Benutzer lehrer = view.gebeNeuKlassenlehrer();
+				if(name.equals("")) {
+					view.showError("Fehler", "Bitte tragen Sie einen Namen ein. ");
+				} else if (lehrer == null) {
+					view.showError("Fehler", "Kein Klassenleiter ausgewählt..." );
+				} else {
+					try {
+						klassen.bearbeiten(view.gebeAusgewaehlt(), name, lehrer);
+					} catch (DatenbankFehler e) {
+						//TODO Fehlermeldung zu doppeltem Klassenname-Schuljahr-Eintrag
+						view.showError(e);
+					}
 				}
 				break;
 			case KlassenverwaltungView.COMMAND_SCHLIESSEN: 

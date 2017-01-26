@@ -1,5 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
+import java.util.List;
+
 import javax.swing.ListModel;
 
 public class Klasse {
@@ -32,9 +34,8 @@ public class Klasse {
 		return klassenlehrer;
 	}
 	
-	public ListModel<Schueler> gebeSchueler(Model model) throws DatenbankFehler {
-		//TODO
-		return null;
+	public List<Schueler> gebeSchueler(Model model) throws DatenbankFehler {
+		return model.gebeDao().gebeSchueler(this);
 	}
 	
 	public SchuelerKlasseModel gebeSchuelerKlasseModel(Model model) throws DatenbankFehler {

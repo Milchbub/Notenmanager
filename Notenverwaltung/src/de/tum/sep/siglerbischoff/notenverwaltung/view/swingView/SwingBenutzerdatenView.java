@@ -43,7 +43,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 		listeners = new EventListenerList();
 		buttons = new Vector<>();
 		
-		JLabel lblAlleSchler = new JLabel("Alle Sch\u00FCler: ");
+		JLabel lblAlleSchler = new JLabel("Alle Benutzer: ");
 		
 		benutzerTable = new JTable(benutzer);
 		benutzerTable.setFillsViewportHeight(true);
@@ -145,6 +145,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 			for (ActionListener l : listeners.getListeners(ActionListener.class)) {
 				l.actionPerformed(ae);
 			}
+			//TODO Der Dialog sollte vom Controller geschlossen werden, nur falls die Angaben korrekt sind.
 			dialog.dispose();
 		});
 		
@@ -190,6 +191,7 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 			.addContainerGap());
 		
 		dialog.setLayout(gl_neuer_Schueler);
+		dialog.getRootPane().setDefaultButton(btnOk);
 		dialog.pack();
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);

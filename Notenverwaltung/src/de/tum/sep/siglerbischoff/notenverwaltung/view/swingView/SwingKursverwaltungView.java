@@ -19,6 +19,8 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
 import javax.swing.event.EventListenerList;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
@@ -61,6 +63,26 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 		} else {
 			scrollPane.setViewportView(new JLabel(" Es sind noch keine Kurse eingetragen..."));
 		}
+
+		kurse.addListDataListener(new ListDataListener() {
+
+			@Override
+			public void intervalAdded(ListDataEvent e) {a();}
+
+			@Override
+			public void intervalRemoved(ListDataEvent e) {a();}
+
+			@Override
+			public void contentsChanged(ListDataEvent e) {a();}
+			
+			private void a() {
+				if (kurse.getSize() > 0) {
+					scrollPane.setViewportView(jList);
+				} else {
+					scrollPane.setViewportView(new JLabel(" Es sind noch keine Kurse eingetragen..."));
+				}
+			}
+		});
 		
 		JButton btnBearbeiten = new JButton("Bearbeiten...");
 		btnBearbeiten.setActionCommand(COMMAND_BEARBEITEN);
@@ -197,10 +219,10 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 			dialog.dispose();
 		});
 		
-		GroupLayout gl_neuer_Schueler = new GroupLayout(dialog.getContentPane());
-		SequentialGroup horizontalGroup = gl_neuer_Schueler.createSequentialGroup()
+		GroupLayout gl_neuer_Kurs = new GroupLayout(dialog.getContentPane());
+		SequentialGroup horizontalGroup = gl_neuer_Kurs.createSequentialGroup()
 			.addContainerGap()
-			.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+			.addGroup(gl_neuer_Kurs.createParallelGroup(Alignment.LEADING, false)
 				.addComponent(lblName)
 				.addComponent(txtName)
 				.addComponent(lblFach)
@@ -208,14 +230,14 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 				.addComponent(lblJahr)
 				.addComponent(lblLehrer)
 				.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 150, GroupLayout.DEFAULT_SIZE)
-				.addGroup(gl_neuer_Schueler.createSequentialGroup()
+				.addGroup(gl_neuer_Kurs.createSequentialGroup()
 					.addComponent(btnOk)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(btnAbbr))
 			);
 		
-		ParallelGroup verticalParallelGroup = gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
-			.addGroup(gl_neuer_Schueler.createSequentialGroup()
+		ParallelGroup verticalParallelGroup = gl_neuer_Kurs.createParallelGroup(Alignment.LEADING)
+			.addGroup(gl_neuer_Kurs.createSequentialGroup()
 				.addContainerGap()
 				.addComponent(lblName)
 				.addPreferredGap(ComponentPlacement.RELATED)
@@ -231,7 +253,7 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(scrollPane)
 				.addPreferredGap(ComponentPlacement.UNRELATED)
-				.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_neuer_Kurs.createParallelGroup(Alignment.LEADING)
 					.addComponent(btnOk)
 					.addComponent(btnAbbr))
 			);
@@ -268,16 +290,17 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 			dialog.setTitle("Kurs \"" + kurs.gebeName() + "\" bearbeiten");
 			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
 			txtName.setText(kurs.gebeName());
+			txtFach.setText(kurs.gebeFach());
 			list.setSelectedValue(kurs.gebeKursleiter(), true);
 			
 			horizontalGroup
 				.addPreferredGap(ComponentPlacement.UNRELATED)
-				.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_neuer_Kurs.createParallelGroup(Alignment.LEADING)
 					.addComponent(lblZuordnen)
-					.addGroup(gl_neuer_Schueler.createSequentialGroup()
+					.addGroup(gl_neuer_Kurs.createSequentialGroup()
 						.addComponent(scrollListIn, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_neuer_Kurs.createParallelGroup(Alignment.LEADING, false)
 							.addComponent(btnIn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 							.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						)
@@ -285,13 +308,14 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 						.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
 					)
 				);
+			
 			verticalParallelGroup
-				.addGroup(gl_neuer_Schueler.createSequentialGroup()
+				.addGroup(gl_neuer_Kurs.createSequentialGroup()
 					.addComponent(lblZuordnen)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_neuer_Schueler.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_neuer_Kurs.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrollListIn)
-						.addGroup(gl_neuer_Schueler.createSequentialGroup()
+						.addGroup(gl_neuer_Kurs.createSequentialGroup()
 							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 							.addComponent(btnIn)
 							.addPreferredGap(ComponentPlacement.RELATED)
@@ -305,15 +329,16 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 		}
 		
 		horizontalGroup.addContainerGap();
-		gl_neuer_Schueler.setHorizontalGroup(horizontalGroup);
+		gl_neuer_Kurs.setHorizontalGroup(horizontalGroup);
 		
-		gl_neuer_Schueler.setVerticalGroup(gl_neuer_Schueler.createSequentialGroup()
+		gl_neuer_Kurs.setVerticalGroup(gl_neuer_Kurs.createSequentialGroup()
 			.addContainerGap()
 			.addGroup(verticalParallelGroup)
 			.addContainerGap()
 		);
 		
-		dialog.setLayout(gl_neuer_Schueler);
+		dialog.setLayout(gl_neuer_Kurs);
+		dialog.getRootPane().setDefaultButton(btnOk);
 		dialog.pack();
 		dialog.setMinimumSize(dialog.getSize());
 		dialog.setLocationRelativeTo(this);

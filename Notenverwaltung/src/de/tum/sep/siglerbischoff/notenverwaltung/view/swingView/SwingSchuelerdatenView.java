@@ -156,10 +156,10 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		JTextField txtName = new JTextField();
 		JLabel lblDatum = new JLabel("Geburtsdatum: ");
 		
-		Calendar calendar = Calendar.getInstance();
-	    Date heute = calendar.getTime();
-	    calendar.add(Calendar.YEAR, -100);
-	    Date fruehestes = calendar.getTime();
+		Calendar cal = Calendar.getInstance();
+	    Date heute = cal.getTime();
+	    cal.add(Calendar.YEAR, -100);
+	    Date fruehestes = cal.getTime();
 		JSpinner sprDatum = new JSpinner(new SpinnerDateModel(heute, fruehestes, heute, Calendar.YEAR));
 		sprDatum.setEditor(new DateEditor(sprDatum, "dd.MM.yyyy"));
 		
@@ -210,6 +210,7 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 			.addContainerGap());
 		
 		dialog.setLayout(gl_neuer_Schueler);
+		dialog.getRootPane().setDefaultButton(btnOk);
 		dialog.pack();
 		dialog.setLocationRelativeTo(this);
 		dialog.setVisible(true);

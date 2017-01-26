@@ -81,6 +81,16 @@ public class Kurs {
 		return name;
 	}
 	
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof Kurs && ((Kurs) o).gebeId() == id;
+	}
+	
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	
 	public static KurseModel gebeKurse(int jahr, Model model) throws DatenbankFehler {
 		return new KurseModel(model.gebeDao().gebeKurse(jahr), jahr, model);
 	}
