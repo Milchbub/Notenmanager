@@ -6,20 +6,14 @@ import javax.swing.ListModel;
 
 public class Klasse {
 
-	private final int id; 
-	private String name; 
-	private int jahr; 
+	private final String name; 
+	private final int jahr; 
 	private Benutzer klassenlehrer;
 	
-	Klasse (int id, String name, int jahr, Benutzer klassenlehrer) {
-		this.id = id; 
+	Klasse (String name, int jahr, Benutzer klassenlehrer) {
 		this.name = name; 
 		this.jahr = jahr; 
 		this.klassenlehrer = klassenlehrer;
-	}
-	
-	public int gebeId() {
-		return id;
 	}
 	
 	public String gebeName() {
@@ -42,22 +36,17 @@ public class Klasse {
 		return new SchuelerKlasseModel(this, model);
 	}
 	
-	void setzeName(String name, Model model) throws DatenbankFehler {
-		model.gebeDao().klasseAendern(id, name, klassenlehrer);
-		this.name = name;
-	}
-	
 	void setzeKlassenlehrer(Benutzer klassenlehrer, Model model) throws DatenbankFehler {
-		model.gebeDao().klasseAendern(id, name, klassenlehrer);
+		model.gebeDao().klasseAendern(this, klassenlehrer);
 		this.klassenlehrer = klassenlehrer;
 	}
 	
 	void schuelerHinzufuegen(Schueler schueler, Model model) throws DatenbankFehler {
-		model.gebeDao().zuKlasseHinzufuegen(id, schueler.gebeId());
+		model.gebeDao().zuKlasseHinzufuegen(this, schueler);
 	}
 	
 	void schuelerEntfernen(Schueler schueler, Model model) throws DatenbankFehler{
-		model.gebeDao().ausKlasseLoeschen(id, schueler.gebeId());
+		model.gebeDao().ausKlasseLoeschen(this, schueler);
 	}
 	
 	@Override

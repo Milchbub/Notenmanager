@@ -7,23 +7,18 @@ import javax.swing.ListModel;
 
 public class Kurs {
 
-	private final int id; 
-	private String name; 
+	private final String name; 
+	private final int jahr; 
 	private String fach; 
-	private int jahr; 
 	private Benutzer kursleiter;
 	
-	Kurs (int id, String name, String fach, int jahr, Benutzer kursleiter) {
-		this.id = id;
+	Kurs (String name, int jahr, String fach, Benutzer kursleiter) {
 		this.name = name; 
-		this.fach = fach;
 		this.jahr = jahr; 
+		this.fach = fach;
 		this.kursleiter = kursleiter;
 	}
-	
-	public int gebeId() {
-		return id;
-	}
+
 	public String gebeName() {
 		return name;
 	}
@@ -53,27 +48,22 @@ public class Kurs {
 		return new SchuelerKursModel(this, model);
 	}
 	
-	void setzeName(String name, Model model) throws DatenbankFehler {
-		model.gebeDao().kursAendern(id, name, fach, kursleiter);
-		this.name = name;
-	}
-	
 	void setzeFach(String fach, Model model) throws DatenbankFehler {
-		model.gebeDao().kursAendern(id, name, fach, kursleiter);
+		model.gebeDao().kursAendern(this, fach, kursleiter);
 		this.fach = fach;
 	}
 	
 	void setzeKursleiter(Benutzer kursleiter, Model model) throws DatenbankFehler {
-		model.gebeDao().kursAendern(id, name, fach, kursleiter);
+		model.gebeDao().kursAendern(this, fach, kursleiter);
 		this.kursleiter = kursleiter;
 	}
 	
 	void schuelerHinzufuegen(Schueler schueler, Model model) throws DatenbankFehler {
-		model.gebeDao().zuKursHinzufuegen(id, schueler.gebeId());
+		model.gebeDao().zuKursHinzufuegen(this, schueler);
 	}
 	
 	void schuelerEntfernen(Schueler schueler, Model model) throws DatenbankFehler{
-		model.gebeDao().ausKursLoeschen(id, schueler.gebeId());
+		model.gebeDao().ausKursLoeschen(this, schueler);
 	}
 	
 	@Override
@@ -83,12 +73,13 @@ public class Kurs {
 	
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Kurs && ((Kurs) o).gebeId() == id;
+		return o instanceof Kurs && 
+			((Kurs) o).name.equalsIgnoreCase(name) && ((Kurs) o).jahr == jahr;
 	}
 	
 	@Override
 	public int hashCode() {
-		return id;
+		return name.toLowerCase().hashCode() + jahr;
 	}
 	
 	public static KurseModel gebeKurse(int jahr, Model model) throws DatenbankFehler {

@@ -193,7 +193,7 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 		dialog.setModal(true);
 		
 		JLabel lblName = new JLabel("Name: ");
-		JTextField txtName = new JTextField(klasse.gebeName());
+		JTextField txtName = new JTextField(klasse != null ? klasse.gebeName() : "");
 		JLabel lblJahr = new JLabel("Jahr: "+ klassen.gebeJahr());
 		
 		JLabel lblLehrer = new JLabel("Klassenlehrer: ");

@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
 
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
@@ -19,7 +20,10 @@ class NotenHinzufuegenManager implements ActionListener {
 	
 	private Model model;
 	
-	NotenHinzufuegenManager(MainView mainView, Model model, Kurs kurs) {
+	private Benutzer loggedIn;
+	
+	NotenHinzufuegenManager(MainView mainView, Model model, Kurs kurs, Benutzer loggedIn) {
+		this.loggedIn = loggedIn;
 		try {
 			view = mainView.getNotenHinzufuegenView(kurs.gebeSchueler(model), kurs);
 			view.addActionListener(this);
@@ -42,10 +46,11 @@ class NotenHinzufuegenManager implements ActionListener {
 			case NotenHinzufuegenView.COMMAND_NOTE_EINTRAGEN:
 				int wert = view.gebeNeuWert();
 				Date datum = view.gebeNeuErstellungsdatum();
-				String art = view.gebeNeuArt();
 				double gewichtung = view.gebeNeuGewichtung();
-				Schueler schueler = view.gebeNeuSchueler();
+				String art = view.gebeNeuArt();
+				String kommentar = view.gebeNeuKommentar();
 				Kurs kurs = view.gebeNeuKurs();
+				Schueler schueler = view.gebeNeuSchueler();
 				if (wert < 1 || wert > 6) {
 					view.showError("Fehler", "Bitte geben Sie eine Note zwischen 1 und 6 an. ");
 				} else if (datum.after(Calendar.getInstance().getTime())) {
@@ -58,7 +63,7 @@ class NotenHinzufuegenManager implements ActionListener {
 					view.showError("Fehler" , "Kein Schüler ausgewählt... ");
 				} else {
 					try {
-						Note.noteEintragen(model, wert, datum, art, gewichtung, schueler, kurs);
+						Note.noteEintragen(wert, datum, gewichtung, art, kommentar, kurs, schueler, loggedIn, model);
 						view.schliessen();
 					} catch (DatenbankFehler e) {
 						view.showError(e);

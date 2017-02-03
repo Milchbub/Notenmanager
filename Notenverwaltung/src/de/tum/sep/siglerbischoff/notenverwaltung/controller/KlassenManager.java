@@ -94,7 +94,7 @@ class KlassenManager implements ActionListener {
 					view.showError("Fehler", "Kein Klassenleiter ausgewählt..." );
 				} else {
 					try {
-						klassen.bearbeiten(view.gebeAusgewaehlt(), name, lehrer);
+						klassen.setzeKlassenlehrer(view.gebeAusgewaehlt(), lehrer);
 					} catch (DatenbankFehler e) {
 						//TODO Fehlermeldung zu doppeltem Klassenname-Schuljahr-Eintrag
 						view.showError(e);

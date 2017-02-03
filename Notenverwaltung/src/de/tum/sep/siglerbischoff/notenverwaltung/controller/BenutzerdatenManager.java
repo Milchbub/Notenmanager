@@ -15,10 +15,7 @@ class BenutzerdatenManager implements ActionListener {
 	private BenutzerdatenView view;
 	private BenutzerTableModel benutzer;
 	
-	private Main parent;
-	
 	BenutzerdatenManager (MainView mainView, Model model, Main parent) {
-		this.parent = parent;
 		try {
 			benutzer = Benutzer.gebeBenutzer(model, parent.getLoggedIn());
 			view = mainView.getBenutzerverwaltungView(benutzer);

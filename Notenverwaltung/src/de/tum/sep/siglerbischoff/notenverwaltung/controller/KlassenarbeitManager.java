@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
@@ -20,7 +21,9 @@ class KlassenarbeitManager implements ActionListener {
 	
 	private Model model;
 	
-	KlassenarbeitManager(MainView mainView, Model model, Kurs kurs) {
+	private Benutzer loggedIn;
+	
+	KlassenarbeitManager(MainView mainView, Model model, Kurs kurs, Benutzer loggedIn) {
 		try {
 			view = mainView.getKlassenarbeitView(kurs.gebeSchueler(model), kurs);
 			view.addActionListener(this);
@@ -42,11 +45,12 @@ class KlassenarbeitManager implements ActionListener {
 				break;
 			case KlassenarbeitView.COMMAND_NOTEN_EINTRAGEN:
 				List<Integer> werte = view.gebeNeuWerte();
-				Date datum = view.gebeNeuErstellungsdatum();
-				String art = view.gebeNeuArt();
+				Date datum = view.gebeNeuDatum();
 				double gewichtung = view.gebeNeuGewichtung();
-				List<Schueler> schueler = view.gebeNeuSchueler();
+				String art = view.gebeNeuArt();
+				String kommentar = view.gebeNeuKommentar();
 				Kurs kurs = view.gebeNeuKurs();
+				List<Schueler> schueler = view.gebeNeuSchueler();
 				if(werte == null
 						|| schueler == null
 						|| werte.size() != schueler.size()) {
@@ -67,7 +71,7 @@ class KlassenarbeitManager implements ActionListener {
 								view.showError("Fehler", "Bitte geben Sie nur Noten zwischen 1 und 6 an. ");
 							} else {
 								try {
-									Note.noteEintragen(model, werte.get(i), datum, art, gewichtung, schueler.get(i), kurs);
+									Note.noteEintragen(werte.get(i), datum, gewichtung, art, kommentar, kurs, schueler.get(i), loggedIn, model);
 									view.schliessen();
 								} catch (DatenbankFehler f) {
 									view.showError(f);

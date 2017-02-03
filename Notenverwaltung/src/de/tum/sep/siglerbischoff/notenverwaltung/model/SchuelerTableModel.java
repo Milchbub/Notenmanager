@@ -9,8 +9,8 @@ public class SchuelerTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 
-	List<Schueler> schueler;
-	Model model;
+	private List<Schueler> schueler;
+	private Model model;
 
 	private static final String[] columnNames = new String[]{"ID", "Name", "Geburtsdatum"};
 	private static final Class<?>[] columnTypes = new Class<?>[]{Integer.class, String.class, Date.class};
@@ -80,7 +80,7 @@ public class SchuelerTableModel extends AbstractTableModel {
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 	
-	public void hinzufuegen(String name, Date gebDat, Model model) throws DatenbankFehler {
+	public void hinzufuegen(String name, Date gebDat) throws DatenbankFehler {
 		schueler.add(model.gebeDao().schuelerHinzufuegen(name, gebDat));
 		fireTableRowsInserted(getColumnCount() - 1,	getColumnCount() - 1);
 	}

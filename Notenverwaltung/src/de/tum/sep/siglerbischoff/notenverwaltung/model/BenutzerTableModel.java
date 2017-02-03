@@ -14,8 +14,8 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 	private Model model;
 	private Benutzer loggedIn;
 
-	private static final String[] columnNames = new String[]{"ID", "Loginname", "Name", "Ist Admin?"};
-	private static final Class<?>[] columnTypes = new Class<?>[]{Integer.class, String.class, String.class, Boolean.class};
+	private static final String[] columnNames = new String[]{"Loginname", "Name", "Ist Admin?"};
+	private static final Class<?>[] columnTypes = new Class<?>[]{String.class, String.class, Boolean.class};
 	
 	BenutzerTableModel(List<Benutzer> benutzer, Model model, Benutzer loggedIn) {
 		this.benutzer = benutzer;
@@ -30,7 +30,7 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 
 	@Override
 	public int getColumnCount() {
-		return 4;
+		return 3;
 	}
 
 	@Override
@@ -45,9 +45,9 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if(columnIndex <= 1) {
+		if(columnIndex == 0) {
 			return false;
-		} else if(columnIndex == 3 && benutzer.indexOf(loggedIn) == rowIndex) {
+		} else if(columnIndex == 2 && benutzer.indexOf(loggedIn) == rowIndex) {
 			return false;
 		} else {
 			return true;
@@ -57,13 +57,11 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		switch(columnIndex) {
-			case 0:
-				return benutzer.get(rowIndex).gebeId();
-			case 1: 
+			case 0: 
 				return benutzer.get(rowIndex).gebeLoginName();
-			case 2:
+			case 1:
 				return benutzer.get(rowIndex).gebeName();
-			case 3: 
+			case 2: 
 				return benutzer.get(rowIndex).istAdmin();
 		}
 		throw new IllegalArgumentException();
@@ -75,12 +73,9 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 		try {
 			switch(columnIndex) {
 				case 1:
-					b.setzeLoginName((String) aValue, model);
-					break;
-				case 2:
 					b.setzeName((String) aValue, model);
 					break;
-				case 3:
+				case 2:
 					b.setzeIstAdmin((Boolean) aValue, model);
 					break;
 			}

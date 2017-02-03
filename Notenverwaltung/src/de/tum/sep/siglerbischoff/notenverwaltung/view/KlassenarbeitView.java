@@ -12,9 +12,10 @@ public interface KlassenarbeitView extends View {
 	static final String COMMAND_NOTEN_EINTRAGEN = "notenEintragen";
 	
 	List<Integer> gebeNeuWerte();
-	Date gebeNeuErstellungsdatum();
-	Double gebeNeuGewichtung();
+	Date gebeNeuDatum();
+	double gebeNeuGewichtung();
 	List<Schueler> gebeNeuSchueler();
 	Kurs gebeNeuKurs();
-	String gebeNeuArt(); 
+	String gebeNeuArt();
+	String gebeNeuKommentar(); 
 }

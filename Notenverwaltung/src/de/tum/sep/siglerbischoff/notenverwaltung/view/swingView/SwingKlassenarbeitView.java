@@ -48,8 +48,9 @@ class SwingKlassenarbeitView extends JDialog implements KlassenarbeitView {
 	private List<Integer> werte;
 	private List<Schueler> schueler;
 	private JSpinner sprDatum; 
-	private JTextField txtArt; 
 	private JSpinner sprGewichtung;
+	private JComboBox<String> txtArt; 
+	private JTextField txtKommentar;
 
 	SwingKlassenarbeitView(JFrame parent, ListModel<Schueler> schueler, Kurs kurs) {
 		super(parent, "Klassenarbeit eintragen", true);
@@ -74,12 +75,17 @@ class SwingKlassenarbeitView extends JDialog implements KlassenarbeitView {
 		sprDatum = new JSpinner(new SpinnerDateModel(heute, fruehestes, heute, Calendar.YEAR));
 		sprDatum.setEditor(new DateEditor(sprDatum, "dd.MM.yyyy"));
 		
-		JLabel lblArt = new JLabel("Art: ");
-		txtArt = new JTextField();
-		
 		JLabel lblGewichtung = new JLabel("Gewichtung: ");
 		sprGewichtung = new JSpinner(new SpinnerNumberModel(1.0, 0.05, 20.0, 0.25));
 		sprGewichtung.setEditor(new NumberEditor(sprGewichtung, "0.00"));
+		
+		JLabel lblArt = new JLabel("Art: ");
+		txtArt = new JComboBox<>(new String[]{"Unterrichtsbeitrag", "Stegreifaufgabe", "Ausfrage", 
+				"Projekt", "Kurzarbeit"});
+		txtArt.setEditable(true);
+		
+		JLabel lblKommentar = new JLabel("Kommentar: ");
+		txtKommentar = new JTextField();
 		
 		TableModel tableModel = new AbstractTableModel() {
 			private static final long serialVersionUID = 1L;
@@ -148,10 +154,12 @@ class SwingKlassenarbeitView extends JDialog implements KlassenarbeitView {
 			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
 				.addComponent(lblDatum)
 				.addComponent(sprDatum)
-				.addComponent(lblArt)
-				.addComponent(txtArt)
 				.addComponent(lblGewichtung)
 				.addComponent(sprGewichtung)
+				.addComponent(lblArt)
+				.addComponent(txtArt)
+				.addComponent(lblKommentar)
+				.addComponent(txtKommentar)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addComponent(btnSpeichern)
 					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -170,13 +178,17 @@ class SwingKlassenarbeitView extends JDialog implements KlassenarbeitView {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(sprDatum, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblGewichtung)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(sprGewichtung, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblArt)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(txtArt, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(lblGewichtung)
+					.addComponent(lblKommentar)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(sprGewichtung, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addComponent(txtKommentar)
 					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(btnSpeichern)
@@ -225,18 +237,23 @@ class SwingKlassenarbeitView extends JDialog implements KlassenarbeitView {
 	}
 
 	@Override
-	public Date gebeNeuErstellungsdatum() {
+	public Date gebeNeuDatum() {
 		return (Date) sprDatum.getValue();
 	}
 
 	@Override
-	public Double gebeNeuGewichtung() {
-		return (Double) sprGewichtung.getValue();
+	public double gebeNeuGewichtung() {
+		return (double) sprGewichtung.getValue();
 	}
 
 	@Override
-	public List<Schueler> gebeNeuSchueler() {
-		return schueler;
+	public String gebeNeuArt() {
+		return (String) txtArt.getSelectedItem();
+	}
+	
+	@Override
+	public String gebeNeuKommentar() {
+		return txtKommentar.getText();
 	}
 
 	@Override
@@ -245,8 +262,8 @@ class SwingKlassenarbeitView extends JDialog implements KlassenarbeitView {
 	}
 
 	@Override
-	public String gebeNeuArt() {
-		return txtArt.getText();
+	public List<Schueler> gebeNeuSchueler() {
+		return schueler;
 	}
 	
 	private static class NotenCellEditor extends AbstractCellEditor implements TableCellEditor {

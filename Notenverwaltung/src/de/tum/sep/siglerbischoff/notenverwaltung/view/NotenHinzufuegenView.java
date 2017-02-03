@@ -15,6 +15,7 @@ public interface NotenHinzufuegenView extends View {
 	Double gebeNeuGewichtung();
 	Schueler gebeNeuSchueler();
 	Kurs gebeNeuKurs();
-	String gebeNeuArt(); 
+	String gebeNeuArt();
+	String gebeNeuKommentar(); 
 	
 }

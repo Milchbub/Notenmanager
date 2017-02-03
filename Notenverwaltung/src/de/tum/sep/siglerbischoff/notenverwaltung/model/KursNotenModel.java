@@ -38,7 +38,7 @@ public class KursNotenModel extends AbstractListModel<Note> {
 	public void schuelerAuswaehlen(Schueler schueler) throws DatenbankFehler {
 		ausgewaehlt = schueler;
 		if(!notenlisten.containsKey(schueler)) {
-			notenlisten.put(schueler, model.gebeDao().gebeNoten(schueler, kurs));
+			notenlisten.put(schueler, model.gebeDao().gebeNoten(kurs, schueler));
 		}
 		fireContentsChanged(this, 0, getSize() - 1); 
 	}

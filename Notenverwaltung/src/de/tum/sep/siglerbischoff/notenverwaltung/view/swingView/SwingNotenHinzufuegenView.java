@@ -38,8 +38,9 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 	
 	private JComboBox<Integer> cmbBxWert;
 	private JSpinner sprDatum;
-	private JTextField txtArt;
 	private JSpinner sprGewichtung;
+	private JComboBox<String> txtArt;
+	private JTextField txtKommentar;
 	private JList<Schueler> list;
 	
 	SwingNotenHinzufuegenView(JFrame parent, ListModel<Schueler> schueler, Kurs kurs) {
@@ -66,12 +67,17 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 		sprDatum = new JSpinner(new SpinnerDateModel(heute, fruehestes, heute, Calendar.YEAR));
 		sprDatum.setEditor(new DateEditor(sprDatum, "dd.MM.yyyy"));
 		
-		JLabel lblArt = new JLabel("Art: ");
-		txtArt = new JTextField();
-		
 		JLabel lblGewichtung = new JLabel("Gewichtung: ");
 		sprGewichtung = new JSpinner(new SpinnerNumberModel(1.0, 0.05, 20.0, 0.25));
 		sprGewichtung.setEditor(new NumberEditor(sprGewichtung, "0.00"));
+		
+		JLabel lblArt = new JLabel("Art: ");
+		txtArt = new JComboBox<>(new String[]{"Unterrichtsbeitrag", "Stegreifaufgabe", "Ausfrage", 
+				"Projekt", "Kurzarbeit"});
+		txtArt.setEditable(true);
+		
+		JLabel lblKommentar = new JLabel("Kommentar: ");
+		txtKommentar = new JTextField();
 		
 		JButton btnSpeichern = new JButton("Speichern");
 		btnSpeichern.setActionCommand(COMMAND_NOTE_EINTRAGEN);
@@ -103,14 +109,16 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(lblNotenwert)
 						.addComponent(lblDatum)
+						.addComponent(lblGewichtung)
 						.addComponent(lblArt)
-						.addComponent(lblGewichtung))
+						.addComponent(lblKommentar))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addComponent(cmbBxWert)
 						.addComponent(sprDatum)
+						.addComponent(sprGewichtung)
 						.addComponent(txtArt)
-						.addComponent(sprGewichtung))
+						.addComponent(txtKommentar))
 				)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addComponent(btnSpeichern)
@@ -136,12 +144,16 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 						.addComponent(sprDatum))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblGewichtung)
+						.addComponent(sprGewichtung))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblArt)
 						.addComponent(txtArt))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblGewichtung)
-						.addComponent(sprGewichtung))
+						.addComponent(lblKommentar)
+						.addComponent(txtKommentar))
 					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnSpeichern)
@@ -198,8 +210,13 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 	}
 
 	@Override
-	public Schueler gebeNeuSchueler() {
-		return list.getSelectedValue();
+	public String gebeNeuArt() {
+		return (String) txtArt.getSelectedItem();
+	}
+	
+	@Override
+	public String gebeNeuKommentar() {
+		return txtKommentar.getText();
 	}
 
 	@Override
@@ -208,7 +225,7 @@ class SwingNotenHinzufuegenView extends JDialog implements NotenHinzufuegenView 
 	}
 
 	@Override
-	public String gebeNeuArt() {
-		return txtArt.getText();
+	public Schueler gebeNeuSchueler() {
+		return list.getSelectedValue();
 	}
 }

@@ -6,34 +6,18 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
-import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
-import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.SchuelerTableModel;
-import de.tum.sep.siglerbischoff.notenverwaltung.view.MainView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
 
 class SchuelerdatenManager implements ActionListener {
 	
-	private Model model;
-	
 	private SchuelerdatenView view;
 	private SchuelerTableModel schueler;
 	
-	private Main parent;
-	
-	SchuelerdatenManager (MainView mainView, Model model, Main parent) {
-		this.parent = parent;
-		this.model = model;
-		try {
-			schueler = Schueler.gebeSchueler(model);
-			view = mainView.getSchuelerdatenView(schueler);
-			view.addActionListener(this);
-		} catch (DatenbankFehler e) {
-			if(Main.debug) {
-				e.printStackTrace();
-			}
-			mainView.showError(e);
-		}
+	SchuelerdatenManager (SchuelerdatenView view, SchuelerTableModel schueler) {
+		this.schueler = schueler;
+		this.view = view;
+		view.addActionListener(this);
 		view.zeigen();
 	}
 
@@ -57,7 +41,7 @@ class SchuelerdatenManager implements ActionListener {
 						view.showError("Fehler", "Schüler dürfen nicht jünger als drei Jahre alt sein. ");
 					} else {
 						try {
-						schueler.hinzufuegen(name, gebDat, model);
+						schueler.hinzufuegen(name, gebDat);
 						//TODO Hier soll nicht die große view, sondern nur der "neu"-Dialog geschlossen werden. 
 						//view.schliessen();
 						} catch (DatenbankFehler e) {

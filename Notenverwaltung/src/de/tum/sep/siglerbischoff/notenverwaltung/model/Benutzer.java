@@ -7,20 +7,14 @@ import javax.swing.ListModel;
 
 public class Benutzer {
 
-	private final int id;
-	private String loginName;
+	private final String loginName;
 	private String name;
 	private boolean istAdmin;
 	
-	Benutzer(int id, String loginName, String name, boolean istAdmin) {
-		this.id = id;
+	Benutzer(String loginName, String name, boolean istAdmin) {
 		this.loginName = loginName;
 		this.name = name;
 		this.istAdmin = istAdmin;
-	}
-
-	public int gebeId() {
-		return id;
 	}
 	
 	public String gebeLoginName() {
@@ -53,26 +47,19 @@ public class Benutzer {
 		return lm;
 	}
 
-	public void setzeLoginName(String loginName, Model model) throws DatenbankFehler {
-		model.gebeDao().benutzerLoginAendern(this, loginName);
-		this.loginName = loginName;
+	public void setzeName(String neuName, Model model) throws DatenbankFehler {
+		model.gebeDao().benutzerAendern(this, neuName, istAdmin);
+		this.name = neuName;
 	}
 
-	public void setzeName(String name, Model model) throws DatenbankFehler {
-		model.gebeDao().benutzerNameAendern(id, name);
-		this.name = name;
-	}
-
-	public void setzeIstAdmin(boolean istAdmin, Model model) throws DatenbankFehler {
-		if(this.istAdmin != istAdmin) {
-			model.gebeDao().benutzerIstAdminAendern(this);
-			this.istAdmin = istAdmin;
-		}
+	public void setzeIstAdmin(boolean neuIstAdmin, Model model) throws DatenbankFehler {
+		model.gebeDao().benutzerAendern(this, name, neuIstAdmin);
+		this.istAdmin = neuIstAdmin;
 	}
 	
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Benutzer && ((Benutzer) o).id == id;
+		return o instanceof Benutzer && ((Benutzer) o).loginName == loginName;
 	}
 	
 	@Override
@@ -81,7 +68,7 @@ public class Benutzer {
 	}
 	
 	public static BenutzerTableModel gebeBenutzer(Model model, Benutzer loggedIn) throws DatenbankFehler {
-		return new BenutzerTableModel(model.gebeDao().gebeBenutzer(), model, loggedIn);
+		return new BenutzerTableModel(model.gebeDao().gebeAlleBenutzer(), model, loggedIn);
 	}
 	
 	public static Benutzer erstelleBenutzer(String loginName, String name, char[] passwort, boolean istAdmin, Model model) throws DatenbankFehler {

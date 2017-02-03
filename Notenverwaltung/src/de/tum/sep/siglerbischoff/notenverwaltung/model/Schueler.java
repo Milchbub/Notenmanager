@@ -27,22 +27,17 @@ public class Schueler {
 		return gebDat;
 	}
 	
-	public List<Klasse> gebeKlassen(int jahr, Model model) throws DatenbankFehler {
-		//TODO
-		return null;
-	}
-	
 	public List<Kurs> gebeKurse(int jahr, Model model) throws DatenbankFehler {
 		return model.gebeDao().gebeKurse(this, jahr);
 	}
 	
 	public void setzeName(String neuerName, Model model) throws DatenbankFehler {
-		model.gebeDao().schuelerAendern(id, neuerName, gebDat);
+		model.gebeDao().schuelerAendern(this, neuerName, gebDat);
 		name = neuerName;
 	}
 
 	public void setzeGebDat(Date neuesGebDat, Model model) throws DatenbankFehler {
-		model.gebeDao().schuelerAendern(id, name, neuesGebDat);
+		model.gebeDao().schuelerAendern(this, name, neuesGebDat);
 		gebDat = neuesGebDat;
 	}
 	
@@ -57,7 +52,7 @@ public class Schueler {
 	}
 	
 	public static SchuelerTableModel gebeSchueler(Model model) throws DatenbankFehler {
-		return new SchuelerTableModel(model.gebeDao().gebeSchueler(), model);
+		return new SchuelerTableModel(model.gebeDao().gebeAlleSchueler(), model);
 	}
 	
 	public static Schueler erstelleSchueler(String name, Date gebDat, Model model) throws DatenbankFehler {

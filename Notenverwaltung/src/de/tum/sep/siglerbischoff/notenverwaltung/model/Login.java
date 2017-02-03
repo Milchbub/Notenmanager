@@ -14,11 +14,7 @@ public class Login {
 		return benutzername;
 	}
 	
-	String gebePasswort() {
-		String p = new String(passwort);
-		for(int i = 0; i < passwort.length; i++) {
-			passwort[i] = 0;
-		}
-		return p;
+	char[] gebePasswort() {
+		return passwort;
 	}
 }

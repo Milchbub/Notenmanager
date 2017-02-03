@@ -12,8 +12,11 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlasseNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KursNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.SchuelerTableModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.MainView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.SchuelerdatenView;
 
 public final class Main implements ActionListener {
 
@@ -95,7 +98,14 @@ public final class Main implements ActionListener {
 				break;
 			}
 			case MainView.COMMAND_SCHUELERDATEN: {
-				new SchuelerdatenManager(view, model, this);
+				SchuelerTableModel schuelerTableModel;
+				try {
+					schuelerTableModel = Schueler.gebeSchueler(model);
+				SchuelerdatenView sdView = view.getSchuelerdatenView(schuelerTableModel);
+				new SchuelerdatenManager(sdView, schuelerTableModel);
+				} catch (DatenbankFehler e) {
+					view.showError(e);
+				}
 				break; 
 			}
 			case MainView.COMMAND_BENUTZERVERWALTUNG: {
@@ -129,11 +139,11 @@ public final class Main implements ActionListener {
 				break;
 			}
 			case MainView.COMMAND_NOTE_EINTRAGEN: {
-				new NotenHinzufuegenManager(view, model, view.getSelectedKurs());
+				new NotenHinzufuegenManager(view, model, view.getSelectedKurs(), loggedIn);
 				break;
 			}
 			case MainView.COMMAND_KLASSENARBEIT_EINTRAGEN: {
-				new KlassenarbeitManager(view, model, view.getSelectedKurs());
+				new KlassenarbeitManager(view, model, view.getSelectedKurs(), loggedIn);
 				break;
 			}
 		}

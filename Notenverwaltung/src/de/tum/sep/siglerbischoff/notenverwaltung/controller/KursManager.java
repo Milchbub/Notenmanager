@@ -100,7 +100,7 @@ class KursManager implements ActionListener {
 					view.showError("Fehler", "Kein Klassenleiter ausgewählt..." );
 				} else {
 					try {
-						kurse.bearbeiten(view.gebeAusgewaehlt(), name, fach, lehrer);
+						kurse.bearbeiten(view.gebeAusgewaehlt(), fach, lehrer);
 					} catch (DatenbankFehler e) {
 						//TODO Fehlermeldung zu doppeltem Klassenname-Schuljahr-Eintrag
 						view.showError(e);

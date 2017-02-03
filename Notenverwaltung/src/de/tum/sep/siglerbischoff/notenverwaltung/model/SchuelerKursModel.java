@@ -24,7 +24,7 @@ public class SchuelerKursModel {
 			schuelerIn.addElement(s);
 		}
 		
-		for(Schueler s : model.gebeDao().gebeSchueler()) {
+		for(Schueler s : model.gebeDao().gebeAlleSchueler()) {
 			if(!schuelerIn.contains(s)) {
 				schuelerOut.addElement(s);
 			}

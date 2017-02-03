@@ -7,50 +7,61 @@ public class Note {
 	
 	private final int id;
 	private int wert;
-	private Date erstellungsdatum;
+	private Date datum;
+	private double gewichtung;
 	private String art;
-	private Double gewichtung;
+	private String kommentar;
+	private String kursName;
+	private int kursJahr;
 	private int schuelerID;
-	private int kursID;
-		
-	private DAO dao;
 
-	public Note (int id, int wert, Date erstellungsdatum, String art, Double gewichtung, Schueler schueler, Kurs kurs) {
+	public Note (int id, int wert, Date datum, double gewichtung, 
+			String art, String kommentar, Kurs kurs, Schueler schueler) {
 		this.id = id;
 		this.wert = wert;
-		this.erstellungsdatum = erstellungsdatum;
-		this.art = art;
+		this.datum = datum;
 		this.gewichtung = gewichtung;
+		this.art = art;
+		this.kommentar = kommentar;
+		this.kursName = kurs.gebeName();
+		this.kursJahr = kurs.gebeJahr();
 		this.schuelerID = schueler.gebeId();
-		this.kursID = kurs.gebeId();
 	}
 	
-	public int getId() {
+	public int gebeId() {
 		return id;
 	}
 	
-	public int getWert() {
+	public int gebeWert() {
 		return wert;
 	}
 	
-	public Date getErstellungsdatum() {
-		return erstellungsdatum;
+	public Date gebeDatum() {
+		return datum;
 	}
 	
-	public String getArt() {
-		return art;
-	}
-	
-	public Double getGewichtung() {
+	public double getGewichtung() {
 		return gewichtung;
 	}
 	
-	public int getSchuelerID(){
-		return schuelerID;
+	public String gebeArt() {
+		return art;
 	}
 	
-	public int getKursID(){
-		return kursID;
+	public String gebeKommentar() {
+		return kommentar;
+	}
+	
+	public String gebeKursName() {
+		return kursName;
+	}
+	
+	public int gebeKursJahr() {
+		return kursJahr;
+	}
+	
+	public int gebeSchuelerID(){
+		return schuelerID;
 	}
 	
 	@Override
@@ -61,55 +72,36 @@ public class Note {
 	@Override
 	public String toString() {
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-		return format.format(erstellungsdatum) + ", " + wert + " (" + art + ")";
+		return format.format(datum) + ", " + wert + " (" + art + ")";
 	}
 	
 	
-	public void wertAendern(int neuerWert) {
+	public void setzeWert(int neuerWert, Model model) throws DatenbankFehler {
+		model.gebeDao().noteAendern(this, neuerWert, datum, gewichtung, art, kommentar);
 		this.wert = neuerWert;
-		try {
-			aendern(this.getId(), neuerWert, erstellungsdatum, art, gewichtung);
-		} catch (DatenbankFehler e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
-	public void erstellungsdatumAendern(Date neuesErstellungsdatum) {
-		this.erstellungsdatum = neuesErstellungsdatum;
-		try {
-			aendern(this.getId(), wert, neuesErstellungsdatum, art, gewichtung);
-		} catch (DatenbankFehler e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void setzeDatum(Date neuesDatum, Model model) throws DatenbankFehler {
+		model.gebeDao().noteAendern(this, wert, neuesDatum, gewichtung, art, kommentar);
+		this.datum = neuesDatum;
 	}
 	
-	public void artAendern(String neueArt) {
-		this.art = neueArt;
-		try {
-			aendern(this.getId(), wert, erstellungsdatum, neueArt, gewichtung);
-		} catch (DatenbankFehler e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void gewichtungAendern(Double neueGewichtung) {
+	public void setzeGewichtung(double neueGewichtung, Model model) throws DatenbankFehler {
+		model.gebeDao().noteAendern(this, wert, datum, neueGewichtung, art, kommentar);
 		this.gewichtung = neueGewichtung;
-		try {
-			aendern(this.getId(), wert, erstellungsdatum, art, neueGewichtung);
-		} catch (DatenbankFehler e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
-	public void aendern(int noteID, int neuerWert, Date neuesErstellungsdatum, String neueArt, Double neueGewichtung) throws DatenbankFehler {
-		dao.noteAendern(noteID, neuerWert, neuesErstellungsdatum, neueArt, neueGewichtung);
+	public void setzeArt(String neueArt, Model model) throws DatenbankFehler {
+		model.gebeDao().noteAendern(this, wert, datum, gewichtung, neueArt, kommentar);
+		this.art = neueArt;
 	}
 	
-	public static Note noteEintragen(Model model, int wert, Date erstellungsdatum, String art, Double gewichtung, Schueler schueler, Kurs kurs) throws DatenbankFehler {
-		return model.gebeDao().noteHinzufuegen(wert, erstellungsdatum, art, gewichtung, schueler, kurs);
+	public void setzeKommentar(String neuerKommentar, Model model) throws DatenbankFehler {
+		model.gebeDao().noteAendern(this, wert, datum, gewichtung, art, neuerKommentar);
+		this.kommentar = neuerKommentar;
+	}
+	
+	public static Note noteEintragen(int wert, Date datum, double gewichtung, String art, String kommentar, Kurs kurs, Schueler schueler, Benutzer benutzer, Model model) throws DatenbankFehler {
+		return model.gebeDao().noteHinzufuegen(wert, datum, gewichtung, art, kommentar, kurs, schueler, benutzer);
 	}
 }

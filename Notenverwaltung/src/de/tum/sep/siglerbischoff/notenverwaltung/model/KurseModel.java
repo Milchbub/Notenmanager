@@ -20,12 +20,11 @@ public class KurseModel extends AbstractListModel<Kurs> {
 	}
 	
 	public void hinzufuegen(String name, String fach, Benutzer kursleiter) throws DatenbankFehler {
-		kurse.add(model.gebeDao().kursEinrichten(name, fach, jahr, kursleiter));
+		kurse.add(model.gebeDao().kursEinrichten(name, jahr, fach, kursleiter));
 		fireIntervalAdded(this, getSize() - 1, getSize() - 1);
 	}
 	
-	public void bearbeiten(Kurs kurs, String neuName, String neuFach, Benutzer neuKursleiter) throws DatenbankFehler {
-		kurs.setzeName(neuName, model);
+	public void bearbeiten(Kurs kurs, String neuFach, Benutzer neuKursleiter) throws DatenbankFehler {
 		kurs.setzeFach(neuFach, model);
 		kurs.setzeKursleiter(neuKursleiter, model);
 		int i = kurse.indexOf(kurs);
@@ -33,9 +32,9 @@ public class KurseModel extends AbstractListModel<Kurs> {
 	}
 
 	public void loeschen(Kurs kurs) throws DatenbankFehler {
+		model.gebeDao().kursLoeschen(kurs);
 		int i = kurse.indexOf(kurs);
 		kurse.remove(kurs);
-		model.gebeDao().kursLoeschen(kurs.gebeId());
 		fireIntervalRemoved(this, i, i);
 	}
 	

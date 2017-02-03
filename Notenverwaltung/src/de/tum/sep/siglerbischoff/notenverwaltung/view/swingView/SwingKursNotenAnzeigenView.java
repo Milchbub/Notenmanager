@@ -40,9 +40,10 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 		JLabel lblNoten = new JLabel("Note: ");		
 		JLabel lblDaten = new JLabel("Daten: ");
 		JLabel lblWert = new JLabel("Wert: ");
+		JLabel lblDatum = new JLabel("Datum: ");
 		JLabel lblGewichtung = new JLabel("Gewichtung: ");
 		JLabel lblArt = new JLabel("Art: ");
-		JLabel lblDatum = new JLabel("Datum: ");
+		JLabel lblKommentar = new JLabel("Kommentar: ");
 		
 		JLabel lblDurchschnitt = new JLabel("Durchschnitt:");
 		
@@ -60,9 +61,10 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 			.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 				.addComponent(lblDaten, 180, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 				.addComponent(lblWert)
-				.addComponent(lblArt)
-				.addComponent(lblGewichtung)
 				.addComponent(lblDatum)
+				.addComponent(lblGewichtung)
+				.addComponent(lblArt)
+				.addComponent(lblKommentar)
 				.addComponent(lblDurchschnitt))
 			.addContainerGap()
 		);
@@ -80,11 +82,13 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblWert)
 					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblDatum)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblGewichtung)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblArt)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblDatum)
+					.addComponent(lblKommentar)
 					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 					.addComponent(lblDurchschnitt))
 			)
@@ -96,12 +100,13 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 			if(se.getValueIsAdjusting() || lstNoten.isSelectionEmpty()) {
 				return;
 			}
-			lblWert.setText("Wert: " + lstNoten.getSelectedValue().getWert());
-			lblArt.setText("Art: " + lstNoten.getSelectedValue().getArt());
+			lblWert.setText("Wert: " + lstNoten.getSelectedValue().gebeWert());
 			SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 			lblDatum.setText("Datum: " + 
-					format.format(lstNoten.getSelectedValue().getErstellungsdatum()));
+					format.format(lstNoten.getSelectedValue().gebeDatum()));
 			lblGewichtung.setText("Gewichtung: " + lstNoten.getSelectedValue().getGewichtung());
+			lblArt.setText("Art: " + lstNoten.getSelectedValue().gebeArt());
+			lblKommentar.setText("<html>Kommentar: " + lstNoten.getSelectedValue().gebeKommentar());
 		});
 		scrollPaneNoten.setViewportView(lstNoten);
 		
@@ -110,16 +115,17 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 			try {
 				noten.schuelerAuswaehlen(lstSchueler.getSelectedValue());
 				lblWert.setText("Wert: ");
-				lblArt.setText("Art: ");
 				lblDatum.setText("Datum: ");
 				lblGewichtung.setText("Gewichtung: ");
+				lblArt.setText("Art: ");
+				lblKommentar.setText("Kommentar: ");
 				if(noten.getSize() > 0) {
 					double gewicht = 0.0;
 					double summe = 0.0;
 					for(int i = 0; i < noten.getSize(); i++) {
 						Note n = noten.getElementAt(i);
 						gewicht += n.getGewichtung();
-						summe += n.getGewichtung() * n.getWert();
+						summe += n.getGewichtung() * n.gebeWert();
 					}
 					NumberFormat f = new DecimalFormat("0.00");
 					lblDurchschnitt.setText("Durchschnitt: " + f.format(summe / gewicht));

@@ -24,17 +24,16 @@ public class KlassenModel extends AbstractListModel<Klasse> {
 		fireIntervalAdded(this, getSize() - 1, getSize() - 1);
 	}
 
-	public void bearbeiten(Klasse klasse, String neuName, Benutzer neuKlassenlehrer) throws DatenbankFehler {
-		klasse.setzeName(neuName, model);
+	public void setzeKlassenlehrer(Klasse klasse, Benutzer neuKlassenlehrer) throws DatenbankFehler {
 		klasse.setzeKlassenlehrer(neuKlassenlehrer, model);
 		int i = klassen.indexOf(klasse);
 		fireContentsChanged(this, i, i);
 	}
 
 	public void loeschen(Klasse klasse) throws DatenbankFehler {
+		model.gebeDao().klasseLoeschen(klasse);
 		int i = klassen.indexOf(klasse);
 		klassen.remove(klasse);
-		model.gebeDao().klasseLoeschen(klasse.gebeId());
 		fireIntervalRemoved(this, i, i);
 	}
 	
