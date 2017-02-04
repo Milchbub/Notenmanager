@@ -1,64 +1,63 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
-
 import org.junit.Test;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.*;
 
-public class DAOAndMysqlDAOTest {
-
-	/* BLOCK KOMMENTAR FUER DIE ERSTEN ZWEI TESTS!!!
-	 * TODO AN NEUE STRUKTUR ANPASSEN
+public class ModelTest {
 
 	// Es wird geprueft, ob ein erstelltes MysqlDAO eine korrekte Verbindung zur DB aufbaut.
 	// Test geschieht ueber eine absichtlich falsch gestaltete Passwortpruefung.
 	@Test
 	public void databaseConnectionTest() {
-		DAO dao;
+		Model model = null;
 		try {
-			dao = DAO.erstelleDAO();
-			Properties props = new Properties();
-			props.setProperty("dbhost", "127.0.0.1");
-			props.setProperty("dbname", "Notenmanager");
-			assertTrue(dao.passwortPruefen("XXX", "XXX", props) == null);
-			assertTrue(dao.passwortPruefen("michi", "XXX", props) == null);
+			model = new Model();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Login login = new Login("sigl", new char[] {'t', 'u', '2' , '0', '1', '7'});
+		Benutzer benutzer;
+		try {
+			benutzer = model.passwortPruefen(login);
+			assertEquals("Test user return after login ->",
+					"Magdalena Sigler", benutzer.gebeName());
 		} catch (DatenbankFehler e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			fail("Datenankfehler bei databaseConnectionTest()");
+			fail("Error while accessing database within testing!");
 		}
 	}
 	
-	// Es wird getestet, ob das erstellen des MysqlDAO ueber die abstrakte DAO Klasse korrekt arbeitet.
-	// Verglichen wird hierbei die Class eines erzeugten MysqlDAO mit der Class des MysqlDAO, welches im
-	// ContextClassLoader herumschwirrt. Diese wiederum wird ueber die findClassInPackage Methode gefunden.
+	// Es wird getestet, ob das erstellen der Model-Klasse korrekt arbeitet. Mit dem erstellen einer
+	// Model Instanz wird auch das MySqlDAO erzeugt, was damit auch auch richtige Funktion überprüft
+	// wird. Verglichen wird hierbei die Class eines erzeugten Model mit der Class des Model, welche
+	// im ContextClassLoader herumschwirrt. Diese wiederum wird ueber die findClassInPackage Methode
+	// gefunden.
 	@Test
-	public void createDAOTest() {
-		DAO dao = null;
+	public void createModelTest() {
+		Model model = null;
 		try {
-			dao = DAO.erstelleDAO();
-		} catch (DatenbankFehler e) {
+			model = new Model();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		// Sinnbildliche Erklaerung:
 		// assertEquals("Message fuer was auch immer", Erwarteter Wert, Wert aus Programm)
-		assertEquals("created MysqlDAO class ->",
-				findClassInPackage("MysqlDAO", "de.tum.sep.siglerbischoff.notenverwaltung.dao"),
-				dao.getClass());
+		assertEquals("created Model class ->",
+				findClassInPackage("Model", "de.tum.sep.siglerbischoff.notenverwaltung.model"),
+				model.getClass());
 	}
-
- BLOCK KOMMENTAR ENDE */
 
 	public Class findClassInPackage(String klassenName, String paketName) {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

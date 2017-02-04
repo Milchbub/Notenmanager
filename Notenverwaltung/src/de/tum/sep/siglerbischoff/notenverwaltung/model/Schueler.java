@@ -58,4 +58,7 @@ public class Schueler {
 	public static Schueler erstelleSchueler(String name, Date gebDat, Model model) throws DatenbankFehler {
 		return model.gebeDao().schuelerHinzufuegen(name, gebDat);
 	}
+	public static void loescheSchueler(Model model, Schueler schueler) throws DatenbankFehler {
+		model.gebeDao().schuelerLoeschen(schueler);
+	}
 }

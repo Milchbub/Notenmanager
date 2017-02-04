@@ -5,6 +5,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({BenutzerTest.class, DAOAndMysqlDAOTest.class, SchuelerTest.class})
+@SuiteClasses({BenutzerTest.class, ModelTest.class, SchuelerTest.class, NotenTest.class})
 public class JUnit_tests {
 }
