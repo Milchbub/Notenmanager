@@ -11,7 +11,12 @@ import java.text.SimpleDateFormat;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.tum.sep.siglerbischoff.notenverwaltung.model.*;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Login;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.SchuelerTableModel;
 
 
 
