@@ -59,7 +59,7 @@ public class Benutzer {
 	
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof Benutzer && ((Benutzer) o).loginName == loginName;
+		return o instanceof Benutzer && ((Benutzer) o).loginName.equals(loginName);
 	}
 	
 	@Override

@@ -6,14 +6,13 @@ import java.util.Date;
 public class Note {
 	
 	private final int id;
-	private int wert;
-	private Date datum;
-	private double gewichtung;
-	private String art;
-	private String kommentar;
-	private String kursName;
-	private int kursJahr;
-	private int schuelerID;
+	private final int wert;
+	private final Date datum;
+	private final double gewichtung;
+	private final String art;
+	private final String kommentar;
+	private final Kurs kurs;
+	private final Schueler schueler;
 
 	public Note (int id, int wert, Date datum, double gewichtung, 
 			String art, String kommentar, Kurs kurs, Schueler schueler) {
@@ -23,9 +22,8 @@ public class Note {
 		this.gewichtung = gewichtung;
 		this.art = art;
 		this.kommentar = kommentar;
-		this.kursName = kurs.gebeName();
-		this.kursJahr = kurs.gebeJahr();
-		this.schuelerID = schueler.gebeId();
+		this.kurs = kurs;
+		this.schueler = schueler;
 	}
 	
 	public int gebeId() {
@@ -40,7 +38,7 @@ public class Note {
 		return datum;
 	}
 	
-	public double getGewichtung() {
+	public double gebeGewichtung() {
 		return gewichtung;
 	}
 	
@@ -52,16 +50,12 @@ public class Note {
 		return kommentar;
 	}
 	
-	public String gebeKursName() {
-		return kursName;
+	public Kurs gebeKurs() {
+		return kurs;
 	}
 	
-	public int gebeKursJahr() {
-		return kursJahr;
-	}
-	
-	public int gebeSchuelerID(){
-		return schuelerID;
+	public Schueler gebeSchueler(){
+		return schueler;
 	}
 	
 	@Override
@@ -73,32 +67,6 @@ public class Note {
 	public String toString() {
 		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 		return format.format(datum) + ", " + wert + " (" + art + ")";
-	}
-	
-	
-	public void setzeWert(int neuerWert, Model model) throws DatenbankFehler {
-		model.gebeDao().noteAendern(this, neuerWert, datum, gewichtung, art, kommentar);
-		this.wert = neuerWert;
-	}
-	
-	public void setzeDatum(Date neuesDatum, Model model) throws DatenbankFehler {
-		model.gebeDao().noteAendern(this, wert, neuesDatum, gewichtung, art, kommentar);
-		this.datum = neuesDatum;
-	}
-	
-	public void setzeGewichtung(double neueGewichtung, Model model) throws DatenbankFehler {
-		model.gebeDao().noteAendern(this, wert, datum, neueGewichtung, art, kommentar);
-		this.gewichtung = neueGewichtung;
-	}
-	
-	public void setzeArt(String neueArt, Model model) throws DatenbankFehler {
-		model.gebeDao().noteAendern(this, wert, datum, gewichtung, neueArt, kommentar);
-		this.art = neueArt;
-	}
-	
-	public void setzeKommentar(String neuerKommentar, Model model) throws DatenbankFehler {
-		model.gebeDao().noteAendern(this, wert, datum, gewichtung, art, neuerKommentar);
-		this.kommentar = neuerKommentar;
 	}
 	
 	public static Note noteEintragen(int wert, Date datum, double gewichtung, String art, String kommentar, Kurs kurs, Schueler schueler, Benutzer benutzer, Model model) throws DatenbankFehler {

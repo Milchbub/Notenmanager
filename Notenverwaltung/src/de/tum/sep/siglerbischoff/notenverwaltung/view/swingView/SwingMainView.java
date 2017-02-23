@@ -64,8 +64,22 @@ public class SwingMainView extends JFrame implements MainView {
 	private JList<Kurs> listKurse;
 
 	public SwingMainView() {
-		setTitle("Notenmanager");
+		super("Notenmanager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//TODO
+		/*addWindowFocusListener(new WindowFocusListener() {
+			
+			@Override
+			public void windowLostFocus(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowGainedFocus(WindowEvent e) {
+				for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+					l.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, MainView.COMMAND_UPDATE));
+				}
+			}
+		});*/
 		
 		GroupLayout gl_content = new GroupLayout(getContentPane()); 
 		
@@ -125,12 +139,12 @@ public class SwingMainView extends JFrame implements MainView {
 		gl_content.setHorizontalGroup(gl_content.createSequentialGroup()
 			.addGroup(gl_content.createParallelGroup(Alignment.LEADING)
 				.addComponent(pnlHeader)
-				.addComponent(pnlContent)
+				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
 				.addComponent(pnlFooter))
 		);
 		gl_content.setVerticalGroup(gl_content.createSequentialGroup()
 			.addComponent(pnlHeader)
-			.addComponent(pnlContent)
+			.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
 			.addComponent(pnlFooter)
 		);
 		getContentPane().setLayout(gl_content);
@@ -459,7 +473,7 @@ public class SwingMainView extends JFrame implements MainView {
 	}
 	
 	@Override
-	public Klasse getSelectedKlasse() {
+	public Klasse gebeAusgewaehlteKlasse() {
 		return listKlasse.getSelectedValue();
 	}
 
@@ -469,7 +483,7 @@ public class SwingMainView extends JFrame implements MainView {
 	}
 
 	@Override
-	public Kurs getSelectedKurs() {
+	public Kurs gebeAusgewaehltenKurs() {
 		return listKurse.getSelectedValue();
 	}
 	

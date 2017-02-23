@@ -6,6 +6,10 @@ public class DatenbankFehler extends Exception {
 		super(e);
 	}
 
+	public DatenbankFehler(String nachricht) {
+		super(nachricht);
+	}
+
 	private static final long serialVersionUID = 2967306509973323802L;
 	
 }

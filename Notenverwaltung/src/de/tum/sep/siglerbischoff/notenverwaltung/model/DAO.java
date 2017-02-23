@@ -15,6 +15,7 @@ abstract class DAO {
 
 	abstract List<Klasse> gebeKlassen(int jahr) throws DatenbankFehler;
 	abstract List<Schueler> gebeSchueler(Klasse klasse) throws DatenbankFehler;
+	abstract List<Note> gebeNoten(Klasse klasse) throws DatenbankFehler;
 	
 	abstract List<Kurs> gebeKurse(int jahr) throws DatenbankFehler;
 	abstract List<Schueler> gebeSchueler(Kurs kurs) throws DatenbankFehler;
@@ -45,9 +46,12 @@ abstract class DAO {
 	abstract void ausKursLoeschen(Kurs kurs, Schueler schueler) throws DatenbankFehler;
 	
 	abstract Note noteHinzufuegen(int wert, Date datum, double gewichtung, String art, String kommentar, Kurs kurs, Schueler schueler, Benutzer benutzer) throws DatenbankFehler; 
-	abstract void noteAendern(Note note, int neuerWert, Date neuesDatum, double neueGewichtung, String neueArt, String neuerKommentar) throws DatenbankFehler;
 	abstract void noteLoeschen(Note note) throws DatenbankFehler;
-	
+
+	KlasseNotenModel gebeKlasseNotenModel(Klasse klasse) throws DatenbankFehler {
+		return new KlasseNotenModel(gebeSchueler(klasse), gebeNoten(klasse));
+	}
+
 	public static DAO erstelleDAO() {
 		return new MysqlDAO();
 	}

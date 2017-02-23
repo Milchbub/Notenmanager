@@ -1,6 +1,5 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 
-import java.awt.Font;
 import java.awt.event.ActionListener;
 
 import javax.swing.GroupLayout;
@@ -33,38 +32,31 @@ public class SwingLoginView extends JFrame implements LoginView {
 		setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
 		
 		JLabel lblLoginDaten = new JLabel("Bitte geben Sie Ihre Login-Daten ein: ");
-		lblLoginDaten.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		
 		JLabel lblBenutzername = new JLabel("Benutzername: ");
-		lblBenutzername.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		txtName = new JTextField();
-		txtName.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		txtName.setColumns(10);
 		
 		JLabel lblPasswort = new JLabel("Passwort: ");
-		lblPasswort.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		txtPass = new JPasswordField();
-		txtPass.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
 		btnAnmelden = new JButton("Anmelden");
-		btnAnmelden.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		btnAnmelden.setActionCommand(COMMAND_LOGIN);
 		
 		lblStatus = new JLabel("");
 		lblStatus.setForeground(Color.RED);
-		lblStatus.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
 			groupLayout.createSequentialGroup()
 				.addContainerGap()
 				.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-					.addComponent(txtName, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+					.addComponent(txtName)
 					.addComponent(lblLoginDaten)
 					.addComponent(lblBenutzername)
 					.addComponent(lblPasswort)
-					.addComponent(txtPass, GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+					.addComponent(txtPass)
 					.addComponent(btnAnmelden)
 					.addComponent(lblStatus))
 				.addContainerGap()

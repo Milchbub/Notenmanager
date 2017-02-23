@@ -18,12 +18,10 @@ import java.util.Vector;
 class MysqlDAO extends DAO {
 
 	private Connection db;
-	private Properties config;
+	private Benutzer loggedIn;
 	
 	@Override
 	Benutzer passwortPruefen(String loginName, char[] pass, Properties config) throws DatenbankFehler {
-		this.config = config;
-		
 		String sql = "SELECT loginName, benutzer, istAdmin FROM Benutzer "
 				+ "WHERE loginName = ?";
 		
@@ -37,7 +35,14 @@ class MysqlDAO extends DAO {
 				s.setString(1, loginName);
 				try (ResultSet rs = s.executeQuery()) {
 					if (rs.next()) {
-						return new Benutzer(rs.getString(1), rs.getString(2), rs.getBoolean(3));
+						boolean istAdmin = rs.getBoolean(3);
+						if (istAdmin) {
+							try (Statement s1 = db.createStatement()) {
+								s1.executeUpdate("SET ROLE admin");
+							}
+						}
+						loggedIn = new Benutzer(rs.getString(1), rs.getString(2), rs.getBoolean(3));
+						return loggedIn;
 					} else {
 						return null;
 					}
@@ -54,8 +59,8 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	Jahre gebeJahre() throws DatenbankFehler {
-		String sql = "SELECT klasse_jahr AS jahr FROM Klasse "
-				+ "UNION SELECT kurs_jahr AS jahr FROM Kurs "
+		String sql = "SELECT klasse_jahr AS jahr FROM klassen_" + loggedIn.gebeLoginName() + " "
+				+ "UNION SELECT kurs_jahr AS jahr FROM kurse_" + loggedIn.gebeLoginName() + " "
 				+ "ORDER BY jahr DESC";
 		
 		Listenpacker<Integer> w = new Listenpacker<Integer>() {
@@ -134,6 +139,36 @@ class MysqlDAO extends DAO {
 			}
 		}.gebeListe(sql);
 	}
+
+	@Override
+	List<Note> gebeNoten(final Klasse klasse) throws DatenbankFehler {
+		String sql = "SELECT loginName, Benutzer.benutzer, istAdmin, "
+					+ "kurs, kurs_jahr, fach, "
+					+ "schuelerID, schueler, gebDat, "
+					+ "noteID, wert, datum, gewichtung, art, kommentar "
+				+ "FROM noten_" + loggedIn.gebeLoginName() + " "
+					+ "JOIN Benutzer ON (noten_" + loggedIn.gebeLoginName() + ".benutzer = Benutzer.loginName) "
+					+ "JOIN Kurs USING (kurs, kurs_jahr) "
+					+ "JOIN Schueler USING (schuelerID) "
+					+ "JOIN Besucht USING (schuelerID) "
+				+ "WHERE klasse = ? AND klasse_jahr = ? ";
+		
+		return new Listenpacker<Note>() {
+			@Override
+			protected void variablenSetzen(PreparedStatement s) throws SQLException {
+				s.setString(1, klasse.gebeName());
+				s.setInt(2, klasse.gebeJahr());
+			}
+			@Override
+			protected Note gib(ResultSet rs) throws SQLException {
+				Benutzer kursleiter = new Benutzer(rs.getString(1), rs.getString(2), rs.getBoolean(3));
+				Kurs kurs = new Kurs(rs.getString(4), rs.getInt(5), rs.getString(6), kursleiter);
+				Schueler schueler = new Schueler(rs.getInt(7), rs.getString(8), rs.getDate(9));
+				return new Note(rs.getInt(10), rs.getInt(11), rs.getDate(12), rs.getDouble(13), 
+						rs.getString(14), rs.getString(15), kurs, schueler);
+			}
+		}.gebeListe(sql);
+	}
 	
 	@Override
 	List<Kurs> gebeKurse(final int jahr) throws DatenbankFehler {
@@ -181,7 +216,7 @@ class MysqlDAO extends DAO {
 	@Override
 	List<Note> gebeNoten(final Kurs kurs, final Schueler schueler) throws DatenbankFehler {
 		String sql = "SELECT noteID, wert, datum, gewichtung, art, kommentar "
-				+ "FROM Note "
+				+ "FROM noten_" + loggedIn.gebeLoginName() + " "
 					+ "JOIN Kurs USING (kurs, kurs_jahr) "
 					+ "JOIN Schueler USING (schuelerID) "
 				+ "WHERE schuelerID = ? AND kurs = ? AND kurs_jahr = ? "
@@ -202,7 +237,7 @@ class MysqlDAO extends DAO {
 	}
 	
 	@Override
-	List<Kurs> gebeKurse(Schueler schueler, int jahr) throws DatenbankFehler {
+	List<Kurs> gebeKurse(final Schueler schueler, final int jahr) throws DatenbankFehler {
 		String sql = "SELECT kurs, fach, loginName, benutzer, istAdmin "
 				+ "FROM Kurs "
 					+ "JOIN Benutzer ON (kursleiter = loginName) "
@@ -226,7 +261,7 @@ class MysqlDAO extends DAO {
 	@Override
 	List<Kurs> gebeKurse(Benutzer benutzer, int jahr) throws DatenbankFehler {
 		String sql = "SELECT kurs, fach "
-				+ "FROM Kurs "
+				+ "FROM kurse_" + loggedIn.gebeLoginName() + " "
 				+ "WHERE kursleiter = ? AND kurs_jahr = ? "
 				+ "ORDER BY kurs";
 		return new Listenpacker<Kurs>() {
@@ -245,7 +280,7 @@ class MysqlDAO extends DAO {
 	@Override
 	List<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler {
 		String sql = "SELECT klasse "
-				+ "FROM Klasse "
+				+ "FROM klassen_" + loggedIn.gebeLoginName() + " "
 				+ "WHERE klassenleiter = ? AND klasse_jahr = ? "
 				+ "ORDER BY klasse";
 		return new Listenpacker<Klasse>() {
@@ -265,8 +300,9 @@ class MysqlDAO extends DAO {
 	Benutzer benutzerAnlegen(String loginName, String name, char[] passwort, boolean istAdmin) throws DatenbankFehler {
 		String sql1 = "INSERT INTO Benutzer (loginName, benutzer, istAdmin) VALUE "
 				+ "(?, ?, ?)";
-		String sql2 = "CREATE USER ?";
-		String sqlAdmin = "GRANT admin TO ?@'%'";
+		String sql2 = "CREATE USER ? IDENTIFIED BY ?";
+		String sql3 = "GRANT SELECT ON Benutzer TO ?@'%'";
+		String sqlAdmin = "GRANT admin TO ?@'%' WITH ADMIN OPTION";
 		
 		String[] views = new String[] {
 				"CREATE VIEW klassen_" + loginName + " AS "
@@ -274,13 +310,13 @@ class MysqlDAO extends DAO {
 				"CREATE VIEW kurse_" + loginName + " AS "
 						+ "SELECT * FROM Kurs WHERE kursleiter = ?",
 				"CREATE VIEW noten_" + loginName + " AS "
-						+ "SELECT * FROM Note WHERE benutzer = ?"
+						+ "SELECT * FROM Note WHERE benutzer = ? "
+						+ "WITH CHECK OPTION"
 		};
 		String[] grants = new String[] {
-				"GRANT SELECT ON " + config.getProperty("dbname") + ".klassen_" + loginName + " TO ?@'%'",
-				"GRANT SELECT ON " + config.getProperty("dbname") + ".kurse_" + loginName + " TO ?@'%'",
-				"GRANT INSERT, DELETE, SELECT, UPDATE ON " + config.getProperty("dbname") + ".noten_" + loginName + " "
-						+ "TO ?@'%' WITH CHECK OPTION"
+				"GRANT SELECT ON klassen_" + loginName + " TO ?@'%'",
+				"GRANT SELECT ON kurse_" + loginName + " TO ?@'%'",
+				"GRANT INSERT, DELETE, SELECT, UPDATE ON noten_" + loginName + " TO ?@'%'"
 		};
 		
 		try (PreparedStatement s1 = db.prepareStatement(sql1)) {
@@ -291,21 +327,27 @@ class MysqlDAO extends DAO {
 			
 			try (PreparedStatement s2 = db.prepareStatement(sql2)) {
 				s2.setString(1, loginName);
-				s2.execute();
+				s2.setString(2, new String(passwort));
+				s2.executeUpdate();
 				if (istAdmin) {
 					try (PreparedStatement s3 = db.prepareStatement(sqlAdmin)) {
 						s3.setString(1, loginName);
-						s3.execute();
+						s3.executeUpdate();
+					}
+				} else {
+					try (PreparedStatement s4 = db.prepareStatement(sql3)) {
+						s4.setString(1, loginName);
+						s4.executeUpdate();
 					}
 				}
 				for(int i = 0; i < 3; i++) {
 					try (PreparedStatement s = db.prepareStatement(views[i])) {
 						s.setString(1, loginName);
-						s.execute();
+						s.executeUpdate();
 					}
 					try (PreparedStatement s = db.prepareStatement(grants[i])) {
 						s.setString(1, loginName);
-						s.execute();
+						s.executeUpdate();
 					}
 				}
 				return new Benutzer(loginName, name, istAdmin);
@@ -321,13 +363,16 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void benutzerAendern(Benutzer benutzer, String neuerName, boolean neuIstAdmin) throws DatenbankFehler {
+		if(loggedIn.equals(benutzer) && loggedIn.istAdmin() != neuIstAdmin) {
+			throw new DatenbankFehler("Sie können nicht Ihren eigenen Admin-Status ändern!");
+		}
 		String sql1 = "UPDATE Benutzer SET benutzer = ?, istAdmin = ? "
 				+ "WHERE loginName = ?";
 		String sql2;
 		if(neuIstAdmin) {
-			sql2 = "GRANT CREATE USER, GRANT OPTION ON *.* TO ?@'%'";
+			sql2 = "GRANT admin TO ?@'%' WITH ADMIN OPTION";
 		} else {
-			sql2 = "REVOKE CREATE USER, GRANT OPTION ON *.* FROM ?@'%'";
+			sql2 = "REVOKE admin FROM ?@'%'";
 		}
 		try (PreparedStatement s1 = db.prepareStatement(sql1)) {
 			s1.setString(1, neuerName);
@@ -337,7 +382,7 @@ class MysqlDAO extends DAO {
 			
 			try (PreparedStatement s2 = db.prepareStatement(sql2)) {
 				s2.setString(1, benutzer.gebeLoginName());
-				s2.execute();
+				s2.executeUpdate();
 			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
@@ -564,13 +609,6 @@ class MysqlDAO extends DAO {
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
-	}
-	
-	@Override
-	void noteAendern(Note note, int neuerWert, Date neuesDatum, double neueGewichtung, String neueArt,
-			String neuerKommentar) throws DatenbankFehler {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override

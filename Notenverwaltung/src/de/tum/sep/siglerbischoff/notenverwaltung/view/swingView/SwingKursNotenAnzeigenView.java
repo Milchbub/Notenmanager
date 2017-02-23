@@ -104,7 +104,7 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 			SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 			lblDatum.setText("Datum: " + 
 					format.format(lstNoten.getSelectedValue().gebeDatum()));
-			lblGewichtung.setText("Gewichtung: " + lstNoten.getSelectedValue().getGewichtung());
+			lblGewichtung.setText("Gewichtung: " + lstNoten.getSelectedValue().gebeGewichtung());
 			lblArt.setText("Art: " + lstNoten.getSelectedValue().gebeArt());
 			lblKommentar.setText("<html>Kommentar: " + lstNoten.getSelectedValue().gebeKommentar());
 		});
@@ -124,8 +124,8 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 					double summe = 0.0;
 					for(int i = 0; i < noten.getSize(); i++) {
 						Note n = noten.getElementAt(i);
-						gewicht += n.getGewichtung();
-						summe += n.getGewichtung() * n.gebeWert();
+						gewicht += n.gebeGewichtung();
+						summe += n.gebeGewichtung() * n.gebeWert();
 					}
 					NumberFormat f = new DecimalFormat("0.00");
 					lblDurchschnitt.setText("Durchschnitt: " + f.format(summe / gewicht));

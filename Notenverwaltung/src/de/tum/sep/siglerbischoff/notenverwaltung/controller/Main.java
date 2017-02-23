@@ -9,7 +9,6 @@ import javax.swing.JOptionPane;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
-import de.tum.sep.siglerbischoff.notenverwaltung.model.KlasseNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KursNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
@@ -69,20 +68,6 @@ public final class Main implements ActionListener {
 			}
 		});
 		lv.zeigen();
-		
-		/*//TODO
-		try {
-			loggedIn = model.passwortPruefen(new Login("bisc", new String("1234").toCharArray()));
-			Jahre jahre = model.gebeJahre();
-			int laj = jahre.gebeLetztesAktuellesJahr();
-			view.loginBenutzer(loggedIn, jahre);
-			view.updateContent(loggedIn, loggedIn.gebeGeleiteteKlassen(laj, model), 
-					loggedIn.gebeGeleiteteKurse(laj, model));
-			view.zeigen();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(0);
-		}*/
 	}
 
 	@Override
@@ -122,8 +107,8 @@ public final class Main implements ActionListener {
 			}
 			case MainView.COMMAND_KLASSE_NOTEN_ANZEIGEN: {
 				try {
-					view.klasseNotenAnzeigen(new KlasseNotenModel(view.getSelectedKlasse(), model), 
-							view.getSelectedKlasse());
+					view.klasseNotenAnzeigen(model.gebeKlasseNotenModel(view.gebeAusgewaehlteKlasse()), 
+							view.gebeAusgewaehlteKlasse());
 				} catch (DatenbankFehler e) {
 					view.showError(e);
 				}
@@ -131,19 +116,28 @@ public final class Main implements ActionListener {
 			}
 			case MainView.COMMAND_KURS_NOTEN_ANZEIGEN: {
 				try {
-					view.kursNotenAnzeigen(new KursNotenModel(view.getSelectedKurs(), model), 
-							view.getSelectedKurs().gebeSchueler(model), view.getSelectedKurs());
+					view.kursNotenAnzeigen(new KursNotenModel(view.gebeAusgewaehltenKurs(), model), 
+							view.gebeAusgewaehltenKurs().gebeSchueler(model), view.gebeAusgewaehltenKurs());
 				} catch (DatenbankFehler e) {
 					view.showError(e);
 				}
 				break;
 			}
 			case MainView.COMMAND_NOTE_EINTRAGEN: {
-				new NotenHinzufuegenManager(view, model, view.getSelectedKurs(), loggedIn);
+				new NotenHinzufuegenManager(view, model, view.gebeAusgewaehltenKurs(), loggedIn);
 				break;
 			}
 			case MainView.COMMAND_KLASSENARBEIT_EINTRAGEN: {
-				new KlassenarbeitManager(view, model, view.getSelectedKurs(), loggedIn);
+				new KlassenarbeitManager(view, model, view.gebeAusgewaehltenKurs(), loggedIn);
+				break;
+			}
+			case MainView.COMMAND_UPDATE: {
+				try {
+					view.updateContent(loggedIn, loggedIn.gebeGeleiteteKlassen(view.gebeJahr(), model), 
+							loggedIn.gebeGeleiteteKurse(view.gebeJahr(), model));
+				} catch (DatenbankFehler e) {
+					view.showError(e);
+				}
 				break;
 			}
 		}

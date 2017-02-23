@@ -30,6 +30,8 @@ public interface MainView extends View {
 	static final String COMMAND_KURS_NOTEN_ANZEIGEN = "kursNotenAnzeigen";
 	static final String COMMAND_KLASSENARBEIT_EINTRAGEN = "klassenarbeitEintragen";
 
+	static final String COMMAND_UPDATE = "update";
+
 	void loginBenutzer(Benutzer benutzer, Jahre jahre) throws DatenbankFehler;
 	
 	void updateContent(Benutzer benutzer, ListModel<Klasse> geleiteteKlassen, 
@@ -51,11 +53,11 @@ public interface MainView extends View {
 	
 	void klasseNotenAnzeigen(KlasseNotenModel klasseNotenModel, Klasse selectedKlasse);
 
-	Klasse getSelectedKlasse();
+	Klasse gebeAusgewaehlteKlasse();
 	
 	void kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs selectedKurs);
 
-	Kurs getSelectedKurs();
+	Kurs gebeAusgewaehltenKurs();
 	
 	public static MainView erstelleMainView() {
 		return new SwingMainView();

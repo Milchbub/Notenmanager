@@ -23,5 +23,9 @@ public class Model {
 	DAO gebeDao() {
 		return dao;
 	}
+
+	public KlasseNotenModel gebeKlasseNotenModel(Klasse klasse) throws DatenbankFehler {
+		return dao.gebeKlasseNotenModel(klasse);
+	}
 	
 }
