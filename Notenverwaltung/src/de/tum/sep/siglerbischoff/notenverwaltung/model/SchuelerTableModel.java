@@ -84,4 +84,8 @@ public class SchuelerTableModel extends AbstractTableModel {
 		schueler.add(model.gebeDao().schuelerHinzufuegen(name, gebDat));
 		fireTableRowsInserted(getColumnCount() - 1,	getColumnCount() - 1);
 	}
+	
+	public Schueler getElementAt(int index) {
+		return schueler.get(index);
+	}
 }

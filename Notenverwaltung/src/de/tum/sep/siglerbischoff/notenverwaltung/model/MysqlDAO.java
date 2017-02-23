@@ -392,8 +392,14 @@ class MysqlDAO extends DAO {
 	@Override
 	void benutzerLoeschen(Benutzer benutzer) throws DatenbankFehler {
 		String sql = "DELETE FROM Benutzer WHERE loginName = ?";
+		String sql2 = "DROP USER ?";
 		try (PreparedStatement s = db.prepareStatement(sql)) {
 			s.setString(1, benutzer.gebeLoginName());
+			s.execute();
+			try (PreparedStatement s2 = db.prepareStatement(sql2)) {
+				s2.setString(1, benutzer.gebeLoginName());
+				s2.execute();
+			}
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}

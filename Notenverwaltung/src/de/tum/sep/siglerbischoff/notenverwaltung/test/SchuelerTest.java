@@ -1,70 +1,72 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.test;
 
-import static org.junit.Assert.assertArrayEquals;
 
-import java.text.DateFormat;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import javax.swing.ListModel;
-
+import org.junit.Before;
 import org.junit.Test;
+
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Login;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.SchuelerTableModel;
 
 
 
 public class SchuelerTest {
 
-	/* BLOCK KOMMENTAR UEBER GANZE KLASSE!!!
-	 * TODO AUF AKTUELLE STRUKTUR UMAENDERN
+	Model model;
+	Benutzer benutzer;
+	
+	@Before
+	public void initialisieren() throws DatenbankFehler {
+		try {
+			model = new Model();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Login login = new Login("sigl", new char[] {'t', 'u', '2' , '0', '1', '7'});
+		benutzer = model.passwortPruefen(login);
+	}
 	
 	@Test
 	public void schuelerHinzufuegenTest() {
 	
 		try {
-			// DAO erstellen
-			DAO dao = DAO.erstelleDAO();
-			// Schueler aus DB direkt ueber DAO geholt
-			ListModel<Schueler> schuelerListeVorEinfuegen = dao.gebeSchueler();
+			// Bisherige Schueler aus DB geholt
+			SchuelerTableModel schuelerTableModel = Schueler.gebeSchueler(model);
+			int oldSize = schuelerTableModel.getRowCount();
 			
-			// Schuelernamen aus schuelerListeVorEinfuegen in Array stecken.
-			// Testschueler-Namen am Ende dazu setzen
-			String[] vergleichsarray1 = new String[schuelerListeVorEinfuegen.getSize() + 1];
-			int i;
-			for (i = 0; i < schuelerListeVorEinfuegen.getSize(); i++) {
-				vergleichsarray1[i] = schuelerListeVorEinfuegen.getElementAt(i).gebeName();
-			}
-			// Testschueler-Namen zu Array dazusetzen
-			vergleichsarray1[i] = "Schüler";
-			
-			// Testschueler in DB ueber MysqlDAO erstellen und einfuegen
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			// Test-Schueler in DB einfuegen
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			java.util.Date yourDate;
 			try {
-				dao.schuelerHinzufuegen("Schüler", formatter.parse("2001-11-01"));
+				yourDate = sdf.parse("2010-01-01");
+				schuelerTableModel.hinzufuegen("Test", yourDate);
 			} catch (ParseException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// Erneut die veraenderte SchuelerListe aus DB holen
-			ListModel<Schueler> schuelerListeNachEinfuegen = dao.gebeSchueler();
-			// Benutzernamen aus benutzerListeNachEinfuegen in Array stecken.
-			String[] vergleichsarray2 = new String[schuelerListeNachEinfuegen.getSize()];
-			//String[] vergleichsarray2 = new String[benutzerListeNachEinfuegen.getSize()];
-			for (i = 0; i < schuelerListeNachEinfuegen.getSize(); i++) {
-				vergleichsarray2[i] = schuelerListeNachEinfuegen.getElementAt(i).gebeName();
-			}
-			// Testschueler wieder aus DB loeschen
 			
-			dao.schuelerLoeschen("Schüler");
+			// Testschueler wieder aus DB loeschen
+			Schueler schueler = schuelerTableModel.getElementAt(schuelerTableModel.getRowCount() - 1);
+			Schueler.loescheSchueler(model, schueler);
+							
+			// Der eigentliche Test (Beide Size Werte sollten identisch sein)
+			assertEquals("Must be old size + 1", oldSize + 1, schuelerTableModel.getRowCount());
 				
-			// Der eigentliche Test (Beide Arrays sollten identisch sein)
-			assertArrayEquals("test adding a user", vergleichsarray1 , vergleichsarray2);
-		} catch (DatenbankFehler e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-	}
+			} catch (DatenbankFehler e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+		}
 	
-	 BLOCK KOMMENTAR ENDE */
-
 }
