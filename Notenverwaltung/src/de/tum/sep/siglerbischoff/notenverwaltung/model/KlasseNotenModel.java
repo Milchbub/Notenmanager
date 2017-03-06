@@ -74,15 +74,19 @@ public class KlasseNotenModel extends AbstractTableModel {
 		if(columnIndex == 0) {
 			return schueler.get(rowIndex);
 		} else {
-			Map<Kurs, List<Note>> map = daten.get(schueler.get(rowIndex));
-			if(map.containsKey(kurse.get(columnIndex - 1))) {
-				double gewicht = 0.0;
-				double summe = 0.0;
-				for(Note n : map.get(kurse.get(columnIndex))) {
-					gewicht += n.gebeGewichtung();
-					summe += n.gebeGewichtung() * n.gebeWert();
+			if(daten.containsKey(schueler.get(rowIndex))) {
+				Map<Kurs, List<Note>> map = daten.get(schueler.get(rowIndex));
+				if(map.containsKey(kurse.get(columnIndex - 1))) {
+					double gewicht = 0.0;
+					double summe = 0.0;
+					for(Note n : map.get(kurse.get(columnIndex))) {
+						gewicht += n.gebeGewichtung();
+						summe += n.gebeGewichtung() * n.gebeWert();
+					}
+					return Math.round((summe / gewicht) * 100.0) / 100.0; 
+				} else {
+					return "keine Noten / nicht belegt";
 				}
-				return Math.round((summe / gewicht) * 100.0) / 100.0; 
 			} else {
 				return "keine Noten / nicht belegt";
 			}

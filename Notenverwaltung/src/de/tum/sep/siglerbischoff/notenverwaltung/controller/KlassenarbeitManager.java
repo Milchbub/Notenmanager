@@ -24,6 +24,7 @@ class KlassenarbeitManager implements ActionListener {
 	private Benutzer loggedIn;
 	
 	KlassenarbeitManager(MainView mainView, Model model, Kurs kurs, Benutzer loggedIn) {
+		this.loggedIn = loggedIn;
 		try {
 			view = mainView.getKlassenarbeitView(kurs.gebeSchueler(model), kurs);
 			view.addActionListener(this);

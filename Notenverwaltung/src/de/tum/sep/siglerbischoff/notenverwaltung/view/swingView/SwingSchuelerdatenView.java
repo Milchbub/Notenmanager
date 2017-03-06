@@ -58,7 +58,14 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		scrollPane.setPreferredSize(new Dimension(300,200));
 		
 		schuelerTable = new JTable(schueler);
+		schuelerTable.setAutoCreateRowSorter(true);
 		schuelerTable.setFillsViewportHeight(true);
+		schuelerTable.getTableHeader().setReorderingAllowed(false);
+		
+		schuelerTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+		schuelerTable.getColumnModel().getColumn(1).setPreferredWidth(600);
+		schuelerTable.getColumnModel().getColumn(2).setPreferredWidth(300);
+		
 		schuelerTable.getColumnModel().getColumn(2).setCellRenderer(new DateCellRenderer());
 		schuelerTable.getColumnModel().getColumn(2).setCellEditor(new DateCellEditor());
 		

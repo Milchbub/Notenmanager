@@ -47,7 +47,9 @@ public class BenutzerTableModel extends AbstractTableModel implements ListModel<
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
 		if(columnIndex == 0) {
 			return false;
-		} else if(columnIndex == 2 && benutzer.indexOf(loggedIn) == rowIndex) {
+		} else if(columnIndex == 2
+				&& ((benutzer.indexOf(loggedIn) == rowIndex)
+				|| (benutzer.indexOf(new Benutzer("root", "", true)) == rowIndex))) {
 			return false;
 		} else {
 			return true;

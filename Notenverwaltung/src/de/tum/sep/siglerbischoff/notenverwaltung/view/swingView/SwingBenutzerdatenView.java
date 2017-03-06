@@ -46,7 +46,9 @@ public class SwingBenutzerdatenView extends JDialog implements BenutzerdatenView
 		JLabel lblAlleSchler = new JLabel("Alle Benutzer: ");
 		
 		benutzerTable = new JTable(benutzer);
+		benutzerTable.setAutoCreateRowSorter(true);
 		benutzerTable.setFillsViewportHeight(true);
+		benutzerTable.getTableHeader().setReorderingAllowed(false);
 		
 		JScrollPane scrollPane = new JScrollPane(benutzerTable);
 		scrollPane.setPreferredSize(new Dimension(300, 200));

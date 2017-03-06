@@ -143,15 +143,15 @@ class MysqlDAO extends DAO {
 	@Override
 	List<Note> gebeNoten(final Klasse klasse) throws DatenbankFehler {
 		String sql = "SELECT loginName, Benutzer.benutzer, istAdmin, "
-					+ "kurs, kurs_jahr, fach, "
+					+ "n.kurs, n.kurs_jahr, k.fach, "
 					+ "schuelerID, schueler, gebDat, "
 					+ "noteID, wert, datum, gewichtung, art, kommentar "
-				+ "FROM noten_" + loggedIn.gebeLoginName() + " "
-					+ "JOIN Benutzer ON (noten_" + loggedIn.gebeLoginName() + ".benutzer = Benutzer.loginName) "
-					+ "JOIN Kurs USING (kurs, kurs_jahr) "
-					+ "JOIN Schueler USING (schuelerID) "
-					+ "JOIN Besucht USING (schuelerID) "
-				+ "WHERE klasse = ? AND klasse_jahr = ? ";
+				+ "FROM noten_" + loggedIn.gebeLoginName() + " AS n "
+					+ "JOIN kurse_" + loggedIn.gebeLoginName() + " AS k USING (kurs, kurs_jahr) "
+					+ "JOIN Benutzer ON (kursleiter = Benutzer.loginName) "
+					+ "JOIN besucht_" + loggedIn.gebeLoginName() + " AS kl USING (schuelerID) "
+					+ "JOIN schueler_" + loggedIn.gebeLoginName() + " USING (schuelerID) "
+				+ "WHERE kl.klasse = ? AND kl.klasse_jahr = ? ";
 		
 		return new Listenpacker<Note>() {
 			@Override
@@ -301,22 +301,52 @@ class MysqlDAO extends DAO {
 		String sql1 = "INSERT INTO Benutzer (loginName, benutzer, istAdmin) VALUE "
 				+ "(?, ?, ?)";
 		String sql2 = "CREATE USER ? IDENTIFIED BY ?";
-		String sql3 = "GRANT SELECT ON Benutzer TO ?@'%'";
-		String sqlAdmin = "GRANT admin TO ?@'%' WITH ADMIN OPTION";
+		String grant1 = "GRANT SELECT ON Benutzer TO ?@'%'";
+		String grantAdmin = "GRANT admin TO ?@'%' WITH ADMIN OPTION";
 		
 		String[] views = new String[] {
 				"CREATE VIEW klassen_" + loginName + " AS "
-						+ "SELECT * FROM Klasse WHERE klassenleiter = ?",
+						+ "SELECT * "
+						+ "FROM Klasse "
+						+ "WHERE klassenleiter = '" + loginName + "'",
 				"CREATE VIEW kurse_" + loginName + " AS "
-						+ "SELECT * FROM Kurs WHERE kursleiter = ?",
+						+ "SELECT * "
+						+ "FROM Kurs "
+						+ "WHERE kursleiter = '" + loginName + "'",
+				"CREATE VIEW noten_loeschen_" + loginName + " AS "
+						+ "SELECT * "
+						+ "FROM Note "
+						+ "WHERE benutzer = '" + loginName + "' "
+						+ "WITH CHECK OPTION", 
 				"CREATE VIEW noten_" + loginName + " AS "
-						+ "SELECT * FROM Note WHERE benutzer = ? "
-						+ "WITH CHECK OPTION"
+						+ "SELECT kurs, kurs_jahr, schuelerID, "
+							+ "noteID, wert, datum, gewichtung, art, kommentar "
+						+ "FROM Note "
+							+ "JOIN kurse_" + loginName + " USING (kurs, kurs_jahr)",
+				"CREATE VIEW schueler_" + loginName + " AS "
+						+ "SELECT * "
+						+ "FROM Schueler "
+							+ "JOIN Belegt USING (schuelerID) "
+							+ "JOIN kurse_" + loginName + " USING (kurs, kurs_jahr) "
+							+ "JOIN Besucht USING (schuelerID) "
+							+ "JOIN klassen_" + loginName + " USING (klasse, klasse_jahr)",
+				"CREATE VIEW besucht_" + loginName + " AS "
+						+ "SELECT * "
+						+ "FROM Besucht "
+							+ "JOIN klassen_" + loginName + " USING (klasse, klasse_jahr)",
+				"CREATE VIEW belegt_" + loginName + " AS "
+						+ "SELECT * "
+						+ "FROM Belegt "
+							+ "JOIN kurse_" + loginName + " USING (kurs, kurs_jahr)"
 		};
 		String[] grants = new String[] {
-				"GRANT SELECT ON klassen_" + loginName + " TO ?@'%'",
-				"GRANT SELECT ON kurse_" + loginName + " TO ?@'%'",
-				"GRANT INSERT, DELETE, SELECT, UPDATE ON noten_" + loginName + " TO ?@'%'"
+				"GRANT SELECT ON klassen_" + loginName + " TO '" + loginName + "'@'%'",
+				"GRANT SELECT ON kurse_" + loginName + " TO '" + loginName + "'@'%'",
+				"GRANT DELETE ON noten_loeschen_" + loginName + " TO '" + loginName + "'@'%'", 
+				"GRANT SELECT ON noten_" + loginName + " TO '" + loginName + "'@'%'",
+				"GRANT SELECT ON schueler_" + loginName + " TO '" + loginName + "'@'%'",
+				"GRANT SELECT ON besucht_" + loginName + " TO '" + loginName + "'@'%'",
+				"GRANT SELECT ON belegt_" + loginName + " TO '" + loginName + "'@'%'"
 		};
 		
 		try (PreparedStatement s1 = db.prepareStatement(sql1)) {
@@ -330,25 +360,22 @@ class MysqlDAO extends DAO {
 				s2.setString(2, new String(passwort));
 				s2.executeUpdate();
 				if (istAdmin) {
-					try (PreparedStatement s3 = db.prepareStatement(sqlAdmin)) {
+					try (PreparedStatement s3 = db.prepareStatement(grantAdmin)) {
 						s3.setString(1, loginName);
 						s3.executeUpdate();
 					}
 				} else {
-					try (PreparedStatement s4 = db.prepareStatement(sql3)) {
+					try (PreparedStatement s4 = db.prepareStatement(grant1)) {
 						s4.setString(1, loginName);
 						s4.executeUpdate();
 					}
 				}
-				for(int i = 0; i < 3; i++) {
-					try (PreparedStatement s = db.prepareStatement(views[i])) {
-						s.setString(1, loginName);
-						s.executeUpdate();
+				try(Statement s = db.createStatement()) {
+					for(int i = 0; i < 7; i++) {
+						s.addBatch(views[i]);
+						s.addBatch(grants[i]);
 					}
-					try (PreparedStatement s = db.prepareStatement(grants[i])) {
-						s.setString(1, loginName);
-						s.executeUpdate();
-					}
+					s.executeBatch();
 				}
 				return new Benutzer(loginName, name, istAdmin);
 			} 
