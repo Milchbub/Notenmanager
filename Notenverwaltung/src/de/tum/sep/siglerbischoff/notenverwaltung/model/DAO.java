@@ -27,10 +27,10 @@ abstract class DAO {
 	
 	abstract Benutzer benutzerAnlegen(String loginName, String name, char[] passwort, boolean istAdmin) throws DatenbankFehler;
 	abstract void benutzerAendern(Benutzer benutzer, String neuerName, boolean neuIstAdmin) throws DatenbankFehler;
-	abstract void benutzerLoeschen(Benutzer benutzer) throws DatenbankFehler;
 	
 	abstract Schueler schuelerHinzufuegen(String name, Date gebDat) throws DatenbankFehler;
 	abstract void schuelerAendern(Schueler schueler, String neuerName, Date neuesGebDat) throws DatenbankFehler;
+	abstract void schuelerLoeschen(int schuelerID) throws DatenbankFehler;
 	abstract void schuelerLoeschen(Schueler schueler) throws DatenbankFehler;
 	
 	abstract Klasse klasseEinrichten(String name, int jahr, Benutzer klassenlehrer) throws DatenbankFehler;
@@ -49,7 +49,10 @@ abstract class DAO {
 	abstract void noteLoeschen(Note note) throws DatenbankFehler;
 
 	KlasseNotenModel gebeKlasseNotenModel(Klasse klasse) throws DatenbankFehler {
-		return new KlasseNotenModel(gebeSchueler(klasse), gebeNoten(klasse));
+		List<Schueler> schueler = gebeSchueler(klasse);
+		List<Note> noten = gebeNoten(klasse);
+		KlasseNotenModel knm = new KlasseNotenModel(schueler, noten);
+		return knm;//new KlasseNotenModel(gebeSchueler(klasse), gebeNoten(klasse));
 	}
 
 	public static DAO erstelleDAO() {

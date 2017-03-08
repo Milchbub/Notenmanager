@@ -1,6 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
@@ -9,7 +10,8 @@ public class SchuelerKursModel {
 	
 	private Kurs kurs;
 	private DefaultListModel<Schueler> schuelerIn;
-	private DefaultListModel<Schueler> schuelerOut;
+	private List<Schueler> schuelerOut;
+	private DefaultListModel<Schueler> schuelerOutFiltered;
 	
 	private Model model;
 
@@ -18,7 +20,8 @@ public class SchuelerKursModel {
 		this.model = model;
 		
 		schuelerIn = new DefaultListModel<>();
-		schuelerOut = new DefaultListModel<>();
+		schuelerOut = new Vector<>();
+		schuelerOutFiltered = new DefaultListModel<>();
 		
 		for(Schueler s : model.gebeDao().gebeSchueler(kurs)) {
 			schuelerIn.addElement(s);
@@ -26,7 +29,8 @@ public class SchuelerKursModel {
 		
 		for(Schueler s : model.gebeDao().gebeAlleSchueler()) {
 			if(!schuelerIn.contains(s)) {
-				schuelerOut.addElement(s);
+				schuelerOut.add(s);
+				schuelerOutFiltered.addElement(s);
 			}
 		}
 	}	
@@ -36,12 +40,13 @@ public class SchuelerKursModel {
 	}
 	
 	public ListModel<Schueler> gebeOut() {
-		return schuelerOut;
+		return schuelerOutFiltered;
 	}
 	
 	public void moveIn(List<Schueler> schueler) throws DatenbankFehler {
 		for(Schueler s : schueler) {
-			schuelerOut.removeElement(s);
+			schuelerOut.remove(s);
+			schuelerOutFiltered.removeElement(s);
 			if(!schuelerIn.contains(s)) {
 				schuelerIn.addElement(s);
 			}
@@ -53,10 +58,38 @@ public class SchuelerKursModel {
 		for(Schueler s : schueler) {
 			schuelerIn.removeElement(s);
 			if(!schuelerOut.contains(s)) {
-				schuelerOut.addElement(s);
+				schuelerOut.add(s);
+				schuelerOutFiltered.addElement(s);
 			}
 			kurs.schuelerEntfernen(s, model);
 		}
+	}
+
+	private String filter = "";
+	private Klasse filterKlasse;
+	
+	private void filter(String filter, Klasse filterKlasse) throws DatenbankFehler {
+		this.filter = filter;
+		this.filterKlasse = filterKlasse;
+		schuelerOutFiltered.removeAllElements();
+		for(Schueler s : schuelerOut) {
+			if(filter != null && s.gebeName().toLowerCase().contains(filter.toLowerCase())) {
+				if(filterKlasse != null) {
+					List<Schueler> schueler = model.gebeDao().gebeSchueler(filterKlasse);
+					if(schueler.contains(s)) {
+						schuelerOutFiltered.addElement(s);
+					}
+				}
+			}
+		}
+	}
+
+	public void filter(Klasse klasse) throws DatenbankFehler {
+		filter(filter, klasse);
+	}
+	
+	public void filter(String filter) throws DatenbankFehler {
+		filter(filter, filterKlasse);
 	}
 
 }

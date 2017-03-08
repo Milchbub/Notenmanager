@@ -51,6 +51,11 @@ public class Schueler {
 		return name;
 	}
 	
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	
 	public static SchuelerTableModel gebeSchueler(Model model) throws DatenbankFehler {
 		return new SchuelerTableModel(model.gebeDao().gebeAlleSchueler(), model);
 	}

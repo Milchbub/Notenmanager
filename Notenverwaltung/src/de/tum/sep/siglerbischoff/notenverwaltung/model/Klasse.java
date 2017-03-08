@@ -2,8 +2,6 @@ package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.util.List;
 
-import javax.swing.ListModel;
-
 public class Klasse {
 
 	private final String name; 

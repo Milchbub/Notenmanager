@@ -50,6 +50,13 @@ class SchuelerdatenManager implements ActionListener {
 					}
 				}
 				break;
+			case SchuelerdatenView.COMMAND_LOESCHEN: 
+				try {
+					schueler.loeschen(view.gebeMarkierteZeile());
+				} catch (DatenbankFehler e) {
+					view.showError(e);
+				}
+				break;
 			case SchuelerdatenView.COMMAND_SCHLIESSEN: 
 				view.schliessen();
 				break;

@@ -8,6 +8,7 @@ public interface SchuelerdatenView extends View {
 	public static final String COMMAND_SCHLIESSEN = "schliessen";
 	public static final String COMMAND_NEU = "neu";
 	public static final String COMMAND_NEU_FERTIG = "neuFertig";
+	public static final String COMMAND_LOESCHEN = "loeschen";
 	
 	void addActionListener(ActionListener l);
 	
@@ -18,4 +19,6 @@ public interface SchuelerdatenView extends View {
 	String gebeNeuName();
 	
 	Date gebeNeuGebDat();
+
+	int gebeMarkierteZeile();
 }

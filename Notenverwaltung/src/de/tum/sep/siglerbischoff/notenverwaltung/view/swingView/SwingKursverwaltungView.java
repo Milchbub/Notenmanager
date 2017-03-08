@@ -9,6 +9,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,12 +19,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
@@ -189,7 +194,7 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 	private Benutzer neuLehrer;
 	
 	@Override
-	public void bearbeiten(Kurs kurs, ListModel<Benutzer> lehrer, SchuelerKursModel schueler) {
+	public void bearbeiten(Kurs kurs, ListModel<Benutzer> lehrer, SchuelerKursModel schueler, KlassenModel klassen) {
 		JDialog dialog = new JDialog(this);
 		dialog.setModal(true);
 		
@@ -287,6 +292,39 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 					}
 				}
 			});
+			
+			JLabel lblFilter = new JLabel("Filtern:");
+			JTextField txtFilter = new JTextField();
+			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
+				
+				@Override
+				public void removeUpdate(DocumentEvent e) {a();}
+				
+				@Override
+				public void insertUpdate(DocumentEvent e) {a();}
+				
+				@Override
+				public void changedUpdate(DocumentEvent e) {a();}
+				
+				private void a() {
+					try {
+						schueler.filter(txtFilter.getText());
+					} catch (DatenbankFehler e) {
+						showError(e);
+					}
+				}
+			});
+			
+			JLabel lblKlasseFilter = new JLabel("Klasse:");
+			JComboBox<Klasse> cmbBxKlasseFilter = new JComboBox<>(klassen);
+			cmbBxKlasseFilter.addActionListener(ae -> {
+				try {
+					schueler.filter((Klasse) cmbBxKlasseFilter.getSelectedItem());
+				} catch (DatenbankFehler e) {
+					showError(e);
+				}
+			});
+			
 			dialog.setTitle("Kurs \"" + kurs.gebeName() + "\" bearbeiten");
 			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
 			txtName.setText(kurs.gebeName());
@@ -305,7 +343,13 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 							.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+						.addGroup(gl_neuer_Kurs.createParallelGroup(Alignment.LEADING)
+							.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+							.addComponent(lblFilter)
+							.addComponent(txtFilter)
+							.addComponent(lblKlasseFilter)
+							.addComponent(cmbBxKlasseFilter)
+						)
 					)
 				);
 			
@@ -323,7 +367,17 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 							.addGap(0)
 						)
-						.addComponent(scrollListOut)
+						.addGroup(gl_neuer_Kurs.createSequentialGroup()
+							.addComponent(scrollListOut)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblFilter)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(txtFilter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblKlasseFilter)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(cmbBxKlasseFilter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						)
 					)
 				);
 		}

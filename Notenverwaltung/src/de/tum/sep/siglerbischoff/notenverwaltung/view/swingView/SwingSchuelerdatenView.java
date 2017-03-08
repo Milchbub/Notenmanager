@@ -86,6 +86,10 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 		JButton btnHinzufuegen = new JButton("Sch\u00FCler hinzuf\u00FCgen...");
 		btnHinzufuegen.setActionCommand(COMMAND_NEU);
 		buttons.add(btnHinzufuegen);
+
+		JButton btnLoeschen = new JButton("Sch\u00FCler loschen");
+		btnLoeschen.setActionCommand(COMMAND_LOESCHEN);
+		buttons.add(btnLoeschen);
 		
 		JButton btnOk = new JButton("Ok");
 		btnOk.setActionCommand(COMMAND_SCHLIESSEN);
@@ -99,9 +103,10 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 				.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 				.addGroup(gl_kursVerwaltung.createSequentialGroup()
 					.addComponent(btnHinzufuegen)
-					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-					.addComponent(btnOk))
-				)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnLoeschen))
+				.addComponent(btnOk)
+			)
 			.addContainerGap()
 		);
 		gl_kursVerwaltung.setVerticalGroup(gl_kursVerwaltung.createSequentialGroup()
@@ -112,7 +117,9 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 			.addPreferredGap(ComponentPlacement.UNRELATED)
 			.addGroup(gl_kursVerwaltung.createParallelGroup(Alignment.LEADING)
 					.addComponent(btnHinzufuegen)
-					.addComponent(btnOk))
+					.addComponent(btnLoeschen))
+			.addPreferredGap(ComponentPlacement.UNRELATED)
+			.addComponent(btnOk)
 			.addContainerGap()
 		);
 		getContentPane().setLayout(gl_kursVerwaltung);
@@ -157,7 +164,7 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	
 	@Override
 	public void neu() {
-		JDialog dialog = new JDialog(this, "Neuer Schüler");
+		JDialog dialog = new JDialog(this, "Neuer Sch\u00FCler");
 		
 		JLabel lblName = new JLabel("Name: ");
 		JTextField txtName = new JTextField();
@@ -231,6 +238,11 @@ public class SwingSchuelerdatenView extends JDialog implements SchuelerdatenView
 	@Override
 	public Date gebeNeuGebDat() {
 		return neuDatum;
+	}
+	
+	@Override
+	public int gebeMarkierteZeile() {
+		return schuelerTable.getRowSorter().convertRowIndexToModel(schuelerTable.getSelectedRow());
 	}
 	
 	private static class DateCellRenderer extends DefaultTableCellRenderer {

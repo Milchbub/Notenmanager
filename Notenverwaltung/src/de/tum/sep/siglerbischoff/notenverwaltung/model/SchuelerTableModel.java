@@ -74,7 +74,7 @@ public class SchuelerTableModel extends AbstractTableModel {
 					s.setzeGebDat((Date) aValue, model);
 					break;
 			} 
-		}catch(DatenbankFehler e) {
+		} catch(DatenbankFehler e) {
 			//TODO
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
@@ -83,6 +83,11 @@ public class SchuelerTableModel extends AbstractTableModel {
 	public void hinzufuegen(String name, Date gebDat) throws DatenbankFehler {
 		schueler.add(model.gebeDao().schuelerHinzufuegen(name, gebDat));
 		fireTableRowsInserted(getColumnCount() - 1,	getColumnCount() - 1);
+	}
+
+	public void loeschen(int index) throws DatenbankFehler {
+		model.gebeDao().schuelerLoeschen(schueler.remove(index));
+		fireTableRowsDeleted(index, index);
 	}
 	
 	public Schueler getElementAt(int index) {

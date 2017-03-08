@@ -3,8 +3,9 @@ package de.tum.sep.siglerbischoff.notenverwaltung.model;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 
-public class KlassenModel extends AbstractListModel<Klasse> {
+public class KlassenModel extends AbstractListModel<Klasse> implements ComboBoxModel<Klasse> {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -49,5 +50,17 @@ public class KlassenModel extends AbstractListModel<Klasse> {
 	@Override
 	public Klasse getElementAt(int index) {
 		return klassen.get(index);
+	}
+
+	private Object selected;
+	
+	@Override
+	public void setSelectedItem(Object anItem) {
+		selected = anItem;
+	}
+
+	@Override
+	public Object getSelectedItem() {
+		return selected;
 	}
 }

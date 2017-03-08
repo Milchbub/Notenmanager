@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KurseModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
@@ -19,9 +20,11 @@ class KursManager implements ActionListener {
 	private Model model;
 	
 	private Main parent;
+	private MainView mainView;
 	
 	KursManager(MainView mainView, Model model, Main parent) {
 		this.parent = parent;
+		this.mainView = mainView;
 		try {
 			kurse = Kurs.gebeKurse(mainView.gebeJahr(), model);
 			view = mainView.getKursverwaltungView(kurse);
@@ -41,7 +44,7 @@ class KursManager implements ActionListener {
 		switch (ae.getActionCommand()) {
 			case KursverwaltungView.COMMAND_NEU:
 				try {
-					view.bearbeiten(null, Benutzer.gebeBenutzer(model, parent.getLoggedIn()), null);
+					view.bearbeiten(null, Benutzer.gebeBenutzer(model, parent.getLoggedIn()), null, null);
 				} catch (DatenbankFehler e) {
 					view.showError(e);
 				}
@@ -51,7 +54,10 @@ class KursManager implements ActionListener {
 					view.showError("Fehler", "Kein Kurs ausgewählt...");
 				} else {
 					try {
-						view.bearbeiten(view.gebeAusgewaehlt(), Benutzer.gebeBenutzer(model, parent.getLoggedIn()), view.gebeAusgewaehlt().gebeSchuelerKursModel(model));
+						view.bearbeiten(view.gebeAusgewaehlt(), 
+								Benutzer.gebeBenutzer(model, parent.getLoggedIn()), 
+								view.gebeAusgewaehlt().gebeSchuelerKursModel(model), 
+								Klasse.gebeKlassen(mainView.gebeJahr(), model));
 					} catch (DatenbankFehler e) {
 						view.showError(e);
 					}

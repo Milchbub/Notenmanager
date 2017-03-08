@@ -37,6 +37,7 @@ public class KlasseNotenModel extends AbstractTableModel {
 				List<Note> list = new Vector<>();
 				list.add(n);
 				map.put(n.gebeKurs(), list);
+				daten.put(n.gebeSchueler(), map);
 			}
 		}
 	}
@@ -79,7 +80,7 @@ public class KlasseNotenModel extends AbstractTableModel {
 				if(map.containsKey(kurse.get(columnIndex - 1))) {
 					double gewicht = 0.0;
 					double summe = 0.0;
-					for(Note n : map.get(kurse.get(columnIndex))) {
+					for(Note n : map.get(kurse.get(columnIndex - 1))) {
 						gewicht += n.gebeGewichtung();
 						summe += n.gebeGewichtung() * n.gebeWert();
 					}

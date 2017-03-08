@@ -3,6 +3,7 @@ package de.tum.sep.siglerbischoff.notenverwaltung.view;
 import javax.swing.ListModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KlassenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.SchuelerKursModel;
 
@@ -15,7 +16,7 @@ public interface KursverwaltungView extends View {
 	static final String COMMAND_NEU_FERTIG = "neuFertig";
 	static final String COMMAND_BEARBEITEN_FERTIG = "bearbeitenFertig";
 
-	void bearbeiten(Kurs kurs, ListModel<Benutzer> lehrer, SchuelerKursModel schueler);
+	void bearbeiten(Kurs kurs, ListModel<Benutzer> lehrer, SchuelerKursModel schueler, KlassenModel klassenModel);
 	
 	Kurs gebeAusgewaehlt();
 	

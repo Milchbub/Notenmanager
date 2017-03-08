@@ -417,22 +417,6 @@ class MysqlDAO extends DAO {
 	}
 	
 	@Override
-	void benutzerLoeschen(Benutzer benutzer) throws DatenbankFehler {
-		String sql = "DELETE FROM Benutzer WHERE loginName = ?";
-		String sql2 = "DROP USER ?";
-		try (PreparedStatement s = db.prepareStatement(sql)) {
-			s.setString(1, benutzer.gebeLoginName());
-			s.execute();
-			try (PreparedStatement s2 = db.prepareStatement(sql2)) {
-				s2.setString(1, benutzer.gebeLoginName());
-				s2.execute();
-			}
-		} catch (SQLException e) {
-			throw new DatenbankFehler(e);
-		}
-	}
-	
-	@Override
 	Schueler schuelerHinzufuegen(String name, Date gebDat) throws DatenbankFehler {
 		String sql = "INSERT INTO Schueler (schueler, gebDat) VALUE "
 				+ "(?, ?)";
@@ -464,16 +448,21 @@ class MysqlDAO extends DAO {
 			throw new DatenbankFehler(e);
 		}
 	}
-	
+
 	@Override
-	void schuelerLoeschen(Schueler schueler) throws DatenbankFehler {
+	void schuelerLoeschen(int schuelerID) throws DatenbankFehler {
 		String sql = "DELETE FROM Schueler WHERE schuelerID = ?";
 		try (PreparedStatement s = db.prepareStatement(sql)) {
-			s.setInt(1, schueler.gebeId());
+			s.setInt(1, schuelerID);
 			s.executeUpdate();
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
+	}
+	
+	@Override
+	void schuelerLoeschen(Schueler schueler) throws DatenbankFehler {
+		schuelerLoeschen(schueler.gebeId());
 	}
 	
 	@Override
@@ -604,7 +593,7 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void ausKursLoeschen(Kurs kurs, Schueler schueler) throws DatenbankFehler {
-		String sql = "DELETE FROM Besucht "
+		String sql = "DELETE FROM Belegt "
 				+ "WHERE schuelerID = ? AND kurs = ? AND kurs_jahr = ?";
 		try (PreparedStatement s = db.prepareStatement(sql)) {
 			s.setInt(1, schueler.gebeId());
