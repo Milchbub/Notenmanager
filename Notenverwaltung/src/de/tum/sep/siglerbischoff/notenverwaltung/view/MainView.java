@@ -1,5 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view;
 
+import java.io.File;
+
 import javax.swing.ListModel;
 import javax.swing.table.TableModel;
 
@@ -25,6 +27,7 @@ public interface MainView extends View {
 	static final String COMMAND_KURSE_ANLEGEN = "kurseAnlegen";
 	
 	static final String COMMAND_KLASSE_NOTEN_ANZEIGEN = "klasseNotenAnzeigen";
+	static final String COMMAND_KLASSE_NOTEN_PDF = "klasseNotenPFD";
 	
 	static final String COMMAND_NOTE_EINTRAGEN = "noteEintragen";
 	static final String COMMAND_KURS_NOTEN_ANZEIGEN = "kursNotenAnzeigen";
@@ -55,7 +58,9 @@ public interface MainView extends View {
 
 	Klasse gebeAusgewaehlteKlasse();
 	
-	void kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs selectedKurs);
+	File gebeSpeicherort();
+	
+	KursNotenAnzeigenView kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs selectedKurs);
 
 	Kurs gebeAusgewaehltenKurs();
 	

@@ -199,9 +199,9 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 		dialog.setModal(true);
 		
 		JLabel lblName = new JLabel("Name: ");
-		JTextField txtName = new JTextField();
+		JTextField txtName = new JTextField(kurs != null ? kurs.gebeName() : "");
 		JLabel lblFach = new JLabel("Fach: ");
-		JTextField txtFach = new JTextField();
+		JTextField txtFach = new JTextField(kurs != null ? kurs.gebeFach() : "");
 		JLabel lblJahr = new JLabel("Jahr: "+ kurse.gebeJahr());
 		
 		JLabel lblLehrer = new JLabel("Kursleiter: ");
@@ -327,8 +327,6 @@ public class SwingKursverwaltungView extends JDialog implements KursverwaltungVi
 			
 			dialog.setTitle("Kurs \"" + kurs.gebeName() + "\" bearbeiten");
 			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
-			txtName.setText(kurs.gebeName());
-			txtFach.setText(kurs.gebeFach());
 			list.setSelectedValue(kurs.gebeKursleiter(), true);
 			
 			horizontalGroup

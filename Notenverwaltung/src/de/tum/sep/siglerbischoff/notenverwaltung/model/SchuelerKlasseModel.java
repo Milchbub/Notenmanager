@@ -1,6 +1,7 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.model;
 
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
@@ -9,7 +10,8 @@ public class SchuelerKlasseModel {
 	
 	private Klasse klasse;
 	private DefaultListModel<Schueler> schuelerIn;
-	private DefaultListModel<Schueler> schuelerOut;
+	private List<Schueler> schuelerOut;
+	private DefaultListModel<Schueler> schuelerOutFiltered;
 	
 	private Model model;
 
@@ -18,7 +20,8 @@ public class SchuelerKlasseModel {
 		this.model = model;
 		
 		schuelerIn = new DefaultListModel<>();
-		schuelerOut = new DefaultListModel<>();
+		schuelerOut = new Vector<>();
+		schuelerOutFiltered = new DefaultListModel<>();
 		
 		for(Schueler s : model.gebeDao().gebeSchueler(klasse)) {
 			schuelerIn.addElement(s);
@@ -26,7 +29,8 @@ public class SchuelerKlasseModel {
 		
 		for(Schueler s : model.gebeDao().gebeAlleSchueler()) {
 			if(!schuelerIn.contains(s)) {
-				schuelerOut.addElement(s);
+				schuelerOut.add(s);
+				schuelerOutFiltered.addElement(s);
 			}
 		}
 	}
@@ -36,12 +40,13 @@ public class SchuelerKlasseModel {
 	}
 	
 	public ListModel<Schueler> gebeOut() {
-		return schuelerOut;
+		return schuelerOutFiltered;
 	}
 	
 	public void moveIn(List<Schueler> schueler) throws DatenbankFehler {
 		for(Schueler s : schueler) {
-			schuelerOut.removeElement(s);
+			schuelerOut.remove(s);
+			schuelerOutFiltered.removeElement(s);
 			if(!schuelerIn.contains(s)) {
 				schuelerIn.addElement(s);
 			}
@@ -53,9 +58,19 @@ public class SchuelerKlasseModel {
 		for(Schueler s : schueler) {
 			schuelerIn.removeElement(s);
 			if(!schuelerOut.contains(s)) {
-				schuelerOut.addElement(s);
+				schuelerOut.add(s);
+				schuelerOutFiltered.addElement(s);
 			}
 			klasse.schuelerEntfernen(s, model);
+		}
+	}
+
+	public void filter(String filter) throws DatenbankFehler {
+		schuelerOutFiltered.removeAllElements();
+		for(Schueler s : schuelerOut) {
+			if(filter != null && s.gebeName().toLowerCase().contains(filter.toLowerCase())) {
+				schuelerOutFiltered.addElement(s);
+			}
 		}
 	}
 }

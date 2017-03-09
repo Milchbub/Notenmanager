@@ -74,8 +74,4 @@ public class Benutzer {
 	public static Benutzer erstelleBenutzer(String loginName, String name, char[] passwort, boolean istAdmin, Model model) throws DatenbankFehler {
 		return model.gebeDao().benutzerAnlegen(loginName, name, passwort, istAdmin);
 	}
-	
-	public static void loescheBenutzer(Model model, Benutzer benutzer) throws DatenbankFehler {
-		model.gebeDao().benutzerLoeschen(benutzer);
-	}
 }

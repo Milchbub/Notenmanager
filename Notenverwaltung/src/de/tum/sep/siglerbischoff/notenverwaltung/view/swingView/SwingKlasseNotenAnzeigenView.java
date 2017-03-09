@@ -1,19 +1,25 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.view.swingView;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 
 import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.GroupLayout.Alignment;
+import javax.swing.table.TableCellRenderer;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Klasse;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.KlasseNotenModel;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.KlasseNotenModel.KursNoten;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.Note;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.View;
 
 class SwingKlasseNotenAnzeigenView extends JDialog implements View {
@@ -28,9 +34,31 @@ class SwingKlasseNotenAnzeigenView extends JDialog implements View {
 		JScrollPane scrollPane = new JScrollPane();
 		JTable table = new JTable(noten);
 		table.setFillsViewportHeight(true);
+		table.setDefaultRenderer(KursNoten.class, new TableCellRenderer() {
+			@Override
+			public Component getTableCellRendererComponent(JTable table, Object value, 
+					boolean isSelected, boolean hasFocus,
+					int row, int column) {
+				KursNoten kn = (KursNoten) value;
+				Component renderer = table.getDefaultRenderer(String.class)
+					.getTableCellRendererComponent(table, kn, isSelected, 
+							hasFocus, row, column);
+				Iterator<Note> it = kn.gebeNoten().iterator();
+				if(!it.hasNext()) {
+					return renderer;
+				} else {
+					String text = "<html><p>";
+					while (it.hasNext()) {
+						text += it.next() + (it.hasNext() ? "<br />" : "");
+					}
+					((JComponent) renderer).setToolTipText(text + "</p></html>");
+					return renderer;
+				}
+			}
+		});
 		scrollPane.setViewportView(table);
 		
-		JButton btnOk = new JButton("Ok");
+		JButton btnOk = new JButton("OK");
 		btnOk.addActionListener(ae -> {
 			dispose();
 		});

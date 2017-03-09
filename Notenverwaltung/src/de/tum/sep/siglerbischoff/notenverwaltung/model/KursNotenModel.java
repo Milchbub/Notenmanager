@@ -42,4 +42,10 @@ public class KursNotenModel extends AbstractListModel<Note> {
 		}
 		fireContentsChanged(this, 0, getSize() - 1); 
 	}
+	
+	public void noteLoeschen(Note note) throws DatenbankFehler {
+		model.gebeDao().noteLoeschen(note);
+		notenlisten.get(ausgewaehlt).remove(note);
+		fireContentsChanged(this, 0, getSize() - 1);
+	}
 }

@@ -2,6 +2,8 @@ package de.tum.sep.siglerbischoff.notenverwaltung.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.swing.JOptionPane;
@@ -9,8 +11,8 @@ import javax.swing.JOptionPane;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Jahre;
-import de.tum.sep.siglerbischoff.notenverwaltung.model.KursNotenModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Model;
+import de.tum.sep.siglerbischoff.notenverwaltung.model.PDFFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.SchuelerTableModel;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
@@ -114,13 +116,21 @@ public final class Main implements ActionListener {
 				}
 				break;
 			}
-			case MainView.COMMAND_KURS_NOTEN_ANZEIGEN: {
+			case MainView.COMMAND_KLASSE_NOTEN_PDF: {
 				try {
-					view.kursNotenAnzeigen(new KursNotenModel(view.gebeAusgewaehltenKurs(), model), 
-							view.gebeAusgewaehltenKurs().gebeSchueler(model), view.gebeAusgewaehltenKurs());
-				} catch (DatenbankFehler e) {
+					File file = view.gebeSpeicherort();
+					if(file != null) {
+						PDFController.print(file, 
+								model.gebeKlasseNotenModel(view.gebeAusgewaehlteKlasse()), 
+								view.gebeAusgewaehlteKlasse());
+					}
+				} catch (FileNotFoundException | PDFFehler | DatenbankFehler e) {
 					view.showError(e);
 				}
+				break;
+			}
+			case MainView.COMMAND_KURS_NOTEN_ANZEIGEN: {
+				new KursNotenMangaer(view, model);
 				break;
 			}
 			case MainView.COMMAND_NOTE_EINTRAGEN: {

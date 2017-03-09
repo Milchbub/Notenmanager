@@ -18,6 +18,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -275,6 +277,29 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 					}
 				}
 			});
+			
+			JLabel lblFilter = new JLabel("Filtern:");
+			JTextField txtFilter = new JTextField();
+			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
+				
+				@Override
+				public void removeUpdate(DocumentEvent e) {a();}
+				
+				@Override
+				public void insertUpdate(DocumentEvent e) {a();}
+				
+				@Override
+				public void changedUpdate(DocumentEvent e) {a();}
+				
+				private void a() {
+					try {
+						schueler.filter(txtFilter.getText());
+					} catch (DatenbankFehler e) {
+						showError(e);
+					}
+				}
+			});
+			
 			dialog.setTitle("Klasse \"" + klasse.gebeName() + "\" bearbeiten");
 			btnOk.setActionCommand(COMMAND_BEARBEITEN_FERTIG);
 			list.setSelectedValue(klasse.gebeKlassenlehrer(), true);
@@ -291,7 +316,11 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 							.addComponent(btnOut, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 						)
 						.addPreferredGap(ComponentPlacement.RELATED)
-						.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+						.addGroup(gl_neue_Klasse.createParallelGroup(Alignment.LEADING)
+							.addComponent(scrollListOut, GroupLayout.PREFERRED_SIZE, 150, Short.MAX_VALUE)
+							.addComponent(lblFilter)
+							.addComponent(txtFilter)
+						)
 					)
 				);
 			
@@ -309,7 +338,13 @@ public class SwingKlassenverwaltungView extends JDialog implements Klassenverwal
 							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
 							.addGap(0)
 						)
-						.addComponent(scrollListOut)
+						.addGroup(gl_neue_Klasse.createSequentialGroup()
+							.addComponent(scrollListOut)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblFilter)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(txtFilter, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						)
 					)
 				);
 		}

@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.ListModel;
+import javax.swing.event.EventListenerList;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.DatenbankFehler;
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Kurs;
@@ -26,11 +28,17 @@ import de.tum.sep.siglerbischoff.notenverwaltung.view.KursNotenAnzeigenView;
 public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnzeigenView {
 
 	private static final long serialVersionUID = 1L;
+	
+	private EventListenerList listeners;
+	
+	private JList<Note> lstNoten;
 
 	SwingKursNotenAnzeigenView(JFrame parent, KursNotenModel noten, 
 			ListModel<Schueler> schueler, Kurs kurs) {
 		super(parent, "Noten von \"" + kurs.gebeName() + "\"", true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		
+		listeners = new EventListenerList();
 		
 		JScrollPane scrollPaneSchueler = new JScrollPane();
 		
@@ -46,6 +54,15 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 		JLabel lblKommentar = new JLabel("Kommentar: ");
 		
 		JLabel lblDurchschnitt = new JLabel("Durchschnitt:");
+		
+		JButton btnNoteLoeschen = new JButton("Note löschen");
+		btnNoteLoeschen.setEnabled(false);
+		btnNoteLoeschen.setActionCommand(KursNotenAnzeigenView.COMMAND_NOTE_LOESCHEN);
+		btnNoteLoeschen.addActionListener(ae -> {
+			for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+				l.actionPerformed(ae);
+			}
+		});
 		
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
@@ -65,7 +82,8 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 				.addComponent(lblGewichtung)
 				.addComponent(lblArt)
 				.addComponent(lblKommentar)
-				.addComponent(lblDurchschnitt))
+				.addComponent(lblDurchschnitt)
+				.addComponent(btnNoteLoeschen))
 			.addContainerGap()
 		);
 		groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
@@ -89,13 +107,15 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 					.addComponent(lblArt)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblKommentar)
-					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-					.addComponent(lblDurchschnitt))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblDurchschnitt)
+					.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(btnNoteLoeschen))
 			)
 			.addContainerGap()
 		);
 		
-		JList<Note> lstNoten = new JList<>(noten);
+		lstNoten = new JList<>(noten);
 		lstNoten.addListSelectionListener(se -> {
 			if(se.getValueIsAdjusting() || lstNoten.isSelectionEmpty()) {
 				return;
@@ -107,6 +127,7 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 			lblGewichtung.setText("Gewichtung: " + lstNoten.getSelectedValue().gebeGewichtung());
 			lblArt.setText("Art: " + lstNoten.getSelectedValue().gebeArt());
 			lblKommentar.setText("<html>Kommentar: " + lstNoten.getSelectedValue().gebeKommentar());
+			btnNoteLoeschen.setEnabled(true);
 		});
 		scrollPaneNoten.setViewportView(lstNoten);
 		
@@ -133,6 +154,7 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 					lblDurchschnitt.setText("Durchschnitt: -");
 				}
 				lstNoten.clearSelection();
+				btnNoteLoeschen.setEnabled(false);
 			} catch (DatenbankFehler e) {
 				showError(e);
 			}
@@ -142,6 +164,11 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 		
 		pack();
 		setMinimumSize(getSize());
+	}
+
+	@Override
+	public Note gebeZuLoeschendeNote() {
+		return lstNoten.getSelectedValue();
 	}
 
 	@Override
@@ -162,11 +189,11 @@ public class SwingKursNotenAnzeigenView extends JDialog implements KursNotenAnze
 
 	@Override
 	public void addActionListener(ActionListener l) {
-		//Nicht notwendig, da keine Veraenderungen an den Daten vorgenommen werden
+		listeners.add(ActionListener.class, l);
 	}
 
 	@Override
 	public void removeActionListener(ActionListener l) {
-		//Siehe addActionListener(ActionListener l)
+		listeners.remove(ActionListener.class, l);
 	}
 }

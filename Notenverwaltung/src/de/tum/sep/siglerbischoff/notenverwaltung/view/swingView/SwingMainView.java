@@ -5,14 +5,15 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Calendar;
 
 import javax.swing.ComboBoxEditor;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -29,6 +30,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.EventListenerList;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableModel;
 
 import de.tum.sep.siglerbischoff.notenverwaltung.model.Benutzer;
@@ -44,6 +46,7 @@ import de.tum.sep.siglerbischoff.notenverwaltung.model.Schueler;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.BenutzerdatenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenarbeitView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KlassenverwaltungView;
+import de.tum.sep.siglerbischoff.notenverwaltung.view.KursNotenAnzeigenView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.KursverwaltungView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.LoginView;
 import de.tum.sep.siglerbischoff.notenverwaltung.view.MainView;
@@ -116,7 +119,7 @@ public class SwingMainView extends JFrame implements MainView {
 		pnlContent.setBorder(new EmptyBorder(0, 8, 0, 8));
 		pnlContent.setLayout(new BorderLayout(0, 0));
 
-		JPanel pnlFooter = new JPanel();
+		/*JPanel pnlFooter = new JPanel();
 
 		JButton button = new JButton("");
 		button.setIcon(new ImageIcon(
@@ -134,18 +137,18 @@ public class SwingMainView extends JFrame implements MainView {
 			.addComponent(button, GroupLayout.PREFERRED_SIZE, 40, GroupLayout.PREFERRED_SIZE)
 			.addContainerGap()
 		);
-		pnlFooter.setLayout(gl_pnlFooter);
+		pnlFooter.setLayout(gl_pnlFooter);*/
 		
 		gl_content.setHorizontalGroup(gl_content.createSequentialGroup()
 			.addGroup(gl_content.createParallelGroup(Alignment.LEADING)
 				.addComponent(pnlHeader)
 				.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
-				.addComponent(pnlFooter))
+				/*.addComponent(pnlFooter)*/)
 		);
 		gl_content.setVerticalGroup(gl_content.createSequentialGroup()
 			.addComponent(pnlHeader)
 			.addComponent(pnlContent, GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
-			.addComponent(pnlFooter)
+			.addContainerGap()/*.addComponent(pnlFooter)*/
 		);
 		getContentPane().setLayout(gl_content);
 	}
@@ -273,6 +276,14 @@ public class SwingMainView extends JFrame implements MainView {
 				//JButton btnZeugnisbemerkungen = new JButton("Zeugnisbemerkungen...");
 				//btnZeugnisbemerkungen.setEnabled(false);	
 				//JButton btnGefhrdungenAnzeigen = new JButton("Gef\u00E4hrdungen anzeigen...");
+				JButton btnNotenUebersichtPDF = new JButton("Notenübersicht speichern unter...");
+				btnNotenUebersichtPDF.setEnabled(false);
+				btnNotenUebersichtPDF.setActionCommand(COMMAND_KLASSE_NOTEN_PDF);
+				btnNotenUebersichtPDF.addActionListener(ae -> {
+					for(ActionListener l : listeners.getListeners(ActionListener.class)) {
+						l.actionPerformed(ae);
+					}
+				});
 	
 				JButton btnNotenAnzeigen = new JButton("Noten anzeigen...");
 				btnNotenAnzeigen.setEnabled(false);
@@ -291,7 +302,8 @@ public class SwingMainView extends JFrame implements MainView {
 						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 150, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING, false)
-						.addComponent(btnNotenAnzeigen, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE))
+						.addComponent(btnNotenAnzeigen, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
+						.addComponent(btnNotenUebersichtPDF, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE))
 					.addContainerGap()
 				);
 				gl_pnlKlassen.setVerticalGroup(gl_pnlKlassen.createSequentialGroup()
@@ -300,7 +312,11 @@ public class SwingMainView extends JFrame implements MainView {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_pnlKlassen.createParallelGroup(Alignment.LEADING)
 						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 200, Short.MAX_VALUE)
-						.addComponent(btnNotenAnzeigen))
+						.addGroup(gl_pnlKlassen.createSequentialGroup()
+							.addComponent(btnNotenAnzeigen)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnNotenUebersichtPDF))
+					)
 					.addContainerGap()
 				);
 	
@@ -308,6 +324,7 @@ public class SwingMainView extends JFrame implements MainView {
 				listKlasse.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				listKlasse.addListSelectionListener(se -> {
 					btnNotenAnzeigen.setEnabled(true);
+					btnNotenUebersichtPDF.setEnabled(true);
 				});
 				scrollPane.setViewportView(listKlasse);
 				pnlKlassen.setLayout(gl_pnlKlassen);
@@ -476,10 +493,41 @@ public class SwingMainView extends JFrame implements MainView {
 	public Klasse gebeAusgewaehlteKlasse() {
 		return listKlasse.getSelectedValue();
 	}
+	
+	private File aktuellesVerzeichnis;
+	
+	@Override
+	public File gebeSpeicherort() {
+		JFileChooser fc = new JFileChooser(aktuellesVerzeichnis);
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fc.setDialogTitle("Speichern unter...");
+		fc.setFileFilter(new FileFilter() {
+			@Override
+			public String getDescription() {
+				return "PDF-Dateien";
+			}
+			
+			@Override
+			public boolean accept(File f) {
+				return f.getName().endsWith(".pdf");
+			}
+		});
+		switch(fc.showSaveDialog(this)) {
+			case JFileChooser.APPROVE_OPTION:
+				aktuellesVerzeichnis = fc.getSelectedFile();
+				return aktuellesVerzeichnis;
+			case JFileChooser.CANCEL_OPTION:
+			case JFileChooser.ERROR_OPTION:
+				return null;
+			default:
+				return null;
+		}
+		
+	}
 
 	@Override
-	public void kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs kurs) {
-		new SwingKursNotenAnzeigenView(this, kursNotenModel, schueler, kurs).zeigen();
+	public KursNotenAnzeigenView kursNotenAnzeigen(KursNotenModel kursNotenModel, ListModel<Schueler> schueler, Kurs kurs) {
+		return new SwingKursNotenAnzeigenView(this, kursNotenModel, schueler, kurs);
 	}
 
 	@Override

@@ -57,7 +57,8 @@ public class KlasseNotenModel extends AbstractTableModel {
 		if(columnIndex == 0) {
 			return "Name";
 		} else {
-			return kurse.get((columnIndex) - 1).gebeName();
+			return kurse.get(columnIndex - 1).gebeName() + 
+					" (" + kurse.get(columnIndex - 1).gebeKursleiter().gebeLoginName() + ")";
 		}
 	}
 
@@ -66,7 +67,7 @@ public class KlasseNotenModel extends AbstractTableModel {
 		if(columnIndex == 0) {
 			return Schueler.class;
 		} else {
-			return String.class;
+			return KursNoten.class;
 		}
 	}
 
@@ -78,19 +79,52 @@ public class KlasseNotenModel extends AbstractTableModel {
 			if(daten.containsKey(schueler.get(rowIndex))) {
 				Map<Kurs, List<Note>> map = daten.get(schueler.get(rowIndex));
 				if(map.containsKey(kurse.get(columnIndex - 1))) {
-					double gewicht = 0.0;
-					double summe = 0.0;
-					for(Note n : map.get(kurse.get(columnIndex - 1))) {
-						gewicht += n.gebeGewichtung();
-						summe += n.gebeGewichtung() * n.gebeWert();
-					}
-					return Math.round((summe / gewicht) * 100.0) / 100.0; 
+					return new KursNoten(map.get(kurse.get(columnIndex - 1))); 
 				} else {
-					return "keine Noten / nicht belegt";
+					return new KursNoten();
 				}
 			} else {
-				return "keine Noten / nicht belegt";
+				return new KursNoten();
 			}
 		}
+	}
+	
+	public static final class KursNoten {
+		
+		private List<Note> noten;
+		private double schnitt;
+		
+		private KursNoten(List<Note> noten) {
+			this.noten = noten;
+			double gewicht = 0.0;
+			double summe = 0.0;
+			for(Note n : noten) {
+				gewicht += n.gebeGewichtung();
+				summe += n.gebeGewichtung() * n.gebeWert();
+			}
+			schnitt = Math.round((summe / gewicht) * 100.0) / 100.0; 
+		}
+		
+		private KursNoten() {
+			noten = new Vector<>();
+		}
+		
+		public List<Note> gebeNoten() {
+			return noten;
+		}
+		
+		public double gebeSchnitt() {
+			return schnitt;
+		}
+		
+		@Override
+		public String toString() {
+			if(noten.isEmpty()) {
+				return "keine Note";
+			} else {
+				return new Double(schnitt).toString();
+			}
+		}
+		
 	}
 }

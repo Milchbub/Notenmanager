@@ -59,8 +59,8 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	Jahre gebeJahre() throws DatenbankFehler {
-		String sql = "SELECT klasse_jahr AS jahr FROM klassen_" + loggedIn.gebeLoginName() + " "
-				+ "UNION SELECT kurs_jahr AS jahr FROM kurse_" + loggedIn.gebeLoginName() + " "
+		String sql = "SELECT klasse_jahr AS jahr FROM Klasse "
+				+ "UNION SELECT kurs_jahr AS jahr FROM Kurs "
 				+ "ORDER BY jahr DESC";
 		
 		Listenpacker<Integer> w = new Listenpacker<Integer>() {
@@ -74,7 +74,7 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	List<Benutzer> gebeAlleBenutzer() throws DatenbankFehler {
-		String sql = "SELECT loginName, benutzer, istAdmin FROM Benutzer";
+		String sql = "SELECT loginName, benutzer, istAdmin FROM Benutzer ORDER BY benutzer";
 
 		return new Listenpacker<Benutzer>() {
 			@Override
@@ -86,7 +86,7 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	List<Schueler> gebeAlleSchueler() throws DatenbankFehler {
-		String sql = "SELECT schuelerID, schueler, gebDat FROM Schueler";
+		String sql = "SELECT schuelerID, schueler, gebDat FROM Schueler ORDER BY schueler";
 		
 		return new Listenpacker<Schueler>() {
 			@Override
@@ -146,13 +146,13 @@ class MysqlDAO extends DAO {
 					+ "n.kurs, n.kurs_jahr, k.fach, "
 					+ "schuelerID, schueler, gebDat, "
 					+ "noteID, wert, datum, gewichtung, art, kommentar "
-				+ "FROM noten_" + loggedIn.gebeLoginName() + " AS n "
-					+ "JOIN kurse_" + loggedIn.gebeLoginName() + " AS k USING (kurs, kurs_jahr) "
+				+ "FROM noten_klasse_" + loggedIn.gebeLoginName() + " AS n "
+					+ "JOIN Kurs AS k USING (kurs, kurs_jahr) "
 					+ "JOIN Benutzer ON (kursleiter = Benutzer.loginName) "
-					+ "JOIN besucht_" + loggedIn.gebeLoginName() + " AS kl USING (schuelerID) "
-					+ "JOIN schueler_" + loggedIn.gebeLoginName() + " USING (schuelerID) "
-				+ "WHERE kl.klasse = ? AND kl.klasse_jahr = ? ";
-		
+					+ "JOIN Besucht AS kl USING (schuelerID) "
+					+ "JOIN Schueler USING (schuelerID) "
+				+ "WHERE kl.klasse = ? AND kl.klasse_jahr = ? "
+				+ "ORDER BY datum";
 		return new Listenpacker<Note>() {
 			@Override
 			protected void variablenSetzen(PreparedStatement s) throws SQLException {
@@ -261,7 +261,7 @@ class MysqlDAO extends DAO {
 	@Override
 	List<Kurs> gebeKurse(Benutzer benutzer, int jahr) throws DatenbankFehler {
 		String sql = "SELECT kurs, fach "
-				+ "FROM kurse_" + loggedIn.gebeLoginName() + " "
+				+ "FROM Kurs "
 				+ "WHERE kursleiter = ? AND kurs_jahr = ? "
 				+ "ORDER BY kurs";
 		return new Listenpacker<Kurs>() {
@@ -280,7 +280,7 @@ class MysqlDAO extends DAO {
 	@Override
 	List<Klasse> gebeGeleiteteKlassen(Benutzer benutzer, int jahr) throws DatenbankFehler {
 		String sql = "SELECT klasse "
-				+ "FROM klassen_" + loggedIn.gebeLoginName() + " "
+				+ "FROM Klasse "
 				+ "WHERE klassenleiter = ? AND klasse_jahr = ? "
 				+ "ORDER BY klasse";
 		return new Listenpacker<Klasse>() {
@@ -300,53 +300,34 @@ class MysqlDAO extends DAO {
 	Benutzer benutzerAnlegen(String loginName, String name, char[] passwort, boolean istAdmin) throws DatenbankFehler {
 		String sql1 = "INSERT INTO Benutzer (loginName, benutzer, istAdmin) VALUE "
 				+ "(?, ?, ?)";
-		String sql2 = "CREATE USER ? IDENTIFIED BY ?";
-		String grant1 = "GRANT SELECT ON Benutzer TO ?@'%'";
+		String sql2 = "CREATE USER ?@'%' IDENTIFIED BY ?";
 		String grantAdmin = "GRANT admin TO ?@'%' WITH ADMIN OPTION";
 		
 		String[] views = new String[] {
-				"CREATE VIEW klassen_" + loginName + " AS "
-						+ "SELECT * "
-						+ "FROM Klasse "
-						+ "WHERE klassenleiter = '" + loginName + "'",
-				"CREATE VIEW kurse_" + loginName + " AS "
-						+ "SELECT * "
-						+ "FROM Kurs "
-						+ "WHERE kursleiter = '" + loginName + "'",
-				"CREATE VIEW noten_loeschen_" + loginName + " AS "
-						+ "SELECT * "
-						+ "FROM Note "
-						+ "WHERE benutzer = '" + loginName + "' "
-						+ "WITH CHECK OPTION", 
-				"CREATE VIEW noten_" + loginName + " AS "
-						+ "SELECT kurs, kurs_jahr, schuelerID, "
-							+ "noteID, wert, datum, gewichtung, art, kommentar "
-						+ "FROM Note "
-							+ "JOIN kurse_" + loginName + " USING (kurs, kurs_jahr)",
-				"CREATE VIEW schueler_" + loginName + " AS "
-						+ "SELECT * "
-						+ "FROM Schueler "
-							+ "JOIN Belegt USING (schuelerID) "
-							+ "JOIN kurse_" + loginName + " USING (kurs, kurs_jahr) "
-							+ "JOIN Besucht USING (schuelerID) "
-							+ "JOIN klassen_" + loginName + " USING (klasse, klasse_jahr)",
-				"CREATE VIEW besucht_" + loginName + " AS "
-						+ "SELECT * "
-						+ "FROM Besucht "
-							+ "JOIN klassen_" + loginName + " USING (klasse, klasse_jahr)",
-				"CREATE VIEW belegt_" + loginName + " AS "
-						+ "SELECT * "
-						+ "FROM Belegt "
-							+ "JOIN kurse_" + loginName + " USING (kurs, kurs_jahr)"
+				"CREATE VIEW noten_loeschen_" + loginName + " AS " +
+					"SELECT * FROM Note WHERE benutzer = '" + loginName + "' WITH CHECK OPTION",
+					
+				"CREATE VIEW noten_" + loginName + " AS " + 
+					"SELECT kurs, kurs_jahr, schuelerID, noteID, wert, datum, gewichtung, art, kommentar " +
+					"FROM Note JOIN Kurs USING (kurs, kurs_jahr) WHERE kursleiter = '" + loginName + "'",
+					
+				"CREATE VIEW noten_klasse_" + loginName + " AS " + 
+					"SELECT klasse, klasse_jahr, kurs, kurs_jahr, schuelerID, noteID, wert, datum, gewichtung, art, kommentar " + 
+					"FROM Note " +
+						"JOIN Besucht USING (schuelerID) " +
+						"JOIN Klasse USING (klasse, klasse_jahr) " +
+					"WHERE klassenleiter = '" + loginName + "'"
 		};
 		String[] grants = new String[] {
-				"GRANT SELECT ON klassen_" + loginName + " TO '" + loginName + "'@'%'",
-				"GRANT SELECT ON kurse_" + loginName + " TO '" + loginName + "'@'%'",
-				"GRANT DELETE ON noten_loeschen_" + loginName + " TO '" + loginName + "'@'%'", 
+				"GRANT SELECT ON Benutzer TO '" + loginName + "'@'%'",
+				"GRANT SELECT ON Klasse TO '" + loginName + "'@'%'",
+				"GRANT SELECT ON Kurs TO '" + loginName + "'@'%'",
+				"GRANT INSERT, DELETE ON noten_loeschen_ilbu TO '" + loginName + "'@'%'", 
 				"GRANT SELECT ON noten_" + loginName + " TO '" + loginName + "'@'%'",
-				"GRANT SELECT ON schueler_" + loginName + " TO '" + loginName + "'@'%'",
-				"GRANT SELECT ON besucht_" + loginName + " TO '" + loginName + "'@'%'",
-				"GRANT SELECT ON belegt_" + loginName + " TO '" + loginName + "'@'%'"
+				"GRANT SELECT ON noten_klasse_" + loginName + " TO '" + loginName + "'@'%'", 
+				"GRANT SELECT ON Schueler TO '" + loginName + "'@'%'",
+				"GRANT SELECT ON Besucht TO '" + loginName + "'@'%'",
+				"GRANT SELECT ON Belegt TO '" + loginName + "'@'%'"
 		};
 		
 		try (PreparedStatement s1 = db.prepareStatement(sql1)) {
@@ -359,21 +340,20 @@ class MysqlDAO extends DAO {
 				s2.setString(1, loginName);
 				s2.setString(2, new String(passwort));
 				s2.executeUpdate();
+				
 				if (istAdmin) {
 					try (PreparedStatement s3 = db.prepareStatement(grantAdmin)) {
 						s3.setString(1, loginName);
 						s3.executeUpdate();
 					}
-				} else {
-					try (PreparedStatement s4 = db.prepareStatement(grant1)) {
-						s4.setString(1, loginName);
-						s4.executeUpdate();
-					}
 				}
+				
 				try(Statement s = db.createStatement()) {
-					for(int i = 0; i < 7; i++) {
-						s.addBatch(views[i]);
-						s.addBatch(grants[i]);
+					for(String sql : views) {
+						s.addBatch(sql);
+					}
+					for(String sql : grants) {
+						s.addBatch(sql);
 					}
 					s.executeBatch();
 				}
@@ -608,7 +588,7 @@ class MysqlDAO extends DAO {
 	@Override
 	Note noteHinzufuegen(int wert, Date datum, double gewichtung, String art, String kommentar, Kurs kurs,
 			Schueler schueler, Benutzer benutzer) throws DatenbankFehler {
-		String sql = "INSERT INTO Note (wert, datum, gewichtung, art, "
+		String sql = "INSERT INTO noten_loeschen_" + loggedIn.gebeLoginName() + " (wert, datum, gewichtung, art, "
 					+ "kommentar, kurs, kurs_jahr, schuelerID, benutzer) VALUE "
 				+ "(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try (PreparedStatement s = db.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -635,9 +615,10 @@ class MysqlDAO extends DAO {
 	
 	@Override
 	void noteLoeschen(Note note) throws DatenbankFehler {
-		String sql = "DELETE FROM Note WHERE noteID = ?";
+		String sql = "DELETE FROM noten_loeschen_" + loggedIn.gebeLoginName() + " WHERE noteID = ?";
 		try (PreparedStatement s = db.prepareStatement(sql)) {
 			s.setInt(1, note.gebeId());
+			s.executeUpdate();
 		} catch (SQLException e) {
 			throw new DatenbankFehler(e);
 		}
