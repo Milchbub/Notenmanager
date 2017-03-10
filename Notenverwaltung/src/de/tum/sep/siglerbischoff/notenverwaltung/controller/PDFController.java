@@ -1,9 +1,12 @@
 package de.tum.sep.siglerbischoff.notenverwaltung.controller;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 
@@ -20,10 +23,18 @@ final class PDFController {
 
 	public static void print(File file, KlasseNotenModel klasseNotenModel, Klasse klasse) throws PDFFehler, FileNotFoundException {
 		try {
-			File in = new File(ClassLoader.getSystemResource("print.html").toURI());
+			InputStream in = ClassLoader.getSystemResourceAsStream("print.html");
 			String html;
 			try {
-				html = new String(Files.readAllBytes(in.toPath()));
+				BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+				StringBuilder builder = new StringBuilder();
+				String aux = "";
+
+				while ((aux = reader.readLine()) != null) {
+				    builder.append(aux);
+				}
+
+				html = builder.toString();
 			} catch (IOException e) {
 				throw new PDFFehler(e);
 			}
@@ -56,8 +67,6 @@ final class PDFController {
 			
 			renderer.layout();
 			renderer.createPDF(new FileOutputStream(file), true);
-		} catch(URISyntaxException e) {
-			throw new PDFFehler(e);
 		} catch (DocumentException e) {
 			throw new PDFFehler(e);
 		}

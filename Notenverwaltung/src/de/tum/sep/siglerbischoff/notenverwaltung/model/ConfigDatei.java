@@ -17,8 +17,10 @@ public class ConfigDatei extends Properties {
 		defaults.setProperty("dbname", "Notenmanager");
 		this.defaults = defaults;
 		
-		File file = new File(URLDecoder.decode(
-				ClassLoader.getSystemClassLoader().getResource(".").getPath(), "UTF-8") + "/.config");
+		
+		/*File file = new File(URLDecoder.decode(
+				ClassLoader.getSystemClassLoader().getResource(".").getPath(), "UTF-8") + "/.config");*/
+		File file = new File("./.config");
 		if(!file.createNewFile()) {
 			try (FileInputStream fis = new FileInputStream(file)) {
 				load(fis);

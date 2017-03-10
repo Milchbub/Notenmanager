@@ -69,20 +69,6 @@ public class SwingMainView extends JFrame implements MainView {
 	public SwingMainView() {
 		super("Notenmanager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//TODO
-		/*addWindowFocusListener(new WindowFocusListener() {
-			
-			@Override
-			public void windowLostFocus(WindowEvent e) {
-			}
-			
-			@Override
-			public void windowGainedFocus(WindowEvent e) {
-				for(ActionListener l : listeners.getListeners(ActionListener.class)) {
-					l.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_FIRST, MainView.COMMAND_UPDATE));
-				}
-			}
-		});*/
 		
 		GroupLayout gl_content = new GroupLayout(getContentPane()); 
 		
@@ -391,9 +377,9 @@ public class SwingMainView extends JFrame implements MainView {
 						.addGroup(gl_pnlKurse.createSequentialGroup()
 							.addComponent(btnNoteEintragen)
 							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnNotenAnzeigen)
-							.addPreferredGap(ComponentPlacement.UNRELATED, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
-							.addComponent(btnKlassenarbeitEintagen))
+							.addComponent(btnKlassenarbeitEintagen)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnNotenAnzeigen))
 						)
 					.addContainerGap()
 				);
